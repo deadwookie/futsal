@@ -1,35 +1,39 @@
 {
-  "name": "OpenShift-Sample-App",
-  "version": "1.0.0",
-  "description": "OpenShift Sample Application",
+  "name": "Futsal",
+  "version": "0.1.0",
+  "description": "Futsal players and tournaments management",
   "keywords": [
-    "OpenShift",
-    "Node.js",
-    "application",
-    "openshift"
+    "Futsal",
+    "Football",
+    "Tournament"
   ],
   "author": {
-    "name": "OpenShift",
-    "email": "ramr@example.org",
-    "url": "http://www.openshift.com/"
+    "name": "Pavel Zet",
+    "email": "zetorama@gmail.com",
+    "url": ""
   },
-  "homepage": "http://www.openshift.com/",
+  "homepage": "http://futsal-bzik.rhcloud.com/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/openshift/origin-server"
+    "url": ""
   },
 
   "engines": {
-    "node": ">= 0.6.0",
+    "node": ">= 0.10.0",
     "npm": ">= 1.0.0"
   },
 
   "dependencies": {
-    "express": "~3.4.4"
+    "express": "~4.7.2",
+    "morgan": "~1.2.2",
+    "compression": "~1.0.9",
+    "express-session": "~1.7.2",
+    "serve-static": "~1.4.3",
+    "serve-favicon": "~2.0.1"
   },
   "devDependencies": {},
   "bundleDependencies": [],
 
   "private": true,
-  "main": "server.js"
+  "main": "server/index.js"
 }

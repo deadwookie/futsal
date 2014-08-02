@@ -1,0 +1,21 @@
+{
+  "server": {
+    "ipaddress": "127.0.0.1",
+    "port": 11000,
+
+    "logFormat": "short",
+    "compressFromKb": 20
+  },
+  "terminator": {
+    "exit": true,
+    "signals": [
+      "SIGHUP", "SIGINT", "SIGQUIT", "SIGILL", "SIGTRAP", "SIGABRT",
+      "SIGBUS", "SIGFPE", "SIGUSR1", "SIGSEGV", "SIGUSR2", "SIGTERM"
+    ]
+  },
+  "session": {
+    "secret": "who's better: maradona or messi?",
+    "resave": true,
+    "saveUninitialized": false
+  }
+}
