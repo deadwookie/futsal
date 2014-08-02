@@ -1,6 +1,8 @@
-export HOME=$HOME/app-root/runtime/repo
+# export HOME=$HOME/app-root/runtime/repo
 
 echo Installing Bower dependencies
-cd $HOME/node_modules/bower/bin
-bower install --silent
+# cd $HOME/node_modules/bower/bin
+# bower install --silent
+cd $HOME/app-root/runtime/repo
+npm boweri
 echo Bower ok
