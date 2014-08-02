@@ -1,4 +1,4 @@
-export HOME=$HOME/app-root/runtime
+export HOME=$HOME/app-root/runtime/repo
 
 echo Installing Bower dependencies
 cd $HOME/node_modules/bower/bin
