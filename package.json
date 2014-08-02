@@ -41,7 +41,7 @@
   "bundleDependencies": [],
   "scripts": {
     "start": "node server",
-    "boweri": "export HOME=$HOME/app-root/runtime; ./node_modules/bower/bin/bower install"
+    "boweri": "export HOME=$HOME/app-root/runtime; ./node_modules/bower/bin/bower install --silent"
   },
   "private": true,
   "main": "server/index.js"
