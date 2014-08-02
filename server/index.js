@@ -6,13 +6,6 @@ var config = require('nconf')
   .file('overrides', __dirname + '/config/server.overrides.json')
   .file('default', __dirname + '/config/server.json');
 
-if (config.get('OPENSHIFT_NODEJS_IP')) {
-  config.set('server:ipaddress', config.get('OPENSHIFT_NODEJS_IP'));
-}
-if (config.get('OPENSHIFT_NODEJS_PORT')) {
-  config.set('server:port', config.get('OPENSHIFT_NODEJS_PORT'));
-}
-
 // process termination (ported from Openshift sample app)
 var terminator = function(signal) {
   if (typeof signal === 'string') {
@@ -78,12 +71,12 @@ app.use(function(err, req, res, next) {
     console.warn('ERROR [%s]: %s', (new Date).toISOString(), err);
   }
 
-  res.json(status, data);
+  res.status(status).json(data);
 });
 
 // let the show go on
-var host = config.get('server:ipaddress'),
-  port = config.get('server:port');
+var host = config.get('OPENSHIFT_NODEJS_IP') || config.get('server:ipaddress'),
+  port = config.get('OPENSHIFT_NODEJS_PORT') || config.get('PORT') || config.get('server:port');
 
 app.listen(port, host, function() {
   console.log('SERVER [%s]: Node started on %s:%d...', (new Date).toISOString(), host, port);

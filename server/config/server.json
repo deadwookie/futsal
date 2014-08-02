@@ -3,7 +3,7 @@
     "ipaddress": "127.0.0.1",
     "port": 11000,
 
-    "logFormat": "short",
+    "logFormat": "dev",
     "compressFromKb": 20
   },
   "terminator": {
