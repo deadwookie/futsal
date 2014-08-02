@@ -2,14 +2,13 @@
   "name": "Futsal",
   "version": "0.1.0",
   "description": "Futsal players and tournaments management",
-
   "dependencies": {
     "ember": "~1.7.0",
     "ember-data": "~1.0.0",
-    "bootstrap": "~3.2.0"
+    "bootstrap": "~3.2.0",
+    "fontawesome": "~4.1.0"
   },
   "devDependencies": {},
-
   "private": true,
   "main": "server/public/js/index.js"
 }

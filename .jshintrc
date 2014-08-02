@@ -22,6 +22,8 @@
   "-W030": true,
   "-W052": true,
   "-W058": true,
+  "-W116": true,
+
   "devel": true,
   "globals": {
   }

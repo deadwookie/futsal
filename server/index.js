@@ -24,16 +24,19 @@ process.on('exit', function() {
   terminator();
 });
 
+
 // server dependencies
 var isDev = config.get('NODE_ENV') !== 'production';
 var express = require('express');
 var logger = require('morgan')(config.get('server:logFormat'));
-var session = require('express-session')(config.get('session'));
 var favicon = require('serve-favicon');
 var statics = require('serve-static');
+var cookieParser = require('cookie-parser')(config.get('session:secret'));
+var session = require('./session');
 var compression = require('compression')({
   threshold: config.get('server:compressFromKb')
 });
+
 
 // server setup
 var app = express();
@@ -44,14 +47,13 @@ app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(statics(__dirname + '/public'));
 app.use('/bower', statics(__dirname + '/../bower'));
 
+app.use(cookieParser);
 app.use(session);
 isDev && app.use(logger);
 
 
 // server routes
-app.get('/', function(req, res) {
-  res.send('hello world');
-});
+// app.get('/', function(req, res, next) {});
 
 // errors
 var HttpError = require('errors/http');
@@ -73,6 +75,7 @@ app.use(function(err, req, res, next) {
 
   res.status(status).json(data);
 });
+
 
 // let the show go on
 var host = config.get('OPENSHIFT_NODEJS_IP') || config.get('server:ipaddress'),

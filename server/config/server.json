@@ -14,8 +14,18 @@
     ]
   },
   "session": {
+    "store": "firebase",
+    "name": "futsal.sid",
     "secret": "who's better: maradona or messi?",
     "resave": true,
     "saveUninitialized": false
+  },
+  "firebase": {
+    "host": "fiery-fire-3995.firebaseio.com"
+  },
+  "redis": {
+    "host": "pub-redis-15390.us-east-1-4.3.ec2.garantiadata.com",
+    "port": 15390,
+    "db": 0
   }
 }
