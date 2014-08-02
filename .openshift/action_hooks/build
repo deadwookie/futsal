@@ -4,5 +4,5 @@ echo Installing Bower dependencies
 # cd $HOME/node_modules/bower/bin
 # bower install --silent
 cd $HOME/app-root/runtime/repo
-npm boweri
+npm run boweri
 echo Bower ok
