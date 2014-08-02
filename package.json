@@ -38,8 +38,7 @@
   "bundleDependencies": [],
 
   "scripts": {
-    "start": "node server",
-    "postinstall": "export HOME=$HOME/app-root/runtime; ./node_modules/bower/bin/bower install"
+    "start": "node server"
   },
 
   "private": true,

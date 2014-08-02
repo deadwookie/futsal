@@ -27,3 +27,6 @@ nbproject
 # Folders to ignore
 /node_modules
 /bower
+
+# Dev overrides
+*.overrides.json
