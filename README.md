@@ -1,10 +1,35 @@
-The OpenShift `nodejs` cartridge documentation can be found at:
+# Futsal
+An internal application for friendly futsal games. Main features:
+* Players registration
+* Players rating
+* Teams randomizer
+* Tournaments organization
+* Statistics
 
-http://openshift.github.io/documentation/oo_cartridge_guide.html#nodejs
+## Platform
+* [The OpenShift `nodejs` cartridge](http://openshift.github.io/documentation/oo_cartridge_guide.html#nodejs)
+* [Firebase](https://www.firebase.com)
+* Redis on [Redislab](http://redislabs.com/node-js-redis)
+* [express](http://expressjs.com)
+* [Ember](http://emberjs.com)
 
+### Tools
+* [gulp](http://gulpjs.com)
+* [browserify](http://browserify.org)
+ 
 
-redis
-====
-http://redislabs.com/node-js-redis
+## Installation
+```
+npm install && bower install
+```
 
-`pub-redis-15390.us-east-1-4.3.ec2.garantiadata.com:15390`
+## Development
+```
+gulp
+# open http://localhost:11000
+```
+Make sure you have `gulp` installed globally (`npm install -g gulp`)
+
+## Testing
+
+## Releasing
