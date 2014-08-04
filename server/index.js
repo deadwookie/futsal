@@ -10,7 +10,7 @@ var config = require('nconf')
 var terminator = function(signal) {
   if (typeof signal === 'string') {
     console.log('SERVER [%s]: Received %s - terminating...', (new Date).toISOString(), signal);
-    process.exit(1);
+    config.get('terminator:exit') && process.exit(1);
   }
   console.log('SERVER [%s]: Node stopped.', (new Date).toISOString());
 };
@@ -59,7 +59,7 @@ isDev && app.use(logger);
 var HttpError = require('errors/http');
 app.use(function(req, res, next) {
   // 404, as this is a last man standing
-  next(new HttpError('Page not found.', 404));
+  next(new HttpError(404));
 });
 app.use(function(err, req, res, next) {
   var status = err.status || 500,
