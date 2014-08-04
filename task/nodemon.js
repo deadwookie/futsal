@@ -11,6 +11,6 @@ gulp.task(taskname, function() {
     //   // Do you want to compile something?
     // })
     .on('restart', function (files) {
-      gutil.log('Restart due to changes in', gutil.colors.magenta(files));
+      gutil.log('Restart node', files ? 'to changes in ' + gutil.colors.magenta(files) : '');
     });
 });
