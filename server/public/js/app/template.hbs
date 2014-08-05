@@ -1,0 +1,28 @@
+<div class="container">
+  <div class="navbar navbar-default" role="navigation">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#">Futsal</a>
+      </div>
+      <ul class="nav navbar-nav">
+        {{#link-to "me" tagName="li" href=false}}
+          {{#link-to "me"}}<i class="fa fa-user"></i> My Profile{{/link-to}}
+        {{/link-to}}
+        {{#link-to "players" tagName="li" href=false}}
+          {{#link-to "players"}}<i class="fa fa-users"></i> Players{{/link-to}}
+        {{/link-to}}
+        {{#link-to "tourneys" tagName="li" href=false}}
+          {{#link-to "tourneys"}}<i class="fa fa-trophy"></i> Tourneys{{/link-to}}
+        {{/link-to}}
+      </ul>
+      <div class="nav-text navbar-right">
+        <a href="#" class="btn btn-warning navbar-btn">
+          <i class="fa fa-trophy"></i> Upcoming Tourney
+        </a>
+        <em>3 days left</em>
+      </div>
+    </div><!--/.container-fluid -->
+  </div>
+
+  {{outlet}}
+</div>

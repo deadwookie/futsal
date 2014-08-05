@@ -1,0 +1,49 @@
+<div class="well">
+  <div class="row player-profile">
+    <div class="col-lg-4 text-right">
+      <h1>
+        {{name}}
+        <!--
+          1..4 default
+          4..6 info
+          6..8 primary
+          8..9 success
+          9..10 warning
+         -->
+        <span class="label label-primary">{{rating}}</span>
+      </h1>
+      <dl class="dl-horizontal lead pull-right">
+        <dt>Shoot</dt>
+        <dd><span class="label label-info">5.0</span></dd>
+        <dt>Pass</dt>
+        <dd><span class="label label-warning">9.1</span></dd>
+        <dt>Dribble</dt>
+        <dd><span class="label label-default">3.1</span></dd>
+        <dt>Pace</dt>
+        <dd><span class="label label-primary">6.3</span></dd>
+        <dt>Defence</dt>
+        <dd><span class="label label-success">8.5</span></dd>
+        <dt>Goal Keeper</dt>
+        <dd><span class="label label-info">5.4</span></dd>
+      </dl>
+    </div>
+    <div class="col-lg-4">
+      <img src="{{unbound photo}}?size=400px" alt="photo" class="img-thumbnail img-responsive">
+    </div>
+    <div class="col-lg-4">
+      <br>
+      <dl>
+        <dt>Last played Tourney:</dt>
+        <dd><a href="#"><i class="fa fa-trophy"></i> July 04</a></dd>
+        <dt>Tourneys won:</dt>
+        <dd>3 of 7</dd>
+        <dt>Matches won:</dt>
+        <dd>21 of 42</dd>
+        <dt>Goals scored:</dt>
+        <dd>13</dd>
+        <dt>Favorite teammate:</dt>
+        <dd><a href="#">Dmitry B. <span class="label label-success">8.2</span></a></dd>
+      </dl>
+    </div>
+  </div>
+</div>

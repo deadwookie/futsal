@@ -1,0 +1,23 @@
+<div class="row players-list">
+  {{#each}}
+    <div class="col-lg-4 players-item">
+      <div class="media">
+        {{#link-to "player" this class="pull-left"}}
+          <img src="{{unbound photo}}?size=60px" alt="photo" class="media-object img-thumbnail">
+        {{/link-to}}
+        <div class="media-body">
+          <h3 class="media-heading">
+            {{#link-to "player" this}}
+              {{name}} <span class="label label-primary">{{rating}}</span>
+            {{/link-to}}
+          </h3>
+          <ul class="list-inline">
+            <li><i class="fa fa-check-square-o"></i> Voted</li>
+            <li><a href="#">Re-Vote</a></li>
+          </ul>
+          <p class="bg-success"><b>+1</b> on <a href="#">Upcoming Tourney</a></p>
+        </div>
+      </div>
+    </div>
+  {{/each}}
+</div>

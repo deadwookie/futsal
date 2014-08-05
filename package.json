@@ -43,10 +43,11 @@
     "browserify-shim": "^3.6.0",
     "watchify": "~0.10.2",
     "vinyl-source-stream": "^0.1.1",
-    "hbsfy": "^2.0.0",
+    "hbsfy": "git+https://github.com/knownasilya/node-hbsfy.git#281ad8f1cfdbe89da84b4ea52c31087a9c643dbe",
     "gulp-nodemon": "^1.0.4",
     "gulp-util": "^3.0.0",
-    "pretty-hrtime": "^0.2.1"
+    "pretty-hrtime": "^0.2.1",
+    "ember-template-compiler": "^1.6.1"
   },
   "bundleDependencies": [],
   "scripts": {
@@ -77,6 +78,11 @@
         "ember:Ember"
       ]
     }
+  },
+  "hbsfy": {
+    "extentions": ["hbs"],
+    "precompiler": "ember-template-compiler",
+    "compiler": "require('ember').Handlebars"
   },
   "private": true,
   "main": "server/index.js"
