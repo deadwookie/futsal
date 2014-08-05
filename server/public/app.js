@@ -1,7 +1,7 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 (function (global){
 
-; Ember = global.Ember = require("c:\\ZeT\\App\\futsal\\bower\\ember\\ember.js");
+; Ember = global.Ember = require("C:\\www\\_wtf\\futsal\\bower\\ember\\ember.js");
 ;__browserify_shim_require__=require;(function browserifyShim(module, exports, require, define, browserify_shim__define__module__export__) {
 /*!
  * @overview  Ember Data
@@ -12061,7 +12061,7 @@ global.DS = requireModule('ember-data/lib/main')['default'];
 }).call(global, undefined, undefined, undefined, undefined, function defineExport(ex) { module.exports = ex; });
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"c:\\ZeT\\App\\futsal\\bower\\ember\\ember.js":2}],2:[function(require,module,exports){
+},{"C:\\www\\_wtf\\futsal\\bower\\ember\\ember.js":2}],2:[function(require,module,exports){
 (function (process,global){
 
 ; jQuery = global.jQuery = require("jquery");
@@ -71557,6 +71557,7 @@ module.exports = function() {
   this.resource('players');
   this.resource('player', {path: 'players/:id'});
   this.resource('tourneys');
+  this.resource('tourney', {path: 'tourneys/:id'});
 };
 
 },{}],22:[function(require,module,exports){
@@ -71612,6 +71613,12 @@ function program8(depth0,data) {
   data.buffer.push("<i class=\"fa fa-trophy\"></i> Tourneys");
   }
 
+function program10(depth0,data) {
+  
+  
+  data.buffer.push("<i class=\"fa fa-trophy\"></i> Upcoming Tourney");
+  }
+
   data.buffer.push("<div class=\"container\">\n  <div class=\"navbar navbar-default\" role=\"navigation\">\n    <div class=\"container-fluid\">\n      <div class=\"navbar-header\">\n        <a class=\"navbar-brand\" href=\"#\">Futsal</a>\n      </div>\n      <ul class=\"nav navbar-nav\">\n        ");
   stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
     'tagName': ("li"),
@@ -71630,7 +71637,12 @@ function program8(depth0,data) {
     'href': (false)
   },hashTypes:{'tagName': "STRING",'href': "BOOLEAN"},hashContexts:{'tagName': depth0,'href': depth0},inverse:self.noop,fn:self.program(7, program7, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "tourneys", options) : helperMissing.call(depth0, "link-to", "tourneys", options));
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n      </ul>\n      <div class=\"nav-text navbar-right\">\n        <a href=\"#\" class=\"btn btn-warning navbar-btn\">\n          <i class=\"fa fa-trophy\"></i> Upcoming Tourney\n        </a>\n        <em>3 days left</em>\n      </div>\n    </div><!--/.container-fluid -->\n  </div>\n\n  ");
+  data.buffer.push("\n      </ul>\n      <div class=\"nav-text navbar-right\">\n        ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
+    'class': ("btn btn-warning navbar-btn")
+  },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(10, program10, data),contexts:[depth0,depth0],types:["STRING","INTEGER"],data:data},helper ? helper.call(depth0, "tourney", 2, options) : helperMissing.call(depth0, "link-to", "tourney", 2, options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n        <em>3 days left</em>\n      </div>\n    </div><!--/.container-fluid -->\n  </div>\n\n  ");
   stack1 = helpers._triageMustache.call(depth0, "outlet", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
   data.buffer.push("\n</div>\n");
@@ -71651,6 +71663,7 @@ App.Router.map(require('./app/routermap'));
 Ember.TEMPLATES.application = require('./app/template.hbs');
 
 App.PlayersRoute = require('./players/route');
+App.PlayersController = require('./players/controller');
 Ember.TEMPLATES.players = require('./players/template.hbs');
 
 App.Player = require('./player/model');
@@ -71659,13 +71672,227 @@ App.Player.FIXTURES = require('./player/fixtures.json');
 App.PlayerRoute = require('./players/route');
 Ember.TEMPLATES.player = require('./player/template.hbs');
 
+App.Tourney = require('./tourney/model');
+App.Tourney.FIXTURES = require('./tourney/fixtures.json');
+App.TourneyRoute = require('./tourney/route');
+App.TourneyController = require('./tourney/controller');
+Ember.TEMPLATES.tourney = require('./tourney/template.hbs');
+Ember.TEMPLATES.tourneyPlayers = require('./tourney/players.hbs');
+Ember.TEMPLATES.tourneyTeams = require('./tourney/teams.hbs');
+Ember.TEMPLATES.tourneyTable = require('./tourney/table.hbs');
+Ember.TEMPLATES.tourneyMatches = require('./tourney/matches.hbs');
+
+App.TourneysRoute = require('./tourneys/route');
+Ember.TEMPLATES.tourneys = require('./tourneys/template.hbs');
+
+App.Team = require('./team/model');
+App.Team.FIXTURES = require('./team/fixtures.json');
+App.TeamRoute = require('./team/route');
+App.TeamController = require('./team/controller');
+
+App.TeamsRoute = require('./teams/route');
+App.TeamsController = require('./teams/controller');
+Ember.TEMPLATES.teams = require('./teams/template.hbs');
+
+App.Match = require('./match/model');
+App.Match.FIXTURES = require('./match/fixtures.json');
+App.MatchRoute = require('./match/route');
+App.MatchController = require('./match/controller');
+
+App.MatchesRoute = require('./matches/route');
+App.MatchesController = require('./matches/controller');
+Ember.TEMPLATES.matches = require('./matches/template.hbs');
+
 App.MeRoute = require('./me/route');
 
 
-},{"./app/routermap":21,"./app/template.hbs":22,"./me/route":24,"./player/fixtures.json":25,"./player/model":26,"./player/template.hbs":28,"./players/route":29,"./players/template.hbs":30,"ember":2,"ember-data":1}],24:[function(require,module,exports){
+},{"./app/routermap":21,"./app/template.hbs":22,"./match/controller":24,"./match/fixtures.json":25,"./match/model":26,"./match/route":27,"./matches/controller":28,"./matches/route":29,"./matches/template.hbs":30,"./me/route":31,"./player/fixtures.json":32,"./player/model":33,"./player/template.hbs":35,"./players/controller":36,"./players/route":37,"./players/template.hbs":38,"./team/controller":39,"./team/fixtures.json":40,"./team/model":41,"./team/route":42,"./teams/controller":43,"./teams/route":44,"./teams/template.hbs":45,"./tourney/controller":46,"./tourney/fixtures.json":47,"./tourney/matches.hbs":48,"./tourney/model":49,"./tourney/players.hbs":50,"./tourney/route":51,"./tourney/table.hbs":52,"./tourney/teams.hbs":53,"./tourney/template.hbs":54,"./tourneys/route":55,"./tourneys/template.hbs":56,"ember":2,"ember-data":1}],24:[function(require,module,exports){
+var Ember = require('ember');
+
+module.exports = Ember.ObjectController.extend({
+  actions: {
+    view: function() {
+
+    },
+    edit: function() {
+
+    }
+  },
+
+  timeLeft: function() {
+    return '4:32';
+  }.property('isPlayed'),
+});
+
+},{"ember":2}],25:[function(require,module,exports){
+module.exports=[
+  {
+    "id": 1,
+    "tourney": 1,
+    "team1": 1,
+    "team2": 3,
+    "team1goals": 0,
+    "team2goals": 1,
+    "isPlayed": true
+  },
+  {
+    "id": 2,
+    "tourney": 1,
+    "team1": 2,
+    "team2": 4,
+    "team1goals": 3,
+    "team2goals": 0,
+    "isPlayed": true
+  },
+  {
+    "id": 3,
+    "tourney": 1,
+    "team1": 3,
+    "team2": 4,
+    "team1goals": 0,
+    "team2goals": 1,
+    "isPlayed": true
+  },
+  {
+    "id": 4,
+    "tourney": 1,
+    "team1": 2,
+    "team2": 1,
+    "team1goals": 0,
+    "team2goals": 0,
+    "isPlayed": true
+  },
+  {
+    "id": 5,
+    "tourney": 1,
+    "team1": 4,
+    "team2": 1,
+    "team1goals": 0,
+    "team2goals": 0,
+    "isPlayed": true
+  },
+
+  {
+    "id": 6,
+    "tourney": 1,
+    "team1": 3,
+    "team2": 2,
+    "team1goals": 1,
+    "team2goals": 0,
+    "isPlayed": true
+  },
+  {
+    "id": 7,
+    "tourney": 1,
+    "team1": 1,
+    "team2": 4,
+    "team1goals": 1,
+    "team2goals": 1,
+    "isPlayed": true
+  },
+  {
+    "id": 8,
+    "tourney": 1,
+    "team1": 2,
+    "team2": 3,
+    "team1goals": 1,
+    "team2goals": 2,
+    "isPlayed": true
+  },
+  {
+    "id": 9,
+    "tourney": 1,
+    "team1": 4,
+    "team2": 3,
+    "team1goals": 2,
+    "team2goals": 3,
+    "isPlayed": true
+  },
+  {
+    "id": 10,
+    "tourney": 1,
+    "team1": 1,
+    "team2": 2,
+    "team1goals": 0,
+    "team2goals": 0,
+    "isPlayed": true
+  },
+  {
+    "id": 11,
+    "tourney": 1,
+    "team1": 4,
+    "team2": 2,
+    "team1goals": 2,
+    "team2goals": 1,
+    "isPlayed": true
+  },
+  {
+    "id": 12,
+    "tourney": 1,
+    "team1": 3,
+    "team2": 1,
+    "team1goals": 0,
+    "team2goals": 0,
+    "isPlayed": false
+  }
+]
+
+},{}],26:[function(require,module,exports){
+var DS = require('ember-data');
+
+module.exports = DS.Model.extend({
+  tourney: DS.belongsTo('tourney'),
+  team1: DS.belongsTo('team'),
+  team2: DS.belongsTo('team'),
+  team1goals: DS.attr('number'),
+  team2goals: DS.attr('number'),
+  isPlayed: DS.attr('boolean', {
+    defaultValue: false
+  }),
+});
+
+},{"ember-data":1}],27:[function(require,module,exports){
+var Ember = require('ember');
+
+module.exports = Ember.Route.extend({
+  model: function(params) {
+    return this.store.find('match', params.id);
+  }
+});
+
+},{"ember":2}],28:[function(require,module,exports){
+var Ember = require('ember');
+
+module.exports = Ember.ObjectController.extend({
+
+});
+
+},{"ember":2}],29:[function(require,module,exports){
+var Ember = require('ember');
+
+module.exports = Ember.Route.extend({
+  model: function(params) {
+    return this.store.find('match');
+  }
+});
+
+},{"ember":2}],30:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var compiler = require('ember').Handlebars;
+module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
+  
+
+
+  data.buffer.push("<div class=\"row\">\nmatches list\n</div>\n");
+  
+});
+
+},{"ember":2}],31:[function(require,module,exports){
 var PlayerRoute = require('../player/route');
 var user = {
-  id: 1
+  id: 13
 };
 
 // An alias to existed player
@@ -71678,47 +71905,131 @@ module.exports = PlayerRoute.extend({
   }
 });
 
-},{"../player/route":27}],25:[function(require,module,exports){
+},{"../player/route":34}],32:[function(require,module,exports){
 module.exports=[
   {
     "id": 1,
-    "name": "Pavel Zet",
-    "rating": 7.2,
-    "photo": "https://secure.gravatar.com/avatar/e8577a56b403f512e8e253bf340705c0"
+    "name": "Кирилл",
+    "rating": 10,
+    "photo": "https://secure.gravatar.com/avatar/c9ccf1c73cf2eb5a21bfa900493dbd4c"
   },
   {
     "id": 2,
-    "name": "Dima B.",
-    "rating": 8.5,
+    "name": "Витя",
+    "rating": 7,
     "photo": "https://secure.gravatar.com/avatar/c9ccf1c73cf2eb5a21bfa900493dbd4c"
   },
   {
     "id": 3,
+    "name": "Тимур",
+    "rating": 6,
+    "photo": "https://secure.gravatar.com/avatar/c9ccf1c73cf2eb5a21bfa900493dbd4c"
+  },
+  {
+    "id": 4,
+    "name": "Серёга (GK)",
+    "rating": 10,
+    "photo": "https://secure.gravatar.com/avatar/c9ccf1c73cf2eb5a21bfa900493dbd4c"
+  },
+  {
+    "id": 5,
+    "name": "Саша Дозер",
+    "rating": 2,
+    "photo": "https://secure.gravatar.com/avatar/c9ccf1c73cf2eb5a21bfa900493dbd4c"
+  },
+  {
+    "id": 6,
     "name": "Sergey M.",
     "rating": 9.3,
     "photo": "https://secure.gravatar.com/avatar/97893dbe4d1fbaef6153a959953802ee"
   },
   {
-    "id": 4,
+    "id": 7,
     "name": "Eugene",
     "rating": 6.6,
     "photo": "https://secure.gravatar.com/avatar/f63b9cef6493177754bc6873841f7a5a"
   },
   {
-    "id": 5,
+    "id": 8,
+    "name": "Игорь",
+    "rating": 7,
+    "photo": "https://secure.gravatar.com/avatar/c9ccf1c73cf2eb5a21bfa900493dbd4c"
+  },
+  {
+    "id": 9,
+    "name": "Роман",
+    "rating": 2,
+    "photo": "https://secure.gravatar.com/avatar/c9ccf1c73cf2eb5a21bfa900493dbd4c"
+  },
+  {
+    "id": 10,
     "name": "Slava",
     "rating": 4.1,
     "photo": "https://secure.gravatar.com/avatar/82ab1e8b468be7ecfb4e668f80cbc3e5"
   },
   {
-    "id": 6,
+    "id": 11,
+    "name": "Самсон",
+    "rating": 9,
+    "photo": "https://secure.gravatar.com/avatar/c9ccf1c73cf2eb5a21bfa900493dbd4c"
+  },
+  {
+    "id": 12,
+    "name": "Дима Т.",
+    "rating": 9,
+    "photo": "https://secure.gravatar.com/avatar/c9ccf1c73cf2eb5a21bfa900493dbd4c"
+  },
+  {
+    "id": 13,
+    "name": "Pavel Zet",
+    "rating": 7.2,
+    "photo": "https://secure.gravatar.com/avatar/e8577a56b403f512e8e253bf340705c0"
+  },
+  {
+    "id": 14,
+    "name": "Андрей",
+    "rating": 6,
+    "photo": "https://secure.gravatar.com/avatar/c9ccf1c73cf2eb5a21bfa900493dbd4c"
+  },
+  {
+    "id": 15,
     "name": "Taras",
     "rating": 3.0,
     "photo": "https://secure.gravatar.com/avatar/a9c6e626501542623f7008b445c6ad82"
-  }
+  },
+  {
+    "id": 16,
+    "name": "Лёша",
+    "rating": 9,
+    "photo": "https://secure.gravatar.com/avatar/c9ccf1c73cf2eb5a21bfa900493dbd4c"
+  },
+  {
+    "id": 17,
+    "name": "Саша Головко",
+    "rating": 8,
+    "photo": "https://secure.gravatar.com/avatar/c9ccf1c73cf2eb5a21bfa900493dbd4c"
+  },
+  {
+    "id": 18,
+    "name": "Dima B.",
+    "rating": 8.5,
+    "photo": "https://secure.gravatar.com/avatar/c9ccf1c73cf2eb5a21bfa900493dbd4c"
+  },
+  {
+    "id": 19,
+    "name": "Женя С.",
+    "rating": 1,
+    "photo": "https://secure.gravatar.com/avatar/c9ccf1c73cf2eb5a21bfa900493dbd4c"
+  },
+  {
+    "id": 20,
+    "name": "аноним",
+    "rating": 1,
+    "photo": "https://secure.gravatar.com/avatar/c9ccf1c73cf2eb5a21bfa900493dbd4c"
+  },
 ]
 
-},{}],26:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 var DS = require('ember-data');
 
 module.exports = DS.Model.extend({
@@ -71727,7 +72038,7 @@ module.exports = DS.Model.extend({
   rating: DS.attr('number')
 });
 
-},{"ember-data":1}],27:[function(require,module,exports){
+},{"ember-data":1}],34:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -71736,7 +72047,7 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],28:[function(require,module,exports){
+},{"ember":2}],35:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -71745,20 +72056,31 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', stack1, escapeExpression=this.escapeExpression;
 
 
-  data.buffer.push("<div class=\"well\">\n  <div class=\"row player-profile\">\n    <div class=\"col-lg-4 text-right\">\n      <h1>\n        ");
+  data.buffer.push("<div class=\"well\">\r\n  <div class=\"row player-profile\">\r\n    <div class=\"col-lg-4 text-right\">\r\n      <h1>\r\n        ");
   stack1 = helpers._triageMustache.call(depth0, "name", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n        <!--\n          1..4 default\n          4..6 info\n          6..8 primary\n          8..9 success\n          9..10 warning\n         -->\n        <span class=\"label label-primary\">");
+  data.buffer.push("\r\n        <!--\r\n          1..4 default\r\n          4..6 info\r\n          6..8 primary\r\n          8..9 success\r\n          9..10 warning\r\n         -->\r\n        <span class=\"label label-primary\">");
   stack1 = helpers._triageMustache.call(depth0, "rating", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("</span>\n      </h1>\n      <dl class=\"dl-horizontal lead pull-right\">\n        <dt>Shoot</dt>\n        <dd><span class=\"label label-info\">5.0</span></dd>\n        <dt>Pass</dt>\n        <dd><span class=\"label label-warning\">9.1</span></dd>\n        <dt>Dribble</dt>\n        <dd><span class=\"label label-default\">3.1</span></dd>\n        <dt>Pace</dt>\n        <dd><span class=\"label label-primary\">6.3</span></dd>\n        <dt>Defence</dt>\n        <dd><span class=\"label label-success\">8.5</span></dd>\n        <dt>Goal Keeper</dt>\n        <dd><span class=\"label label-info\">5.4</span></dd>\n      </dl>\n    </div>\n    <div class=\"col-lg-4\">\n      <img src=\"");
+  data.buffer.push("</span>\r\n      </h1>\r\n      <dl class=\"dl-horizontal lead pull-right\">\r\n        <dt>Shoot</dt>\r\n        <dd><span class=\"label label-info\">5.0</span></dd>\r\n        <dt>Pass</dt>\r\n        <dd><span class=\"label label-warning\">9.1</span></dd>\r\n        <dt>Dribble</dt>\r\n        <dd><span class=\"label label-default\">3.1</span></dd>\r\n        <dt>Pace</dt>\r\n        <dd><span class=\"label label-primary\">6.3</span></dd>\r\n        <dt>Defence</dt>\r\n        <dd><span class=\"label label-success\">8.5</span></dd>\r\n        <dt>Goal Keeper</dt>\r\n        <dd><span class=\"label label-info\">5.4</span></dd>\r\n      </dl>\r\n    </div>\r\n    <div class=\"col-lg-4\">\r\n      <img src=\"");
   data.buffer.push(escapeExpression(helpers.unbound.call(depth0, "photo", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data})));
-  data.buffer.push("?size=400px\" alt=\"photo\" class=\"img-thumbnail img-responsive\">\n    </div>\n    <div class=\"col-lg-4\">\n      <br>\n      <dl>\n        <dt>Last played Tourney:</dt>\n        <dd><a href=\"#\"><i class=\"fa fa-trophy\"></i> July 04</a></dd>\n        <dt>Tourneys won:</dt>\n        <dd>3 of 7</dd>\n        <dt>Matches won:</dt>\n        <dd>21 of 42</dd>\n        <dt>Goals scored:</dt>\n        <dd>13</dd>\n        <dt>Favorite teammate:</dt>\n        <dd><a href=\"#\">Dmitry B. <span class=\"label label-success\">8.2</span></a></dd>\n      </dl>\n    </div>\n  </div>\n</div>\n");
+  data.buffer.push("?size=400px\" alt=\"photo\" class=\"img-thumbnail img-responsive\">\r\n    </div>\r\n    <div class=\"col-lg-4\">\r\n      <br>\r\n      <dl>\r\n        <dt>Last played Tourney:</dt>\r\n        <dd><a href=\"#\"><i class=\"fa fa-trophy\"></i> July 04</a></dd>\r\n        <dt>Tourneys won:</dt>\r\n        <dd>3 of 7</dd>\r\n        <dt>Matches won:</dt>\r\n        <dd>21 of 42</dd>\r\n        <dt>Goals scored:</dt>\r\n        <dd>13</dd>\r\n        <dt>Favorite teammate:</dt>\r\n        <dd><a href=\"#\">Dmitry B. <span class=\"label label-success\">8.2</span></a></dd>\r\n      </dl>\r\n    </div>\r\n  </div>\r\n</div>\r\n");
   return buffer;
   
 });
 
-},{"ember":2}],29:[function(require,module,exports){
+},{"ember":2}],36:[function(require,module,exports){
+var Ember = require('ember');
+
+module.exports = Ember.ArrayController.extend({
+  sortProperties: ['rating'],
+  sortAscending: false,
+
+  playersSortedByRankDesc: ['rating:desc', 'name:asc'],
+  playersSorderByRank: Ember.computed.sort('model', 'playersSortedByRankDesc'),
+});
+
+},{"ember":2}],37:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -71767,7 +72089,7 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],30:[function(require,module,exports){
+},{"ember":2}],38:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -71778,43 +72100,575 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = '', stack1, helper, options;
-  data.buffer.push("\n    <div class=\"col-lg-4 players-item\">\n      <div class=\"media\">\n        ");
+  data.buffer.push("\r\n    <div class=\"col-lg-4 players-item\">\r\n      <div class=\"media\">\r\n        ");
   stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
     'class': ("pull-left")
   },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(2, program2, data),contexts:[depth0,depth0],types:["STRING","ID"],data:data},helper ? helper.call(depth0, "player", "", options) : helperMissing.call(depth0, "link-to", "player", "", options));
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n        <div class=\"media-body\">\n          <h3 class=\"media-heading\">\n            ");
+  data.buffer.push("\r\n        <div class=\"media-body\">\r\n          <h3 class=\"media-heading\">\r\n            ");
   stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(4, program4, data),contexts:[depth0,depth0],types:["STRING","ID"],data:data},helper ? helper.call(depth0, "player", "", options) : helperMissing.call(depth0, "link-to", "player", "", options));
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n          </h3>\n          <ul class=\"list-inline\">\n            <li><i class=\"fa fa-check-square-o\"></i> Voted</li>\n            <li><a href=\"#\">Re-Vote</a></li>\n          </ul>\n          <p class=\"bg-success\"><b>+1</b> on <a href=\"#\">Upcoming Tourney</a></p>\n        </div>\n      </div>\n    </div>\n  ");
+  data.buffer.push("\r\n          </h3>\r\n          <ul class=\"list-inline\">\r\n            <li><i class=\"fa fa-check-square-o\"></i> Voted</li>\r\n            <li><a href=\"#\">Re-Vote</a></li>\r\n          </ul>\r\n          <p class=\"bg-success\"><b>+1</b> on <a href=\"#\">Upcoming Tourney</a></p>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  ");
   return buffer;
   }
 function program2(depth0,data) {
   
   var buffer = '';
-  data.buffer.push("\n          <img src=\"");
+  data.buffer.push("\r\n          <img src=\"");
   data.buffer.push(escapeExpression(helpers.unbound.call(depth0, "photo", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data})));
-  data.buffer.push("?size=60px\" alt=\"photo\" class=\"media-object img-thumbnail\">\n        ");
+  data.buffer.push("?size=60px\" alt=\"photo\" class=\"media-object img-thumbnail\">\r\n        ");
   return buffer;
   }
 
 function program4(depth0,data) {
   
   var buffer = '', stack1;
-  data.buffer.push("\n              ");
+  data.buffer.push("\r\n              ");
   stack1 = helpers._triageMustache.call(depth0, "name", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
   data.buffer.push(" <span class=\"label label-primary\">");
   stack1 = helpers._triageMustache.call(depth0, "rating", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("</span>\n            ");
+  data.buffer.push("</span>\r\n            ");
   return buffer;
   }
 
-  data.buffer.push("<div class=\"row players-list\">\n  ");
+  data.buffer.push("<div class=\"row players-list\">\r\n  ");
   stack1 = helpers.each.call(depth0, {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[],types:[],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n</div>\n");
+  data.buffer.push("\r\n</div>\r\n");
+  return buffer;
+  
+});
+
+},{"ember":2}],39:[function(require,module,exports){
+var Ember = require('ember');
+
+module.exports = Ember.ObjectController.extend({
+  playersSortedByRankDesc: ['rating:desc', 'name:asc'],
+  playersSorderByRank: Ember.computed.sort('model.players', 'playersSortedByRankDesc'),
+
+  teamRank: function() {
+    var players = this.get('players');
+
+    return players.reduce(function(previousValue, user) {
+      return previousValue + user.get('rating');
+    }, 0);
+  }.property('players.@each.rank'),
+});
+
+},{"ember":2}],40:[function(require,module,exports){
+module.exports=[
+  {
+    "id": 1,
+    "name": "alpha",
+    "tournament": 1,
+    "players": [1,2,3,4,5]
+  },
+
+  {
+    "id": 2,
+    "name": "delta",
+    "tournament": 1,
+    "players": [6,7,8,9,10]
+  },
+
+  {
+    "id": 3,
+    "name": "charlie",
+    "tournament": 1,
+    "players": [11,12,13,14,15]
+  },
+
+  {
+    "id": 4,
+    "name": "bravo",
+    "tournament": 1,
+    "players": [16,17,18,19,20]
+  }
+]
+
+},{}],41:[function(require,module,exports){
+var DS = require('ember-data');
+
+module.exports = DS.Model.extend({
+  name: DS.attr('string'),
+  tourney: DS.belongsTo('tourney'),
+  players: DS.hasMany('player')
+});
+
+},{"ember-data":1}],42:[function(require,module,exports){
+var Ember = require('ember');
+
+module.exports = Ember.Route.extend({
+  model: function(params) {
+    return this.store.find('team', params.id);
+  }
+});
+
+},{"ember":2}],43:[function(require,module,exports){
+module.exports=require(28)
+},{"ember":2}],44:[function(require,module,exports){
+var Ember = require('ember');
+
+module.exports = Ember.Route.extend({
+  model: function(params) {
+    return this.store.find('team');
+  }
+});
+
+},{"ember":2}],45:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var compiler = require('ember').Handlebars;
+module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
+  
+
+
+  data.buffer.push("<div class=\"row\">\nteams list\n</div>\n");
+  
+});
+
+},{"ember":2}],46:[function(require,module,exports){
+var Ember = require('ember');
+
+module.exports = Ember.ObjectController.extend({
+  isFinished: function() {
+    return this.get('model.matches').length > 0 && this.get('model.matches').filterBy('isPlayed', false).length === 0;
+  }.property('matches'),
+
+  getMatchesPlayed: function() {
+    var teamId = this.get('model.id'),
+      matches = this.parentController.get('model.matches').filterBy('isPlayed', true).filter(function(item, index, enumerable) {
+        return (item.get('team1.id') === teamId || item.get('team2.id') === teamId);
+      });
+
+    return matches.length;
+  }.property('matches'),
+
+  getMatchesWon: function() {
+    var teamId = this.get('model.id'),
+      matches = this.parentController.get('model.matches').filterBy('isPlayed', true).filter(function(item, index, enumerable) {
+        return (item.get('team1.id') === teamId && item.get('team1goals') > item.get('team2goals')) || (item.get('team2.id') === teamId && item.get('team2goals') > item.get('team1goals'));
+      });
+
+    return matches.length;
+  }.property('matches'),
+
+  getMatchesDraw: function() {
+    var teamId = this.get('model.id'),
+      matches = this.parentController.get('model.matches').filterBy('isPlayed', true).filter(function(item, index, enumerable) {
+        return (item.get('team1.id') === teamId || item.get('team2.id') === teamId) && item.get('team1goals') === item.get('team2goals');
+      });
+
+    return matches.length;
+  }.property('matches'),
+
+  getMatchesLost: function() {
+    var teamId = this.get('model.id'),
+      matches = this.parentController.get('model.matches').filterBy('isPlayed', true).filter(function(item, index, enumerable) {
+        return (item.get('team1.id') === teamId && item.get('team1goals') < item.get('team2goals')) || (item.get('team2.id') === teamId && item.get('team2goals') < item.get('team1goals'));
+      });
+
+    return matches.length;
+  }.property('matches'),
+
+  getGoalsFor: function() {
+    var teamId = this.get('model.id'),
+      matches = this.parentController.get('model.matches').filterBy('isPlayed', true).filter(function(item, index, enumerable) {
+        return (item.get('team1.id') === teamId || item.get('team2.id') === teamId);
+      });
+
+    return matches.reduce(function(previousValue, match) {
+      var goals = match.get('team1.id') === teamId ? match.get('team1goals') : match.get('team2goals');
+      return previousValue + goals;
+    }, 0);
+  }.property('matches'),
+
+  getGoalsAgainst: function() {
+    var teamId = this.get('model.id'),
+      matches = this.parentController.get('model.matches').filterBy('isPlayed', true).filter(function(item, index, enumerable) {
+        return (item.get('team1.id') === teamId || item.get('team2.id') === teamId);
+      });
+
+    return matches.reduce(function(previousValue, match) {
+      var goals = match.get('team1.id') === teamId ? match.get('team2goals') : match.get('team1goals');
+      return previousValue + goals;
+    }, 0);
+  }.property('matches'),
+
+  getGoalsDiff: function() {
+    return this.get('getGoalsFor') - this.get('getGoalsAgainst');
+  }.property('matches'),
+
+  getPoints: function() {
+    return this.get('getMatchesWon') * 3 + this.get('getMatchesDraw') * 1;
+  }.property('matches'),
+});
+
+},{"ember":2}],47:[function(require,module,exports){
+module.exports=[
+  {
+    "id": 1,
+    "name": "supa troopa tournament",
+    "date": "23/07/2014",
+    "players": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+    "teams": [1, 2, 3, 4],
+    "matches": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+    "isPlayed": true
+  },
+  {
+    "id": 2,
+    "name": "go go go!",
+    "date": "06/08/2014"
+  }
+]
+
+},{}],48:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var compiler = require('ember').Handlebars;
+module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
+  var buffer = '', stack1, self=this, escapeExpression=this.escapeExpression;
+
+function program1(depth0,data) {
+  
+  var buffer = '', stack1;
+  data.buffer.push("\n      <tr>\n        <td>");
+  stack1 = helpers._triageMustache.call(depth0, "team1.name", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("</td>\n        <td>");
+  stack1 = helpers._triageMustache.call(depth0, "team1goals", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push(" : ");
+  stack1 = helpers._triageMustache.call(depth0, "team2goals", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("</td>\n        <td>");
+  stack1 = helpers._triageMustache.call(depth0, "team2.name", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("</td>\n        <td>\n          ");
+  stack1 = helpers['if'].call(depth0, "isPlayed", {hash:{},hashTypes:{},hashContexts:{},inverse:self.program(4, program4, data),fn:self.program(2, program2, data),contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n        </td>\n        <td>\n          <span class=\"btn-group\">\n            <button type=\"button\" class=\"btn btn-default btn-xs\" ");
+  data.buffer.push(escapeExpression(helpers.action.call(depth0, "view", "", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0,depth0],types:["STRING","ID"],data:data})));
+  data.buffer.push("><i class=\"glyphicon glyphicon-info-sign\"></i></button>\n            <button type=\"button\" class=\"btn btn-default btn-xs\" ");
+  data.buffer.push(escapeExpression(helpers.action.call(depth0, "edit", "", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0,depth0],types:["STRING","ID"],data:data})));
+  data.buffer.push("><i class=\"glyphicon glyphicon-edit\"></i></button>\n          </span>\n        </td>\n      </tr>\n    ");
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  
+  data.buffer.push("\n            <span class='label label-success'>played</span>\n          ");
+  }
+
+function program4(depth0,data) {
+  
+  var buffer = '', stack1;
+  data.buffer.push("\n            <span class='label label-info'>");
+  stack1 = helpers._triageMustache.call(depth0, "timeLeft", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("</span>\n          ");
+  return buffer;
+  }
+
+  data.buffer.push("<table class='table'>\n  <thead>\n    <tr>\n      <th>team1</th>\n      <th>result</th>\n      <th>team2</th>\n      <th>status</th>\n      <th>actions</th>\n    </tr>\n  </thead>\n  <tbody>\n    ");
+  stack1 = helpers.each.call(depth0, "model", {hash:{
+    'itemController': ("match")
+  },hashTypes:{'itemController': "STRING"},hashContexts:{'itemController': depth0},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n  </tbody>\n</table>\n\n");
+  return buffer;
+  
+});
+
+},{"ember":2}],49:[function(require,module,exports){
+var DS = require('ember-data');
+
+module.exports = DS.Model.extend({
+  name: DS.attr('string'),
+  date: DS.attr('string'),
+  players: DS.hasMany('player', { async: true }),
+  teams: DS.hasMany('team', { async: true }),
+  matches: DS.hasMany('match', { async: true }),
+  isPlayed: DS.attr('boolean', {
+    defaultValue: false
+  }),
+});
+
+},{"ember-data":1}],50:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var compiler = require('ember').Handlebars;
+module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
+  var buffer = '', stack1, self=this, helperMissing=helpers.helperMissing;
+
+function program1(depth0,data) {
+  
+  var buffer = '', stack1, helper, options;
+  data.buffer.push("\n    <li>\n      <div style=\"clear: both;\">\n        ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
+    'class': ("label label-info")
+  },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(2, program2, data),contexts:[depth0,depth0],types:["STRING","ID"],data:data},helper ? helper.call(depth0, "player", "", options) : helperMissing.call(depth0, "link-to", "player", "", options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n        <span class=\"pull-right\">\n          <span class=\"badge\">");
+  stack1 = helpers._triageMustache.call(depth0, "rating", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("</span>\n        </span>\n      </div>\n    </li>\n  ");
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  var stack1;
+  stack1 = helpers._triageMustache.call(depth0, "name", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  else { data.buffer.push(''); }
+  }
+
+  data.buffer.push("<strong>Players</strong>\n\n<ul class='list-unstyled'>\n  ");
+  stack1 = helpers.each.call(depth0, "playersSorderByRank", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n</ul>\n");
+  return buffer;
+  
+});
+
+},{"ember":2}],51:[function(require,module,exports){
+var Ember = require('ember');
+
+module.exports = Ember.Route.extend({
+  model: function(params) {
+    return this.store.find('tourney', params.id);
+  },
+
+  setupController: function(controller, model) {
+    // this._super(this, arguments);
+
+    controller.set('model', model);
+
+    this.controllerFor('players').set('model', model.get('players'));
+    this.controllerFor('teams').set('model', model.get('teams'));
+    this.controllerFor('matches').set('model', model.get('matches'));
+  },
+
+  renderTemplate: function(controller, model) {
+    this._super(this, arguments);
+
+    // this.render();
+
+    this.render('tourneyPlayers', {
+      into: 'tourney',
+      outlet: 'playersOutlet',
+      controller: this.controllerFor('players')
+    });
+
+    this.render('tourneyTeams', {
+      into: 'tourney',
+      outlet: 'teamsOutlet',
+      controller: this.controllerFor('teams')
+    });
+
+    this.render('tourneyTable', {
+      into: 'tourney',
+      outlet: 'tableOutlet',
+      controller: controller
+    });
+
+    this.render('tourneyMatches', {
+      into: 'tourney',
+      outlet: 'matchesOutlet',
+      controller: this.controllerFor('matches')
+    });
+  }
+});
+
+},{"ember":2}],52:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var compiler = require('ember').Handlebars;
+module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
+  var buffer = '', stack1, self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = '', stack1;
+  data.buffer.push("\n      <tr>\n        <td>");
+  stack1 = helpers._triageMustache.call(depth0, "name", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("</td>\n        <td>");
+  stack1 = helpers._triageMustache.call(depth0, "getMatchesPlayed", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("</td>\n        <td>");
+  stack1 = helpers._triageMustache.call(depth0, "getMatchesWon", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("</td>\n        <td>");
+  stack1 = helpers._triageMustache.call(depth0, "getMatchesDraw", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("</td>\n        <td>");
+  stack1 = helpers._triageMustache.call(depth0, "getMatchesLost", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("</td>\n        <td>");
+  stack1 = helpers._triageMustache.call(depth0, "getGoalsFor", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("</td>\n        <td>");
+  stack1 = helpers._triageMustache.call(depth0, "getGoalsAgainst", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("</td>\n        <td>");
+  stack1 = helpers._triageMustache.call(depth0, "getGoalsDiff", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("</td>\n        <td>");
+  stack1 = helpers._triageMustache.call(depth0, "getPoints", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("</td>\n      </tr>\n    ");
+  return buffer;
+  }
+
+  data.buffer.push("<table class=\"table\">\n  <thead>\n    <tr>\n      <th>Team</th>\n      <th title=\"Played\">P</th>\n      <th title=\"Won\">W</th>\n      <th title=\"Draw\">D</th>\n      <th title=\"Lost\">L</th>\n      <th title=\"For\">F</th>\n      <th title=\"Against\">A</th>\n      <th title=\"Goal Difference\">+/-</th>\n      <th title=\"Poinst\">pts</th>\n    </tr>\n  </thead>\n  <tbody>\n    ");
+  stack1 = helpers.each.call(depth0, "teams", {hash:{
+    'itemController': ("tourney")
+  },hashTypes:{'itemController': "STRING"},hashContexts:{'itemController': depth0},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n  </tbody>\n</table>\n");
+  return buffer;
+  
+});
+
+},{"ember":2}],53:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var compiler = require('ember').Handlebars;
+module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
+  var buffer = '', stack1, self=this, helperMissing=helpers.helperMissing;
+
+function program1(depth0,data) {
+  
+  var buffer = '', stack1;
+  data.buffer.push("\n  <div class=\"well pull-left\" style=\"width: 23%; margin-right: 10px;\">\n    <strong>");
+  stack1 = helpers._triageMustache.call(depth0, "name", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("</strong>\n    <span class=\"pull-right\">\n      <span class=\"badge\">");
+  stack1 = helpers._triageMustache.call(depth0, "teamRank", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("</span>\n    </span>\n    <ul class=\"list-unstyled\">\n      ");
+  stack1 = helpers.each.call(depth0, "playersSorderByRank", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(2, program2, data),contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n    </ul>\n  </div>\n");
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  var buffer = '', stack1, helper, options;
+  data.buffer.push("\n        <li>\n          <div style=\"clear: both;\">\n            ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
+    'class': ("label label-info")
+  },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(3, program3, data),contexts:[depth0,depth0],types:["STRING","ID"],data:data},helper ? helper.call(depth0, "player", "", options) : helperMissing.call(depth0, "link-to", "player", "", options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n            <span class=\"pull-right\">\n              <span class=\"badge\">");
+  stack1 = helpers._triageMustache.call(depth0, "rating", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("</span>\n            </span>\n          </div>\n        </li>\n      ");
+  return buffer;
+  }
+function program3(depth0,data) {
+  
+  var stack1;
+  stack1 = helpers._triageMustache.call(depth0, "name", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  else { data.buffer.push(''); }
+  }
+
+  stack1 = helpers.each.call(depth0, "model", {hash:{
+    'itemController': ("team")
+  },hashTypes:{'itemController': "STRING"},hashContexts:{'itemController': depth0},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n");
+  return buffer;
+  
+});
+
+},{"ember":2}],54:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var compiler = require('ember').Handlebars;
+module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
+  var buffer = '', helper, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
+
+
+  data.buffer.push("<div class=\"row\">\n  <div class=\"col-md-3\">\n    <div class=\"well sidebar-nav\">\n      ");
+  data.buffer.push(escapeExpression((helper = helpers.outlet || (depth0 && depth0.outlet),options={hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data},helper ? helper.call(depth0, "playersOutlet", options) : helperMissing.call(depth0, "outlet", "playersOutlet", options))));
+  data.buffer.push("\n    </div>\n  </div>\n  <div class=\"col-md-9\">\n    ");
+  data.buffer.push(escapeExpression((helper = helpers.outlet || (depth0 && depth0.outlet),options={hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data},helper ? helper.call(depth0, "teamsOutlet", options) : helperMissing.call(depth0, "outlet", "teamsOutlet", options))));
+  data.buffer.push("\n    ");
+  data.buffer.push(escapeExpression((helper = helpers.outlet || (depth0 && depth0.outlet),options={hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data},helper ? helper.call(depth0, "tableOutlet", options) : helperMissing.call(depth0, "outlet", "tableOutlet", options))));
+  data.buffer.push("\n    ");
+  data.buffer.push(escapeExpression((helper = helpers.outlet || (depth0 && depth0.outlet),options={hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data},helper ? helper.call(depth0, "matchesOutlet", options) : helperMissing.call(depth0, "outlet", "matchesOutlet", options))));
+  data.buffer.push("\n  </div>\n</div>\n");
+  return buffer;
+  
+});
+
+},{"ember":2}],55:[function(require,module,exports){
+var Ember = require('ember');
+
+module.exports = Ember.Route.extend({
+  model: function(params) {
+    return this.store.find('tourney');
+  }
+});
+
+},{"ember":2}],56:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var compiler = require('ember').Handlebars;
+module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
+  var buffer = '', stack1, self=this, helperMissing=helpers.helperMissing;
+
+function program1(depth0,data) {
+  
+  var buffer = '', stack1, helper, options;
+  data.buffer.push("\n        <tr>\n          <td>");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(2, program2, data),contexts:[depth0,depth0],types:["STRING","ID"],data:data},helper ? helper.call(depth0, "tourney", "", options) : helperMissing.call(depth0, "link-to", "tourney", "", options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("</td>\n          <td>");
+  stack1 = helpers._triageMustache.call(depth0, "date", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("</td>\n          <td>wamg</td>\n          <td>list</td>\n          <td>\n            ");
+  stack1 = helpers['if'].call(depth0, "isPlayed", {hash:{},hashTypes:{},hashContexts:{},inverse:self.program(6, program6, data),fn:self.program(4, program4, data),contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n          </td>\n        </tr>\n      ");
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  var stack1;
+  stack1 = helpers._triageMustache.call(depth0, "name", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  else { data.buffer.push(''); }
+  }
+
+function program4(depth0,data) {
+  
+  
+  data.buffer.push("\n              played\n            ");
+  }
+
+function program6(depth0,data) {
+  
+  
+  data.buffer.push("\n              upcoming\n            ");
+  }
+
+  data.buffer.push("<div class=\"row\">\n  <table class=\"table\">\n    <thead>\n      <tr>\n        <th>tourney</th>\n        <th>date</th>\n        <th>league</th>\n        <th>players</th>\n        <th>status</th>\n      </tr>\n    </thead>\n    <tbody>\n      ");
+  stack1 = helpers.each.call(depth0, {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[],types:[],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n    </tbody>\n  </table>\n</div>\n");
   return buffer;
   
 });

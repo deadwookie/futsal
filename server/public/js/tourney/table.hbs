@@ -1,0 +1,30 @@
+<table class="table">
+  <thead>
+    <tr>
+      <th>Team</th>
+      <th title="Played">P</th>
+      <th title="Won">W</th>
+      <th title="Draw">D</th>
+      <th title="Lost">L</th>
+      <th title="For">F</th>
+      <th title="Against">A</th>
+      <th title="Goal Difference">+/-</th>
+      <th title="Poinst">pts</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each teams itemController='tourney'}}
+      <tr>
+        <td>{{name}}</td>
+        <td>{{getMatchesPlayed}}</td>
+        <td>{{getMatchesWon}}</td>
+        <td>{{getMatchesDraw}}</td>
+        <td>{{getMatchesLost}}</td>
+        <td>{{getGoalsFor}}</td>
+        <td>{{getGoalsAgainst}}</td>
+        <td>{{getGoalsDiff}}</td>
+        <td>{{getPoints}}</td>
+      </tr>
+    {{/each}}
+  </tbody>
+</table>

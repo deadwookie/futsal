@@ -1,6 +1,6 @@
 var PlayerRoute = require('../player/route');
 var user = {
-  id: 1
+  id: 13
 };
 
 // An alias to existed player

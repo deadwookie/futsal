@@ -1,0 +1,29 @@
+[
+  {
+    "id": 1,
+    "name": "alpha",
+    "tournament": 1,
+    "players": [1,2,3,4,5]
+  },
+
+  {
+    "id": 2,
+    "name": "delta",
+    "tournament": 1,
+    "players": [6,7,8,9,10]
+  },
+
+  {
+    "id": 3,
+    "name": "charlie",
+    "tournament": 1,
+    "players": [11,12,13,14,15]
+  },
+
+  {
+    "id": 4,
+    "name": "bravo",
+    "tournament": 1,
+    "players": [16,17,18,19,20]
+  }
+]

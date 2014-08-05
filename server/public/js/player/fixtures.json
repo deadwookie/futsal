@@ -1,38 +1,122 @@
 [
   {
     "id": 1,
-    "name": "Pavel Zet",
-    "rating": 7.2,
-    "photo": "https://secure.gravatar.com/avatar/e8577a56b403f512e8e253bf340705c0"
+    "name": "Кирилл",
+    "rating": 10,
+    "photo": "https://secure.gravatar.com/avatar/c9ccf1c73cf2eb5a21bfa900493dbd4c"
   },
   {
     "id": 2,
-    "name": "Dima B.",
-    "rating": 8.5,
+    "name": "Витя",
+    "rating": 7,
     "photo": "https://secure.gravatar.com/avatar/c9ccf1c73cf2eb5a21bfa900493dbd4c"
   },
   {
     "id": 3,
+    "name": "Тимур",
+    "rating": 6,
+    "photo": "https://secure.gravatar.com/avatar/c9ccf1c73cf2eb5a21bfa900493dbd4c"
+  },
+  {
+    "id": 4,
+    "name": "Серёга (GK)",
+    "rating": 10,
+    "photo": "https://secure.gravatar.com/avatar/c9ccf1c73cf2eb5a21bfa900493dbd4c"
+  },
+  {
+    "id": 5,
+    "name": "Саша Дозер",
+    "rating": 2,
+    "photo": "https://secure.gravatar.com/avatar/c9ccf1c73cf2eb5a21bfa900493dbd4c"
+  },
+  {
+    "id": 6,
     "name": "Sergey M.",
     "rating": 9.3,
     "photo": "https://secure.gravatar.com/avatar/97893dbe4d1fbaef6153a959953802ee"
   },
   {
-    "id": 4,
+    "id": 7,
     "name": "Eugene",
     "rating": 6.6,
     "photo": "https://secure.gravatar.com/avatar/f63b9cef6493177754bc6873841f7a5a"
   },
   {
-    "id": 5,
+    "id": 8,
+    "name": "Игорь",
+    "rating": 7,
+    "photo": "https://secure.gravatar.com/avatar/c9ccf1c73cf2eb5a21bfa900493dbd4c"
+  },
+  {
+    "id": 9,
+    "name": "Роман",
+    "rating": 2,
+    "photo": "https://secure.gravatar.com/avatar/c9ccf1c73cf2eb5a21bfa900493dbd4c"
+  },
+  {
+    "id": 10,
     "name": "Slava",
     "rating": 4.1,
     "photo": "https://secure.gravatar.com/avatar/82ab1e8b468be7ecfb4e668f80cbc3e5"
   },
   {
-    "id": 6,
+    "id": 11,
+    "name": "Самсон",
+    "rating": 9,
+    "photo": "https://secure.gravatar.com/avatar/c9ccf1c73cf2eb5a21bfa900493dbd4c"
+  },
+  {
+    "id": 12,
+    "name": "Дима Т.",
+    "rating": 9,
+    "photo": "https://secure.gravatar.com/avatar/c9ccf1c73cf2eb5a21bfa900493dbd4c"
+  },
+  {
+    "id": 13,
+    "name": "Pavel Zet",
+    "rating": 7.2,
+    "photo": "https://secure.gravatar.com/avatar/e8577a56b403f512e8e253bf340705c0"
+  },
+  {
+    "id": 14,
+    "name": "Андрей",
+    "rating": 6,
+    "photo": "https://secure.gravatar.com/avatar/c9ccf1c73cf2eb5a21bfa900493dbd4c"
+  },
+  {
+    "id": 15,
     "name": "Taras",
     "rating": 3.0,
     "photo": "https://secure.gravatar.com/avatar/a9c6e626501542623f7008b445c6ad82"
-  }
+  },
+  {
+    "id": 16,
+    "name": "Лёша",
+    "rating": 9,
+    "photo": "https://secure.gravatar.com/avatar/c9ccf1c73cf2eb5a21bfa900493dbd4c"
+  },
+  {
+    "id": 17,
+    "name": "Саша Головко",
+    "rating": 8,
+    "photo": "https://secure.gravatar.com/avatar/c9ccf1c73cf2eb5a21bfa900493dbd4c"
+  },
+  {
+    "id": 18,
+    "name": "Dima B.",
+    "rating": 8.5,
+    "photo": "https://secure.gravatar.com/avatar/c9ccf1c73cf2eb5a21bfa900493dbd4c"
+  },
+  {
+    "id": 19,
+    "name": "Женя С.",
+    "rating": 1,
+    "photo": "https://secure.gravatar.com/avatar/c9ccf1c73cf2eb5a21bfa900493dbd4c"
+  },
+  {
+    "id": 20,
+    "name": "аноним",
+    "rating": 1,
+    "photo": "https://secure.gravatar.com/avatar/c9ccf1c73cf2eb5a21bfa900493dbd4c"
+  },
 ]

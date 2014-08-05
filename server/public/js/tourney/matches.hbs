@@ -1,0 +1,34 @@
+<table class='table'>
+  <thead>
+    <tr>
+      <th>team1</th>
+      <th>result</th>
+      <th>team2</th>
+      <th>status</th>
+      <th>actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each model itemController='match'}}
+      <tr>
+        <td>{{team1.name}}</td>
+        <td>{{team1goals}} : {{team2goals}}</td>
+        <td>{{team2.name}}</td>
+        <td>
+          {{#if isPlayed}}
+            <span class='label label-success'>played</span>
+          {{else}}
+            <span class='label label-info'>{{timeLeft}}</span>
+          {{/if}}
+        </td>
+        <td>
+          <span class="btn-group">
+            <button type="button" class="btn btn-default btn-xs" {{action "view" this}}><i class="glyphicon glyphicon-info-sign"></i></button>
+            <button type="button" class="btn btn-default btn-xs" {{action "edit" this}}><i class="glyphicon glyphicon-edit"></i></button>
+          </span>
+        </td>
+      </tr>
+    {{/each}}
+  </tbody>
+</table>
+

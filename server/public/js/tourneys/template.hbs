@@ -1,0 +1,30 @@
+<div class="row">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>tourney</th>
+        <th>date</th>
+        <th>league</th>
+        <th>players</th>
+        <th>status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each}}
+        <tr>
+          <td>{{#link-to 'tourney' this}}{{name}}{{/link-to}}</td>
+          <td>{{date}}</td>
+          <td>wamg</td>
+          <td>list</td>
+          <td>
+            {{#if isPlayed}}
+              played
+            {{else}}
+              upcoming
+            {{/if}}
+          </td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</div>
