@@ -1,2 +1,27 @@
 @import "/bower/bootstrap/dist/css/bootstrap.css";
 @import "/bower/fontawesome/css/font-awesome.css";
+
+body {
+  font-size: 16px;
+  padding: 20px;
+}
+
+.players-item {
+  margin-bottom: 20px;
+}
+.players-item .media {
+  padding-top: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.players-item:nth-child(odd) .media {
+  background: #fafafa;
+}
+.players-item .img-thumbnail {
+  width: 60px;
+  height: 60px;
+}
+
+.player-profile .img-thumbnail {
+  width: 400px;
+}
