@@ -1,19 +1,28 @@
 var Ember = require('ember');
 var DS = require('ember-data');
-
-// todo: rethink!
-Ember.Route.reopen({
-  currentUserId: 13
-});
+var EmberFire = require('emberfire');
+var Firebase = require("firebase-client");
 
 var App = Ember.Application.create({
-  LOG_TRANSITIONS: true
+  LOG_TRANSITIONS: true,
+  ready: function() {
+    this.register('main:auth', App.AuthController);
+    this.inject('route', 'auth', 'main:auth');
+    this.inject('controller', 'auth', 'main:auth');
+  }
 });
-App.ApplicationAdapter = DS.FixtureAdapter.extend();
+
+// App.ApplicationAdapter = DS.FixtureAdapter.extend();
+App.ApplicationAdapter = DS.FirebaseAdapter.extend({
+  firebase: new Firebase('https://popping-fire-6658.firebaseio.com')
+});
 App.templates = Ember.TEMPLATES;
 
 App.Router.map(function() {
   this.route('me', {path: '/'});
+  this.route('login');
+  this.route('signup');
+
   this.resource('players');
   this.resource('player', {path: 'players/:id'});
   this.resource('tourneys');
@@ -24,15 +33,35 @@ App.Router.map(function() {
 
 // Application
 App.ApplicationRoute = require('./app/route');
+App.ApplicationController = require('./app/controller');
 App.templates.application = require('./app/template.hbs');
+
+// Auth
+App.AuthRoute = require('./auth/route');
+App.AuthController = require('./auth/controller');
+
+// login
+App.LoginRoute = require('./login/route');
+App.LoginController = require('./login/controller');
+App.templates.login = require('./login/template');
+
+// signup
+App.SignupRoute = require('./signup/route');
+App.SignupController = require('./signup/controller');
+App.templates.signup = require('./signup/template');
 
 // Gameday
 App.templates.gameday = require('./gameday/template.hbs');
 
-
 // Player Model
 App.Player = require('./player/model');
-App.Player.FIXTURES = require('./player/fixtures.json');
+
+// App.Player.FIXTURES = require('./player/fixtures.json');
+App.PlayerAdapter = App.ApplicationAdapter.extend({
+  pathForType: function(type) {
+    return 'players';
+  }
+});
 
 // Players
 App.PlayersRoute = require('./players/route');
@@ -41,12 +70,13 @@ App.templates.players = require('./players/template.hbs');
 
 // Player
 App.PlayerRoute = require('./players/route');
+App.PlayerController = require('./player/controller');
 App.templates.player = require('./player/template.hbs');
 
 
 // Tourney Model
 App.Tourney = require('./tourney/model');
-App.Tourney.FIXTURES = require('./tourney/fixtures.json');
+// App.Tourney.FIXTURES = require('./tourney/fixtures.json');
 
 // Tourney
 App.TourneyRoute = require('./tourney/route');
@@ -63,7 +93,7 @@ App.templates.tourneys = require('./tourneys/template.hbs');
 
 // Team Model
 App.Team = require('./team/model');
-App.Team.FIXTURES = require('./team/fixtures.json');
+// App.Team.FIXTURES = require('./team/fixtures.json');
 
 // Team
 App.TeamRoute = require('./team/route');
@@ -76,7 +106,7 @@ App.templates.teams = require('./teams/template.hbs');
 
 // Match Model
 App.Match = require('./match/model');
-App.Match.FIXTURES = require('./match/fixtures.json');
+// App.Match.FIXTURES = require('./match/fixtures.json');
 
 // Match
 App.MatchRoute = require('./match/route');
