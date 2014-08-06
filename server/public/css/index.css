@@ -1,9 +1,14 @@
 @import "/bower/bootstrap/dist/css/bootstrap.css";
 @import "/bower/fontawesome/css/font-awesome.css";
+@import "./football/flaticon.css";
 
 body {
   font-size: 16px;
-  padding: 20px;
+}
+
+.navbar-brand h1 {
+  margin: 0;
+  line-height: 20px;
 }
 
 .players-item {
@@ -24,4 +29,15 @@ body {
 
 .player-profile .img-thumbnail {
   width: 400px;
+}
+
+.tourney-table th {
+  text-align: center;
+}
+.tourney-table th:first-child {
+  text-align: left;
+}
+.tourney-table td {
+  width: 9%;
+  text-align: center;
 }

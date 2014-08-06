@@ -1,12 +1,11 @@
-<div class="container">
-  <div class="navbar navbar-default" role="navigation">
-    <div class="container-fluid">
+  <div class="navbar navbar-default navbar-static-top" role="navigation">
+    <div class="container">
       <div class="navbar-header">
-        <a class="navbar-brand" href="#">Futsal</a>
+        <div class="navbar-brand"><h1 class="text-success">Futsal</h1></div>
       </div>
       <ul class="nav navbar-nav">
         {{#link-to "me" tagName="li" href=false}}
-          {{#link-to "me"}}<i class="fa fa-user"></i> My Profile{{/link-to}}
+          {{#link-to "me"}}<i class="fa fa-user"></i> {{model.name}}{{/link-to}}
         {{/link-to}}
         {{#link-to "players" tagName="li" href=false}}
           {{#link-to "players"}}<i class="fa fa-users"></i> Players{{/link-to}}
@@ -15,12 +14,21 @@
           {{#link-to "tourneys"}}<i class="fa fa-trophy"></i> Tourneys{{/link-to}}
         {{/link-to}}
       </ul>
-      <div class="nav-text navbar-right">
-        {{#link-to "tourney" 2 class="btn btn-warning navbar-btn"}}<i class="fa fa-trophy"></i> Upcoming Tourney{{/link-to}}
-        <em>3 days left</em>
+      <div class="navbar-right">
+        <ul class="nav navbar-nav">
+          {{#link-to "gameday" tagName="li" href=false}}
+            {{#link-to "gameday"}}<i class="fa fa-trophy"></i> Upcoming GameDay{{/link-to}}
+          {{/link-to}}
+          {{!-- <li class="navbar-text">
+            <em>3 days left</em>
+          </li> --}}
+        </ul>
+        &nbsp;
+        <button class="btn navbar-btn btn-success active" title="I'm coming">+1</button>
       </div>
     </div><!--/.container-fluid -->
   </div>
 
+<div class="container">
   {{outlet}}
 </div>

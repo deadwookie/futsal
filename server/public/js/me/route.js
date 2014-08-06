@@ -1,7 +1,4 @@
 var PlayerRoute = require('../player/route');
-var user = {
-  id: 13
-};
 
 // An alias to existed player
 module.exports = PlayerRoute.extend({
@@ -9,6 +6,6 @@ module.exports = PlayerRoute.extend({
   // viewName: 'player',
   // controllerName: 'player',
   model: function() {
-    return this._super({id: user.id});
+    return this._super({id: this.get('currentUserId')});
   }
 });

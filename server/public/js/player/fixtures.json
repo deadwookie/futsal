@@ -2,7 +2,7 @@
   {
     "id": 1,
     "name": "Кирилл",
-    "rating": 10,
+    "rating": 9,
     "photo": "https://secure.gravatar.com/avatar/c9ccf1c73cf2eb5a21bfa900493dbd4c"
   },
   {
@@ -20,7 +20,7 @@
   {
     "id": 4,
     "name": "Серёга (GK)",
-    "rating": 10,
+    "rating": 8.5,
     "photo": "https://secure.gravatar.com/avatar/c9ccf1c73cf2eb5a21bfa900493dbd4c"
   },
   {
@@ -115,8 +115,38 @@
   },
   {
     "id": 20,
-    "name": "аноним",
-    "rating": 1,
+    "name": "Zidan",
+    "rating": 10,
     "photo": "https://secure.gravatar.com/avatar/c9ccf1c73cf2eb5a21bfa900493dbd4c"
   },
+  {
+    "id": 21,
+    "name": "Pele",
+    "rating": 10,
+    "photo": "https://secure.gravatar.com/avatar/c9ccf1c73cf2eb5a21bfa900493dbd4c"
+  },
+  {
+    "id": 22,
+    "name": "Platini",
+    "rating": 10,
+    "photo": "https://secure.gravatar.com/avatar/c9ccf1c73cf2eb5a21bfa900493dbd4c"
+  },
+  {
+    "id": 23,
+    "name": "Ronaldo",
+    "rating": 10,
+    "photo": "https://secure.gravatar.com/avatar/c9ccf1c73cf2eb5a21bfa900493dbd4c"
+  },
+  {
+    "id": 24,
+    "name": "Messi",
+    "rating": 10,
+    "photo": "https://secure.gravatar.com/avatar/c9ccf1c73cf2eb5a21bfa900493dbd4c"
+  },
+  {
+    "id": 25,
+    "name": "Pirlo",
+    "rating": 10,
+    "photo": "https://secure.gravatar.com/avatar/c9ccf1c73cf2eb5a21bfa900493dbd4c"
+  }
 ]

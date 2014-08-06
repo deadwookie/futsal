@@ -1,54 +1,91 @@
 var Ember = require('ember');
 var DS = require('ember-data');
 
+// todo: rethink!
+Ember.Route.reopen({
+  currentUserId: 13
+});
+
 var App = Ember.Application.create({
   LOG_TRANSITIONS: true
 });
 App.ApplicationAdapter = DS.FixtureAdapter.extend();
+App.templates = Ember.TEMPLATES;
 
-App.Router.map(require('./app/routermap'));
-Ember.TEMPLATES.application = require('./app/template.hbs');
+App.Router.map(function() {
+  this.route('me', {path: '/'});
+  this.resource('players');
+  this.resource('player', {path: 'players/:id'});
+  this.resource('tourneys');
+  this.resource('tourney', {path: 'tourneys/:id'});
 
-App.PlayersRoute = require('./players/route');
-App.PlayersController = require('./players/controller');
-Ember.TEMPLATES.players = require('./players/template.hbs');
+  this.resource('gameday');
+});
 
+// Application
+App.ApplicationRoute = require('./app/route');
+App.templates.application = require('./app/template.hbs');
+
+// Gameday
+App.templates.gameday = require('./gameday/template.hbs');
+
+
+// Player Model
 App.Player = require('./player/model');
 App.Player.FIXTURES = require('./player/fixtures.json');
 
-App.PlayerRoute = require('./players/route');
-Ember.TEMPLATES.player = require('./player/template.hbs');
+// Players
+App.PlayersRoute = require('./players/route');
+App.PlayersController = require('./players/controller');
+App.templates.players = require('./players/template.hbs');
 
+// Player
+App.PlayerRoute = require('./players/route');
+App.templates.player = require('./player/template.hbs');
+
+
+// Tourney Model
 App.Tourney = require('./tourney/model');
 App.Tourney.FIXTURES = require('./tourney/fixtures.json');
+
+// Tourney
 App.TourneyRoute = require('./tourney/route');
 App.TourneyController = require('./tourney/controller');
-Ember.TEMPLATES.tourney = require('./tourney/template.hbs');
-Ember.TEMPLATES.tourneyPlayers = require('./tourney/players.hbs');
-Ember.TEMPLATES.tourneyTeams = require('./tourney/teams.hbs');
-Ember.TEMPLATES.tourneyTable = require('./tourney/table.hbs');
-Ember.TEMPLATES.tourneyMatches = require('./tourney/matches.hbs');
+App.templates.tourney = require('./tourney/template.hbs');
+App.templates.tourneyPlayers = require('./tourney/players.hbs');
+App.templates.tourneyTeams = require('./tourney/teams.hbs');
+App.templates.tourneyTable = require('./tourney/table.hbs');
+App.templates.tourneyMatches = require('./tourney/matches.hbs');
 
+// Tourneys
 App.TourneysRoute = require('./tourneys/route');
-Ember.TEMPLATES.tourneys = require('./tourneys/template.hbs');
+App.templates.tourneys = require('./tourneys/template.hbs');
 
+// Team Model
 App.Team = require('./team/model');
 App.Team.FIXTURES = require('./team/fixtures.json');
+
+// Team
 App.TeamRoute = require('./team/route');
 App.TeamController = require('./team/controller');
 
+// Teams
 App.TeamsRoute = require('./teams/route');
 App.TeamsController = require('./teams/controller');
-Ember.TEMPLATES.teams = require('./teams/template.hbs');
+App.templates.teams = require('./teams/template.hbs');
 
+// Match Model
 App.Match = require('./match/model');
 App.Match.FIXTURES = require('./match/fixtures.json');
+
+// Match
 App.MatchRoute = require('./match/route');
 App.MatchController = require('./match/controller');
 
+// Matches
 App.MatchesRoute = require('./matches/route');
 App.MatchesController = require('./matches/controller');
-Ember.TEMPLATES.matches = require('./matches/template.hbs');
+App.templates.matches = require('./matches/template.hbs');
 
+// Me
 App.MeRoute = require('./me/route');
-
