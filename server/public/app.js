@@ -71664,6 +71664,104 @@ function program11(depth0,data) {
 });
 
 },{"ember":2}],23:[function(require,module,exports){
+var Ember = require('ember');
+
+module.exports = Ember.Route.extend({
+  redirect: function() {
+    this.transitionTo('gameday.matches');
+  }
+});
+
+},{"ember":2}],24:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var compiler = require('ember').Handlebars;
+module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
+  var buffer = '';
+
+
+  data.buffer.push("<div class=\"well match-now\">\n  <div class=\"row\">\n    <div class=\"col-sm-5 text-right\">\n      \n      <button class=\"btn fa-lg btn-default\"><i class=\"fa fa-pause fa-lg\"></i> Pause</button>\n    </div>\n    <div class=\"col-sm-2 text-center\">\n      <span class=\"match-time lift-lg text-danger\">3:42</span>\n    </div>\n    <div class=\"col-sm-5\">\n      <div class=\"btn-group\">\n        <button class=\"btn fa-lg btn-default\" title=\"Plus 30s\"><i class=\"fa fa-plus fa-lg\"></i></button>\n        <button class=\"btn fa-lg btn-default\" title=\"Minus 30s\"><i class=\"fa fa-minus fa-lg\"></i></button>\n      </div>\n    </div>\n  </div>\n\n  <div class=\"row\">\n    <div class=\"col-sm-5\">\n      <h3 class=\"match-team text-right\">Alpha</h3>\n      <ul class=\"list-group\">\n        <li class=\"list-group-item\">\n          <div class=\"pull-right\">\n            <div class=\"btn-group\">\n              <button class=\"btn btn-sm btn-default\"><i class=\"fa fa-plus-circle fa-lg\"></i></button>\n            </div>\n          </div>\n          <a href=\"#\">Кирилл</a>\n          <span class=\"label label-warning\">9</span>\n        </li>\n        <li class=\"list-group-item\">\n          <div class=\"pull-right\">\n            <div class=\"btn-group\">\n              <button class=\"btn btn-sm btn-default\"><i class=\"fa fa-plus-circle fa-lg\"></i></button>\n            </div>\n          </div>\n          <a href=\"#\">Серёга (GK)</a>\n          <span class=\"label label-primary\">8</span>\n        </li>\n        <li class=\"list-group-item\">\n          <div class=\"pull-right\">\n            <div class=\"btn-group\">\n              <button class=\"btn btn-sm btn-default\"><i class=\"fa fa-plus-circle fa-lg\"></i></button>\n            </div>\n          </div>\n          <a href=\"#\">Витя</a>\n          <span class=\"label label-info\">7</span>\n        </li>\n        <li class=\"list-group-item\">\n          <div class=\"pull-right\">\n            <i class=\"flaticon-football28\"></i>\n            <div class=\"btn-group\">\n              <button class=\"btn btn-sm btn-default\"><i class=\"fa fa-plus-circle fa-lg\"></i></button>\n            </div>\n          </div>\n          <a href=\"#\">Тимур</a>\n          <span class=\"label label-info\">6</span>\n        </li>\n        <li class=\"list-group-item\">\n          <div class=\"pull-right\">\n            <div class=\"btn-group\">\n              <button class=\"btn btn-sm btn-default\"><i class=\"fa fa-plus-circle fa-lg\"></i></button>\n            </div>\n          </div>\n          <a href=\"#\">Саша Дозер</a>\n          <span class=\"label label-default\">2</span>\n        </li>\n      </ul>\n    </div>\n    <div class=\"col-sm-2 text-center\">\n      <span class=\"match-score text-muted\">1:2</span>\n    </div>\n    <div class=\"col-sm-5\">\n      <h3 class=\"match-team\">Bravo</h3>\n      <ul class=\"list-group\">\n        <li class=\"list-group-item\">\n          <div class=\"pull-right\">\n            <i class=\"flaticon-football28\"></i>\n            <i class=\"flaticon-football28\"></i>\n            <div class=\"btn-group\">\n              <button class=\"btn btn-sm btn-default\"><i class=\"fa fa-plus-circle fa-lg\"></i></button>\n            </div>\n          </div>\n          <a href=\"#\">Кирилл</a>\n          <span class=\"label label-warning\">9</span>\n        </li>\n        <li class=\"list-group-item\">\n          <div class=\"pull-right\">\n            <div class=\"btn-group\">\n              <button class=\"btn btn-sm btn-default\"><i class=\"fa fa-plus-circle fa-lg\"></i></button>\n            </div>\n          </div>\n          <a href=\"#\">Серёга (GK)</a>\n          <span class=\"label label-primary\">8</span>\n        </li>\n        <li class=\"list-group-item\">\n          <div class=\"pull-right\">\n            <div class=\"btn-group\">\n              <button class=\"btn btn-sm btn-default\"><i class=\"fa fa-plus-circle fa-lg\"></i></button>\n            </div>\n          </div>\n          <a href=\"#\">Витя</a>\n          <span class=\"label label-info\">7</span>\n        </li>\n        <li class=\"list-group-item\">\n          <div class=\"pull-right\">\n            <div class=\"btn-group\">\n              <button class=\"btn btn-sm btn-default\"><i class=\"fa fa-plus-circle fa-lg\"></i></button>\n            </div>\n          </div>\n          <a href=\"#\">Тимур</a>\n          <span class=\"label label-info\">6</span>\n        </li>\n        <li class=\"list-group-item\">\n          <div class=\"pull-right\">\n            <div class=\"btn-group\">\n              <button class=\"btn btn-sm btn-default\"><i class=\"fa fa-plus-circle fa-lg\"></i></button>\n            </div>\n          </div>\n          <a href=\"#\">Саша Дозер</a>\n          <span class=\"label label-default\">2</span>\n        </li>\n      </ul>\n    </div>\n  </div>\n</div>\n\n\n<div class=\"row\">\n  <div class=\"col-sm-4\">\n    <table class=\"table table-striped matches-table\">\n      <tbody>\n        <tr>\n          <td>Alpha</td> <td>0 : 1</td> <td><b>Charlie</b></td>\n        </tr>\n        <tr>\n          <td><b>Delta</b></td> <td>3 : 0</td> <td>Bravo</td>\n        </tr>\n        <tr>\n          <td>Charlie</td> <td>0 : 1</td> <td><b>Bravo</b></td>\n        </tr>\n        <tr>\n          <td>Delta</td> <td>0 : 0</td> <td>Alpha</td>\n        </tr>\n        <tr>\n          <td>Bravo</td> <td>0 : 0</td> <td>Alpha</td>\n        </tr>\n        <tr>\n          <td><b>Charlie</b></td> <td>1 : 0</td> <td>Delta</td>\n        </tr>\n        <tr class=\"success\">\n          <td>Alpha</td> <td>1 : 2</td> <td>Bravo</td>\n        </tr>\n        <tr>\n          <td>Delta</td> <td></td> <td>Charlie</td>\n        </tr>\n        <tr>\n          <td>Bravo</td> <td></td> <td>Charlie</td>\n        </tr>\n        <tr>\n          <td>Alpha</td> <td></td> <td>Delta</td>\n        </tr>\n        <tr>\n          <td>Bravo</td> <td></td> <td>Delta</td>\n        </tr>\n        <tr>\n          <td>Charlie</td> <td></td> <td>Alpha</td>\n        </tr>\n      </tbody>\n    </table>\n  </div>\n  <div class=\"col-sm-8\">\n    <table class=\"table tourney-table\">\n      <thead>\n        <tr>\n          <th>Team</th>\n          <th title=\"Average Rating\">AVR</th>\n          <th title=\"Matches Played\">MP</th>\n          <th title=\"Won\">W</th>\n          <th title=\"Drawn\">D</th>\n          <th title=\"Lost\">L</th>\n          <th title=\"Goals For\">GF</th>\n          <th title=\"Goals Against\">GA</th>\n          <th title=\"Goal Difference\">±</th>\n          <th title=\"Points\">Pts</th>\n        </tr>\n      </thead>\n      <tbody>\n        <tr>\n          <th>Charlie</th>\n          <td><span class=\"label label-info\">7.1</span></td>\n          <td>6</td>\n          <td>4</td>\n          <td>0</td>\n          <td>1</td>\n          <td>7</td>\n          <td>4</td>\n          <td>3</td>\n          <td>12</td>\n        </tr>\n        <tr>\n          <th>Bravo</th>\n          <td><span class=\"label label-info\">7.2</span></td>\n          <td>6</td>\n          <td>2</td>\n          <td>2</td>\n          <td>2</td>\n          <td>6</td>\n          <td>8</td>\n          <td>-2</td>\n          <td>8</td>\n        </tr>\n        <tr>\n          <th>Delta</th>\n          <td><span class=\"label label-info\">7.3</span></td>\n          <td>6</td>\n          <td>1</td>\n          <td>2</td>\n          <td>3</td>\n          <td>5</td>\n          <td>5</td>\n          <td>0</td>\n          <td>5</td>\n        </tr>\n        <tr>\n          <th>Alpha</th>\n          <td><span class=\"label label-info\">7.4</span></td>\n          <td>6</td>\n          <td>0</td>\n          <td>4</td>\n          <td>1</td>\n          <td>1</td>\n          <td>2</td>\n          <td>-1</td>\n          <td>4</td>\n        </tr>\n      </tbody>\n    </table>\n\n    <h3 class=\"text-muted\">Next Match <small>Delta vs. Charlie</small></h3>\n    <div class=\"row\">\n      <div class=\"col-sm-6\">\n        <div class=\"panel panel-default\">\n          <div class=\"panel-heading\">\n            <b class=\"pull-right\" title=\"Average Rating\">7.1</b>\n            <h3 class=\"panel-title\">Delta</h3>\n          </div>\n          <ul class=\"list-group\">\n            <li class=\"list-group-item\">\n              <span class=\"label label-warning pull-right\">9</span>\n              <a href=\"#\">Кирилл</a>\n            </li>\n            <li class=\"list-group-item\">\n              <span class=\"label label-primary pull-right\">8</span>\n              <a href=\"#\">Серёга (GK)</a>\n            </li>\n            <li class=\"list-group-item\">\n              <span class=\"label label-info pull-right\">7</span>\n              <a href=\"#\">Витя</a>\n            </li>\n            <li class=\"list-group-item\">\n              <span class=\"label label-info pull-right\">6</span>\n              <a href=\"#\">Тимур</a>\n            </li>\n            <li class=\"list-group-item\">\n              <span class=\"label label-default pull-right\">2</span>\n              <a href=\"#\">Саша Дозер</a>\n            </li>\n          </ul>\n        </div>\n      </div>\n\n      <div class=\"col-sm-6\">\n        <div class=\"panel panel-default\">\n          <div class=\"panel-heading\">\n            <b class=\"pull-right\" title=\"Average Rating\">7.1</b>\n            <h3 class=\"panel-title\">Charlie</h3>\n          </div>\n          <ul class=\"list-group\">\n            <li class=\"list-group-item\">\n              <span class=\"label label-warning pull-right\">9</span>\n              <a href=\"#\">Кирилл</a>\n            </li>\n            <li class=\"list-group-item\">\n              <span class=\"label label-primary pull-right\">8</span>\n              <a href=\"#\">Серёга (GK)</a>\n            </li>\n            <li class=\"list-group-item\">\n              <span class=\"label label-info pull-right\">7</span>\n              <a href=\"#\">Витя</a>\n            </li>\n            <li class=\"list-group-item\">\n              <span class=\"label label-info pull-right\">6</span>\n              <a href=\"#\">Тимур</a>\n            </li>\n            <li class=\"list-group-item\">\n              <span class=\"label label-default pull-right\">2</span>\n              <a href=\"#\">Саша Дозер</a>\n            </li>\n          </ul>\n        </div>\n      </div>\n    </div>\n\n  </div>\n</div>\n\n");
+  return buffer;
+  
+});
+
+},{"ember":2}],25:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var compiler = require('ember').Handlebars;
+module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
+  var buffer = '', stack1, helper, options, self=this, helperMissing=helpers.helperMissing;
+
+function program1(depth0,data) {
+  
+  
+  data.buffer.push("\n        <img src=\"https://secure.gravatar.com/avatar/c9ccf1c73cf2eb5a21bfa900493dbd4c?size=60px\" alt=\"photo\" class=\"media-object img-thumbnail\">\n      ");
+  }
+
+function program3(depth0,data) {
+  
+  
+  data.buffer.push("\n            Zidan <span class=\"label label-danger\">10</span>\n          ");
+  }
+
+function program5(depth0,data) {
+  
+  
+  data.buffer.push("\n            Messi <span class=\"label label-danger\">10</span>\n          ");
+  }
+
+function program7(depth0,data) {
+  
+  
+  data.buffer.push("\n            Pirlo <span class=\"label label-danger\">10</span>\n          ");
+  }
+
+function program9(depth0,data) {
+  
+  
+  data.buffer.push("\n            Ronaldo <span class=\"label label-danger\">10</span>\n          ");
+  }
+
+  data.buffer.push("<div class=\"row players-list\">\n  <div class=\"col-sm-4 players-item\">\n    <div class=\"media\">\n      ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
+    'class': ("pull-left")
+  },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0,depth0],types:["STRING","INTEGER"],data:data},helper ? helper.call(depth0, "player", 1, options) : helperMissing.call(depth0, "link-to", "player", 1, options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n      <div class=\"media-body\">\n        <h3 class=\"media-heading\">\n          ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(3, program3, data),contexts:[depth0,depth0],types:["STRING","INTEGER"],data:data},helper ? helper.call(depth0, "player", 1, options) : helperMissing.call(depth0, "link-to", "player", 1, options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n        </h3>\n        <p class=\"text-muted\"><b class=\"text-success\">+1</b> on Aug 13 at 12:23</p>\n      </div>\n    </div>\n  </div>\n  <div class=\"col-sm-4 players-item\">\n    <div class=\"media\">\n      ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
+    'class': ("pull-left")
+  },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0,depth0],types:["STRING","INTEGER"],data:data},helper ? helper.call(depth0, "player", 2, options) : helperMissing.call(depth0, "link-to", "player", 2, options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n      <div class=\"media-body\">\n        <h3 class=\"media-heading\">\n          ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(5, program5, data),contexts:[depth0,depth0],types:["STRING","INTEGER"],data:data},helper ? helper.call(depth0, "player", 2, options) : helperMissing.call(depth0, "link-to", "player", 2, options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n        </h3>\n        <p class=\"text-muted\"><b class=\"text-success\">+1</b> on Aug 14 at 15:12</p>\n      </div>\n    </div>\n  </div>\n  <div class=\"col-sm-4 players-item\">\n    <div class=\"media\">\n      ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
+    'class': ("pull-left")
+  },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0,depth0],types:["STRING","INTEGER"],data:data},helper ? helper.call(depth0, "player", 3, options) : helperMissing.call(depth0, "link-to", "player", 3, options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n      <div class=\"media-body\">\n        <h3 class=\"media-heading\">\n          ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(7, program7, data),contexts:[depth0,depth0],types:["STRING","INTEGER"],data:data},helper ? helper.call(depth0, "player", 3, options) : helperMissing.call(depth0, "link-to", "player", 3, options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n        </h3>\n        <p class=\"text-muted\"><b class=\"text-success\">+1</b> on Aug 15 at 00:01</p>\n      </div>\n    </div>\n  </div>\n  <div class=\"col-sm-4 players-item\">\n    <div class=\"media\">\n      ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
+    'class': ("pull-left")
+  },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0,depth0],types:["STRING","INTEGER"],data:data},helper ? helper.call(depth0, "player", 4, options) : helperMissing.call(depth0, "link-to", "player", 4, options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n      <div class=\"media-body\">\n        <h3 class=\"media-heading\">\n          ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(9, program9, data),contexts:[depth0,depth0],types:["STRING","INTEGER"],data:data},helper ? helper.call(depth0, "player", 4, options) : helperMissing.call(depth0, "link-to", "player", 4, options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n        </h3>\n        <p class=\"text-muted\"><b class=\"text-success\">+1</b> on Aug 15 at 12:23</p>\n      </div>\n    </div>\n  </div>\n</div>\n");
+  return buffer;
+  
+});
+
+},{"ember":2}],26:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -71672,11 +71770,90 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   
 
 
-  data.buffer.push("<h2>\n  GameDay #23\n  <span class=\"label label-success active\" title=\"Been there\">+1</span>\n  <small>July 04, 2014</small>\n</h2>\n\n<ul class=\"nav nav-pills\">\n  <li class=\"active\"><a href=\"#\">Overview</a></li>\n  <li><a href=\"#\">Alpha</a></li>\n  <li><a href=\"#\">Bravo</a></li>\n  <li><a href=\"#\">Charlie <i class=\"flaticon-football117\"></i></a></li>\n  <li><a href=\"#\">Delta</a></li>\n</ul>\n\n<hr class=\"hr-sm\">\n\n<div class=\"row\">\n  <div class=\"col-lg-3\">\n    <div class=\"panel panel-default\">\n      <div class=\"panel-heading\">\n        <b class=\"pull-right\" title=\"Rating Sum\">32.4</b>\n        <h3 class=\"panel-title\">Alpha</h3>\n      </div>\n      <ul class=\"panel-body list-unstyled\">\n        <li>\n          <span class=\"label label-warning pull-right\">9</span>\n          <a href=\"#\">Кирилл</a>\n        </li>\n        <li>\n          <span class=\"label label-primary pull-right\">8</span>\n          <a href=\"#\">Серёга (GK)</a>\n        </li>\n        <li>\n          <span class=\"label label-info pull-right\">7</span>\n          <a href=\"#\">Витя</a>\n        </li>\n        <li>\n          <span class=\"label label-info pull-right\">6</span>\n          <a href=\"#\">Тимур</a>\n        </li>\n        <li>\n          <span class=\"label label-default pull-right\">2</span>\n          <a href=\"#\">Саша Дозер</a>\n        </li>\n      </ul>\n    </div>\n    <div class=\"panel panel-success\">\n      <div class=\"panel-heading\">\n        <b class=\"pull-right\" title=\"Rating Sum\">32.1</b>\n        <h3 class=\"panel-title\">Bravo</h3>\n      </div>\n      <ul class=\"panel-body list-unstyled\">\n        <li>\n          <span class=\"label label-warning pull-right\">9</span>\n          <a href=\"#\">Кирилл</a>\n        </li>\n        <li>\n          <span class=\"label label-primary pull-right\">8</span>\n          <a href=\"#\">Серёга (GK)</a>\n        </li>\n        <li>\n          <span class=\"label label-info pull-right\">7</span>\n          <a href=\"#\">Витя</a>\n        </li>\n        <li>\n          <span class=\"label label-info pull-right\">6</span>\n          <a href=\"#\">Тимур</a>\n        </li>\n        <li>\n          <span class=\"label label-default pull-right\">2</span>\n          <a href=\"#\">Саша Дозер</a>\n        </li>\n      </ul>\n    </div>\n    <div class=\"panel panel-default\">\n      <div class=\"panel-heading\">\n        <b class=\"pull-right\" title=\"Rating Sum\">32.2</b>\n        <h3 class=\"panel-title\">Charlie <i class=\"flaticon-football117\"></i></h3>\n      </div>\n      <ul class=\"panel-body list-unstyled\">\n        <li>\n          <span class=\"label label-warning pull-right\">9</span>\n          <a href=\"#\">Кирилл</a>\n        </li>\n        <li>\n          <span class=\"label label-primary pull-right\">8</span>\n          <a href=\"#\">Серёга (GK)</a>\n        </li>\n        <li>\n          <span class=\"label label-info pull-right\">7</span>\n          <a href=\"#\">Витя</a>\n        </li>\n        <li>\n          <span class=\"label label-info pull-right\">6</span>\n          <a href=\"#\">Тимур</a>\n        </li>\n        <li>\n          <span class=\"label label-default pull-right\">2</span>\n          <a href=\"#\">Саша Дозер</a>\n        </li>\n      </ul>\n    </div>\n    <div class=\"panel panel-default\">\n      <div class=\"panel-heading\">\n        <b class=\"pull-right\" title=\"Rating Sum\">32.3</b>\n        <h3 class=\"panel-title\">Delta</h3>\n      </div>\n      <ul class=\"panel-body list-unstyled\">\n        <li>\n          <span class=\"label label-warning pull-right\">9</span>\n          <a href=\"#\">Кирилл</a>\n        </li>\n        <li>\n          <span class=\"label label-primary pull-right\">8</span>\n          <a href=\"#\">Серёга (GK)</a>\n        </li>\n        <li>\n          <span class=\"label label-info pull-right\">7</span>\n          <a href=\"#\">Витя</a>\n        </li>\n        <li>\n          <span class=\"label label-info pull-right\">6</span>\n          <a href=\"#\">Тимур</a>\n        </li>\n        <li>\n          <span class=\"label label-default pull-right\">2</span>\n          <a href=\"#\">Саша Дозер</a>\n        </li>\n      </ul>\n    </div>\n  </div>\n  <div class=\"col-lg-9\">\n    <table class=\"table tourney-table\">\n      <thead>\n        <tr>\n          <th>Team</th>\n          <th title=\"Average Rating\">AVR</th>\n          <th title=\"Matches Played\">MP</th>\n          <th title=\"Won\">W</th>\n          <th title=\"Drawn\">D</th>\n          <th title=\"Lost\">L</th>\n          <th title=\"Goals For\">GF</th>\n          <th title=\"Goals Against\">GA</th>\n          <th title=\"Goal Difference\">±</th>\n          <th title=\"Points\">Pts</th>\n        </tr>\n      </thead>\n      <tbody>\n        <tr>\n          <th>Charlie <i class=\"flaticon-football117\"></i></th>\n          <td><span class=\"label label-info\">7.1</span></td>\n          <td>6</td>\n          <td>4</td>\n          <td>0</td>\n          <td>1</td>\n          <td>7</td>\n          <td>4</td>\n          <td>3</td>\n          <td>12</td>\n        </tr>\n        <tr class=\"success\">\n          <th>Bravo</th>\n          <td><span class=\"label label-info\">7.2</span></td>\n          <td>6</td>\n          <td>2</td>\n          <td>2</td>\n          <td>2</td>\n          <td>6</td>\n          <td>8</td>\n          <td>-2</td>\n          <td>8</td>\n        </tr>\n        <tr>\n          <th>Delta</th>\n          <td><span class=\"label label-info\">7.3</span></td>\n          <td>6</td>\n          <td>1</td>\n          <td>2</td>\n          <td>3</td>\n          <td>5</td>\n          <td>5</td>\n          <td>0</td>\n          <td>5</td>\n        </tr>\n        <tr>\n          <th>Alpha</th>\n          <td><span class=\"label label-info\">7.4</span></td>\n          <td>6</td>\n          <td>0</td>\n          <td>4</td>\n          <td>1</td>\n          <td>1</td>\n          <td>2</td>\n          <td>-1</td>\n          <td>4</td>\n        </tr>\n      </tbody>\n    </table>\n\n    <div class=\"row\">\n      <div class=\"col-lg-6\">\n        <h3>Matches</h3>\n        <table class=\"table table-striped matches-table\">\n          <tbody>\n            <tr>\n              <td>Alpha</td> <td>0 : 1</td> <td><b>Charlie</b></td>\n            </tr>\n            <tr class=\"text-success\">\n              <td><b>Delta</b></td> <td>3 : 0</td> <td>Bravo</td>\n            </tr>\n            <tr class=\"text-success\">\n              <td>Charlie</td> <td>0 : 1</td> <td><b>Bravo</b></td>\n            </tr>\n            <tr>\n              <td>Delta</td> <td>0 : 0</td> <td>Alpha</td>\n            </tr>\n            <tr class=\"text-success\">\n              <td>Bravo</td> <td>0 : 0</td> <td>Alpha</td>\n            </tr>\n            <tr>\n              <td><b>Charlie</b></td> <td>1 : 0</td> <td>Delta</td>\n            </tr>\n            <tr class=\"text-success\">\n              <td>Alpha</td> <td>1 : 1</td> <td>Bravo</td>\n            </tr>\n            <tr>\n              <td>Delta</td> <td>1 : 2</td> <td><b>Charlie</b></td>\n            </tr>\n            <tr class=\"text-success\">\n              <td>Bravo</td> <td>2 : 3</td> <td><b>Charlie</b></td>\n            </tr>\n            <tr>\n              <td>Alpha</td> <td>0 : 0</td> <td>Delta</td>\n            </tr>\n            <tr class=\"text-success\">\n              <td><b>Bravo</b></td> <td>2 : 1</td> <td>Delta</td>\n            </tr>\n            <tr>\n              <td>Charlie</td> <td>0 : 0</td> <td>Alpha</td>\n            </tr>\n          </tbody>\n        </table>\n      </div>\n      <div class=\"col-lg-6\">\n        <h3>Shooters</h3>\n        <table class=\"table table-striped shooters-table\">\n          <tbody>\n            <tr>\n              <td>1</td>\n              <td><a href=\"#\">Витя</a></td>\n              <td><span class=\"label label-info\">7</span></td>\n              <td>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n              </td>\n            </tr>\n            <tr>\n              <td>2</td>\n              <td><a href=\"#\">Серёга (GK)</a></td>\n              <td><span class=\"label label-primary\">8</span></td>\n              <td>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n              </td>\n            </tr>\n            <tr>\n              <td>3</td>\n              <td><a href=\"#\">Кирилл</a></td>\n              <td><span class=\"label label-warning\">9</span></td>\n              <td>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n              </td>\n            </tr>\n            <tr>\n              <td>4</td>\n              <td><a href=\"#\">Тимур</a></td>\n              <td><span class=\"label label-info\">6</span></td>\n              <td>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n              </td>\n            </tr>\n            <tr>\n              <td>5</td>\n              <td><a href=\"#\">Саша Дозер</a></td>\n              <td><span class=\"label label-default\">2</span></td>\n              <td>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n              </td>\n            </tr>\n            <tr class=\"success\">\n              <td>6</td>\n              <td><a href=\"#\">Витя</a></td>\n              <td><span class=\"label label-info\">7</span></td>\n              <td>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n              </td>\n            </tr>\n            <tr>\n              <td>7</td>\n              <td><a href=\"#\">Серёга (GK)</a></td>\n              <td><span class=\"label label-primary\">8</span></td>\n              <td>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n              </td>\n            </tr>\n            <tr>\n              <td>8</td>\n              <td><a href=\"#\">Кирилл</a></td>\n              <td><span class=\"label label-warning\">9</span></td>\n              <td>\n                <i class=\"flaticon-football28\"></i>\n              </td>\n            </tr>\n            <tr>\n              <td>9</td>\n              <td><a href=\"#\">Тимур</a></td>\n              <td><span class=\"label label-info\">6</span></td>\n              <td>\n                <i class=\"flaticon-football28\"></i>\n              </td>\n            </tr>\n            <tr>\n              <td>10</td>\n              <td><a href=\"#\">Саша Дозер</a></td>\n              <td><span class=\"label label-default\">2</span></td>\n              <td>\n                <i class=\"flaticon-football28\"></i>\n              </td>\n            </tr>\n          </tbody>\n        </table>\n      </div>\n    </div>\n  </div>\n</div>\n");
+  data.buffer.push("<div class=\"row\">\n  <div class=\"col-md-9 col-md-push-3\">\n    <div class=\"row gap-md\">\n      <div class=\"col-md-8\">\n        <button class=\"btn fa-lg btn-success\"><i class=\"flaticon-football90 fa-lg\"></i> Randomize Teams</button>\n        <button class=\"btn fa-lg btn-default\"><i class=\"flaticon-soccer18 fa-lg\"></i> Add Player</button>\n      </div>\n      <div class=\"col-md-4 text-right\">\n        <button class=\"btn fa-lg btn-default\"><i class=\"flaticon-checkered3 fa-lg\"></i> Setup</button>\n      </div>\n    </div>\n\n    <div class=\"row\">\n      <div class=\"col-sm-6\">\n        <div class=\"panel panel-default\">\n          <div class=\"panel-heading\">\n            <b class=\"pull-right\" title=\"Average Rating\">7.1</b>\n            <h3 class=\"panel-title\">Alpha</h3>\n          </div>\n          <ul class=\"list-group\">\n            <li class=\"list-group-item\">\n              <span class=\"label label-warning pull-right\">9</span>\n              <a href=\"#\">Кирилл</a>\n            </li>\n            <li class=\"list-group-item\">\n              <span class=\"label label-primary pull-right\">8</span>\n              <a href=\"#\">Серёга (GK)</a>\n            </li>\n            <li class=\"list-group-item\">\n              <span class=\"label label-info pull-right\">7</span>\n              <a href=\"#\">Витя</a>\n            </li>\n            <li class=\"list-group-item\">\n              <span class=\"label label-info pull-right\">6</span>\n              <a href=\"#\">Тимур</a>\n            </li>\n            <li class=\"list-group-item\">\n              <span class=\"label label-default pull-right\">2</span>\n              <a href=\"#\">Саша Дозер</a>\n            </li>\n          </ul>\n        </div>\n      </div>\n\n      <div class=\"col-sm-6\">\n        <div class=\"panel panel-default\">\n          <div class=\"panel-heading\">\n            <b class=\"pull-right\" title=\"Average Rating\">7.1</b>\n            <h3 class=\"panel-title\">Bravo</h3>\n          </div>\n          <ul class=\"list-group\">\n            <li class=\"list-group-item\">\n              <span class=\"label label-warning pull-right\">9</span>\n              <a href=\"#\">Кирилл</a>\n            </li>\n            <li class=\"list-group-item\">\n              <span class=\"label label-primary pull-right\">8</span>\n              <a href=\"#\">Серёга (GK)</a>\n            </li>\n            <li class=\"list-group-item\">\n              <span class=\"label label-info pull-right\">7</span>\n              <a href=\"#\">Витя</a>\n            </li>\n            <li class=\"list-group-item\">\n              <span class=\"label label-info pull-right\">6</span>\n              <a href=\"#\">Тимур</a>\n            </li>\n            <li class=\"list-group-item\">\n              <span class=\"label label-default pull-right\">2</span>\n              <a href=\"#\">Саша Дозер</a>\n            </li>\n          </ul>\n        </div>\n      </div>\n\n      <div class=\"col-sm-6\">\n        <div class=\"panel panel-default\">\n          <div class=\"panel-heading\">\n            <b class=\"pull-right\" title=\"Average Rating\">7.1</b>\n            <h3 class=\"panel-title\">Charlie</h3>\n          </div>\n          <ul class=\"list-group\">\n            <li class=\"list-group-item\">\n              <span class=\"label label-warning pull-right\">9</span>\n              <a href=\"#\">Кирилл</a>\n            </li>\n            <li class=\"list-group-item\">\n              <span class=\"label label-primary pull-right\">8</span>\n              <a href=\"#\">Серёга (GK)</a>\n            </li>\n            <li class=\"list-group-item\">\n              <span class=\"label label-info pull-right\">7</span>\n              <a href=\"#\">Витя</a>\n            </li>\n            <li class=\"list-group-item\">\n              <span class=\"label label-info pull-right\">6</span>\n              <a href=\"#\">Тимур</a>\n            </li>\n            <li class=\"list-group-item\">\n              <span class=\"label label-default pull-right\">2</span>\n              <a href=\"#\">Саша Дозер</a>\n            </li>\n          </ul>\n        </div>\n      </div>\n\n      <div class=\"col-sm-6\">\n        <div class=\"panel panel-default\">\n          <div class=\"panel-heading\">\n            <b class=\"pull-right\" title=\"Average Rating\">7.1</b>\n            <h3 class=\"panel-title\">Delta</h3>\n          </div>\n          <ul class=\"list-group\">\n            <li class=\"list-group-item\">\n              <span class=\"label label-warning pull-right\">9</span>\n              <a href=\"#\">Кирилл</a>\n            </li>\n            <li class=\"list-group-item\">\n              <span class=\"label label-primary pull-right\">8</span>\n              <a href=\"#\">Серёга (GK)</a>\n            </li>\n            <li class=\"list-group-item\">\n              <span class=\"label label-info pull-right\">7</span>\n              <a href=\"#\">Витя</a>\n            </li>\n            <li class=\"list-group-item\">\n              <span class=\"label label-info pull-right\">6</span>\n              <a href=\"#\">Тимур</a>\n            </li>\n            <li class=\"list-group-item\">\n              <span class=\"label label-default pull-right\">2</span>\n              <a href=\"#\">Саша Дозер</a>\n            </li>\n          </ul>\n        </div>\n      </div>\n    </div>\n\n    <div class=\"row gap-lg\">\n      <div class=\"col-md-8\">\n        <button class=\"btn fa-lg btn-success\"><i class=\"flaticon-goal fa-lg\"></i> Save</button>\n        <button class=\"btn fa-lg btn-default\"><i class=\"flaticon-football79 fa-lg\"></i> Discard</button>\n      </div>\n      <div class=\"col-md-4 text-right\">\n      </div>\n    </div>\n  </div>\n\n  <div class=\"col-md-3 col-md-pull-9\">\n    <div class=\"panel panel-default\">\n      <div class=\"panel-heading\">\n        <b class=\"pull-right\" title=\"AVR\">7.3</b>\n        <h3 class=\"panel-title\">Average Rating</h3>\n      </div>\n      <ul class=\"list-group\">\n        <li class=\"list-group-item\">\n          <select>\n            <option>&mdash;</option>\n            <option>A</option>\n            <option>B</option>\n            <option>C</option>\n            <option>D</option>\n          </select>\n          <span class=\"label label-warning pull-right\">9</span>\n          <a href=\"#\">Кирилл</a>\n        </li>\n        <li class=\"list-group-item\">\n          <select>\n            <option>&mdash;</option>\n            <option>A</option>\n            <option>B</option>\n            <option>C</option>\n            <option>D</option>\n          </select>\n          <span class=\"label label-primary pull-right\">8</span>\n          <a href=\"#\">Серёга (GK)</a>\n        </li>\n        <li class=\"list-group-item\">\n          <select>\n            <option>&mdash;</option>\n            <option>A</option>\n            <option>B</option>\n            <option>C</option>\n            <option>D</option>\n          </select>\n          <span class=\"label label-info pull-right\">7</span>\n          <a href=\"#\">Витя</a>\n        </li>\n        <li class=\"list-group-item\">\n          <select>\n            <option>&mdash;</option>\n            <option>A</option>\n            <option>B</option>\n            <option>C</option>\n            <option>D</option>\n          </select>\n          <span class=\"label label-info pull-right\">6</span>\n          <a href=\"#\">Тимур</a>\n        </li>\n        <li class=\"list-group-item\">\n          <select>\n            <option>&mdash;</option>\n            <option>A</option>\n            <option>B</option>\n            <option>C</option>\n            <option>D</option>\n          </select>\n          <span class=\"label label-default pull-right\">2</span>\n          <a href=\"#\">Саша Дозер</a>\n        </li>\n        <li class=\"list-group-item\">\n          <select>\n            <option>&mdash;</option>\n            <option>A</option>\n            <option>B</option>\n            <option>C</option>\n            <option>D</option>\n          </select>\n          <span class=\"label label-warning pull-right\">9</span>\n          <a href=\"#\">Кирилл</a>\n        </li>\n        <li class=\"list-group-item\">\n          <select>\n            <option>&mdash;</option>\n            <option>A</option>\n            <option>B</option>\n            <option>C</option>\n            <option>D</option>\n          </select>\n          <span class=\"label label-primary pull-right\">8</span>\n          <a href=\"#\">Серёга (GK)</a>\n        </li>\n        <li class=\"list-group-item\">\n          <select>\n            <option>&mdash;</option>\n            <option>A</option>\n            <option>B</option>\n            <option>C</option>\n            <option>D</option>\n          </select>\n          <span class=\"label label-info pull-right\">7</span>\n          <a href=\"#\">Витя</a>\n        </li>\n        <li class=\"list-group-item\">\n          <select>\n            <option>&mdash;</option>\n            <option>A</option>\n            <option>B</option>\n            <option>C</option>\n            <option>D</option>\n          </select>\n          <span class=\"label label-info pull-right\">6</span>\n          <a href=\"#\">Тимур</a>\n        </li>\n        <li class=\"list-group-item\">\n          <select>\n            <option>&mdash;</option>\n            <option>A</option>\n            <option>B</option>\n            <option>C</option>\n            <option>D</option>\n          </select>\n          <span class=\"label label-default pull-right\">2</span>\n          <a href=\"#\">Саша Дозер</a>\n        </li>\n        <li class=\"list-group-item\">\n          <select>\n            <option>&mdash;</option>\n            <option>A</option>\n            <option>B</option>\n            <option>C</option>\n            <option>D</option>\n          </select>\n          <span class=\"label label-warning pull-right\">9</span>\n          <a href=\"#\">Кирилл</a>\n        </li>\n        <li class=\"list-group-item\">\n          <select>\n            <option>&mdash;</option>\n            <option>A</option>\n            <option>B</option>\n            <option>C</option>\n            <option>D</option>\n          </select>\n          <span class=\"label label-primary pull-right\">8</span>\n          <a href=\"#\">Серёга (GK)</a>\n        </li>\n        <li class=\"list-group-item\">\n          <select>\n            <option>&mdash;</option>\n            <option>A</option>\n            <option>B</option>\n            <option>C</option>\n            <option>D</option>\n          </select>\n          <span class=\"label label-info pull-right\">7</span>\n          <a href=\"#\">Витя</a>\n        </li>\n        <li class=\"list-group-item\">\n          <select>\n            <option>&mdash;</option>\n            <option>A</option>\n            <option>B</option>\n            <option>C</option>\n            <option>D</option>\n          </select>\n          <span class=\"label label-info pull-right\">6</span>\n          <a href=\"#\">Тимур</a>\n        </li>\n        <li class=\"list-group-item\">\n          <select>\n            <option>&mdash;</option>\n            <option>A</option>\n            <option>B</option>\n            <option>C</option>\n            <option>D</option>\n          </select>\n          <span class=\"label label-default pull-right\">2</span>\n          <a href=\"#\">Саша Дозер</a>\n        </li>\n      </ul>\n    </div>\n    <p class=\"text-muted\"><em>* Chosen letters predefine teams for custom players</em></p>\n  </div>\n\n</div>\n");
   
 });
 
-},{"ember":2}],24:[function(require,module,exports){
+},{"ember":2}],27:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var compiler = require('ember').Handlebars;
+module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
+  var buffer = '', stack1, helper, options, self=this, helperMissing=helpers.helperMissing;
+
+function program1(depth0,data) {
+  
+  var buffer = '', stack1, helper, options;
+  data.buffer.push("\n    ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(2, program2, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "gameday.players", options) : helperMissing.call(depth0, "link-to", "gameday.players", options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n  ");
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  
+  data.buffer.push("Players");
+  }
+
+function program4(depth0,data) {
+  
+  var buffer = '', stack1, helper, options;
+  data.buffer.push("\n    ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(5, program5, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "gameday.teams", options) : helperMissing.call(depth0, "link-to", "gameday.teams", options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n  ");
+  return buffer;
+  }
+function program5(depth0,data) {
+  
+  
+  data.buffer.push("Teams");
+  }
+
+function program7(depth0,data) {
+  
+  var buffer = '', stack1, helper, options;
+  data.buffer.push("\n    ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(8, program8, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "gameday.matches", options) : helperMissing.call(depth0, "link-to", "gameday.matches", options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n  ");
+  return buffer;
+  }
+function program8(depth0,data) {
+  
+  
+  data.buffer.push("Matches");
+  }
+
+  data.buffer.push("<h2 class=\"tourney-title\">\n  Upcoming GameDay #23\n  <span class=\"label label-success active\" title=\"I'm goin'\">+1</span>\n\n  <small class=\"tourney-meta pull-right\">\n    <b>19</b> Players / <b>4</b> Teams\n  </small>\n  <small class=\"nowrap\">September 04, 2014</small>\n</h2>\n\n<ul class=\"nav nav-pills gap-lg\">\n  ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
+    'tagName': ("li"),
+    'href': (false)
+  },hashTypes:{'tagName': "STRING",'href': "BOOLEAN"},hashContexts:{'tagName': depth0,'href': depth0},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "gameday.players", options) : helperMissing.call(depth0, "link-to", "gameday.players", options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n  ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
+    'tagName': ("li"),
+    'href': (false)
+  },hashTypes:{'tagName': "STRING",'href': "BOOLEAN"},hashContexts:{'tagName': depth0,'href': depth0},inverse:self.noop,fn:self.program(4, program4, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "gameday.teams", options) : helperMissing.call(depth0, "link-to", "gameday.teams", options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n  ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
+    'tagName': ("li"),
+    'href': (false)
+  },hashTypes:{'tagName': "STRING",'href': "BOOLEAN"},hashContexts:{'tagName': depth0,'href': depth0},inverse:self.noop,fn:self.program(7, program7, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "gameday.matches", options) : helperMissing.call(depth0, "link-to", "gameday.matches", options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n</ul>\n\n");
+  stack1 = helpers._triageMustache.call(depth0, "outlet", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n");
+  return buffer;
+  
+});
+
+},{"ember":2}],28:[function(require,module,exports){
 var Ember = require('ember');
 var DS = require('ember-data');
 
@@ -71695,10 +71872,16 @@ App.Router.map(function() {
   this.route('me', {path: '/'});
   this.resource('players');
   this.resource('player', {path: 'players/:id'});
-  this.resource('tourneys');
+  this.resource('tourneys', function() {
+    this.route('new');
+  });
   this.resource('tourney', {path: 'tourneys/:id'});
 
-  this.resource('gameday');
+  this.resource('gameday', function() {
+    this.route('players');
+    this.route('teams');
+    this.route('matches');
+  });
 });
 
 // Application
@@ -71706,7 +71889,11 @@ App.ApplicationRoute = require('./app/route');
 App.templates.application = require('./app/template.hbs');
 
 // Gameday
+App.GamedayIndexRoute = require('./gameday/index/route');
 App.templates.gameday = require('./gameday/template.hbs');
+App.templates['gameday/players'] = require('./gameday/players.hbs');
+App.templates['gameday/teams'] = require('./gameday/teams.hbs');
+App.templates['gameday/matches'] = require('./gameday/matches.hbs');
 
 
 // Player Model
@@ -71731,6 +71918,7 @@ App.Tourney.FIXTURES = require('./tourney/fixtures.json');
 App.TourneyRoute = require('./tourney/route');
 App.TourneyController = require('./tourney/controller');
 App.templates.tourney = require('./tourney/template.hbs');
+App.templates['tourneys/new'] = require('./tourney/mockup.hbs');
 App.templates.tourneyPlayers = require('./tourney/players.hbs');
 App.templates.tourneyTeams = require('./tourney/teams.hbs');
 App.templates.tourneyTable = require('./tourney/table.hbs');
@@ -71769,7 +71957,7 @@ App.templates.matches = require('./matches/template.hbs');
 // Me
 App.MeRoute = require('./me/route');
 
-},{"./app/route":21,"./app/template.hbs":22,"./gameday/template.hbs":23,"./match/controller":25,"./match/fixtures.json":26,"./match/model":27,"./match/route":28,"./matches/controller":29,"./matches/route":30,"./matches/template.hbs":31,"./me/route":32,"./player/fixtures.json":33,"./player/model":34,"./player/template.hbs":36,"./players/controller":37,"./players/route":38,"./players/template.hbs":39,"./team/controller":40,"./team/fixtures.json":41,"./team/model":42,"./team/route":43,"./teams/controller":44,"./teams/route":45,"./teams/template.hbs":46,"./tourney/controller":47,"./tourney/fixtures.json":48,"./tourney/matches.hbs":49,"./tourney/model":50,"./tourney/players.hbs":51,"./tourney/route":52,"./tourney/table.hbs":53,"./tourney/teams.hbs":54,"./tourney/template.hbs":55,"./tourneys/route":56,"./tourneys/template.hbs":57,"ember":2,"ember-data":1}],25:[function(require,module,exports){
+},{"./app/route":21,"./app/template.hbs":22,"./gameday/index/route":23,"./gameday/matches.hbs":24,"./gameday/players.hbs":25,"./gameday/teams.hbs":26,"./gameday/template.hbs":27,"./match/controller":29,"./match/fixtures.json":30,"./match/model":31,"./match/route":32,"./matches/controller":33,"./matches/route":34,"./matches/template.hbs":35,"./me/route":36,"./player/fixtures.json":37,"./player/model":38,"./player/template.hbs":40,"./players/controller":41,"./players/route":42,"./players/template.hbs":43,"./team/controller":44,"./team/fixtures.json":45,"./team/model":46,"./team/route":47,"./teams/controller":48,"./teams/route":49,"./teams/template.hbs":50,"./tourney/controller":51,"./tourney/fixtures.json":52,"./tourney/matches.hbs":53,"./tourney/mockup.hbs":54,"./tourney/model":55,"./tourney/players.hbs":56,"./tourney/route":57,"./tourney/table.hbs":58,"./tourney/teams.hbs":59,"./tourney/template.hbs":60,"./tourneys/route":61,"./tourneys/template.hbs":62,"ember":2,"ember-data":1}],29:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.ObjectController.extend({
@@ -71787,7 +71975,7 @@ module.exports = Ember.ObjectController.extend({
   }.property('isPlayed'),
 });
 
-},{"ember":2}],26:[function(require,module,exports){
+},{"ember":2}],30:[function(require,module,exports){
 module.exports=[
   {
     "id": 1,
@@ -71900,7 +72088,7 @@ module.exports=[
   }
 ]
 
-},{}],27:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 var DS = require('ember-data');
 
 module.exports = DS.Model.extend({
@@ -71914,7 +72102,7 @@ module.exports = DS.Model.extend({
   }),
 });
 
-},{"ember-data":1}],28:[function(require,module,exports){
+},{"ember-data":1}],32:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -71923,14 +72111,14 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],29:[function(require,module,exports){
+},{"ember":2}],33:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.ObjectController.extend({
 
 });
 
-},{"ember":2}],30:[function(require,module,exports){
+},{"ember":2}],34:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -71939,7 +72127,7 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],31:[function(require,module,exports){
+},{"ember":2}],35:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -71952,7 +72140,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   
 });
 
-},{"ember":2}],32:[function(require,module,exports){
+},{"ember":2}],36:[function(require,module,exports){
 var PlayerRoute = require('../player/route');
 
 // An alias to existed player
@@ -71965,7 +72153,7 @@ module.exports = PlayerRoute.extend({
   }
 });
 
-},{"../player/route":35}],33:[function(require,module,exports){
+},{"../player/route":39}],37:[function(require,module,exports){
 module.exports=[
   {
     "id": 1,
@@ -72119,7 +72307,7 @@ module.exports=[
   }
 ]
 
-},{}],34:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 var DS = require('ember-data');
 
 module.exports = DS.Model.extend({
@@ -72128,7 +72316,7 @@ module.exports = DS.Model.extend({
   rating: DS.attr('number')
 });
 
-},{"ember-data":1}],35:[function(require,module,exports){
+},{"ember-data":1}],39:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -72137,7 +72325,7 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],36:[function(require,module,exports){
+},{"ember":2}],40:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -72159,7 +72347,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   
 });
 
-},{"ember":2}],37:[function(require,module,exports){
+},{"ember":2}],41:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.ArrayController.extend({
@@ -72170,7 +72358,7 @@ module.exports = Ember.ArrayController.extend({
   playersSorderByRank: Ember.computed.sort('model', 'playersSortedByRankDesc'),
 });
 
-},{"ember":2}],38:[function(require,module,exports){
+},{"ember":2}],42:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -72179,7 +72367,7 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],39:[function(require,module,exports){
+},{"ember":2}],43:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -72190,7 +72378,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = '', stack1, helper, options;
-  data.buffer.push("\n    <div class=\"col-lg-4 players-item\">\n      <div class=\"media\">\n        ");
+  data.buffer.push("\n    <div class=\"col-sm-4 players-item\">\n      <div class=\"media\">\n        ");
   stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
     'class': ("pull-left")
   },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(2, program2, data),contexts:[depth0,depth0],types:["STRING","ID"],data:data},helper ? helper.call(depth0, "player", "", options) : helperMissing.call(depth0, "link-to", "player", "", options));
@@ -72198,7 +72386,7 @@ function program1(depth0,data) {
   data.buffer.push("\n        <div class=\"media-body\">\n          <h3 class=\"media-heading\">\n            ");
   stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(4, program4, data),contexts:[depth0,depth0],types:["STRING","ID"],data:data},helper ? helper.call(depth0, "player", "", options) : helperMissing.call(depth0, "link-to", "player", "", options));
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n          </h3>\n          <ul class=\"list-inline\">\n            <li><i class=\"fa fa-check-square-o\"></i> Voted</li>\n            <li><a href=\"#\">Re-Vote</a></li>\n          </ul>\n          <p class=\"bg-success\"><b>+1</b> on <a href=\"#\">Upcoming Tourney</a></p>\n        </div>\n      </div>\n    </div>\n  ");
+  data.buffer.push("\n          </h3>\n          <ul class=\"list-unstyled\">\n            <li><i class=\"fa fa-check-circle\"></i> Voted (<a href=\"#\">Re-Vote</a>)</li>\n            <li><b class=\"text-success\">+1</b> on <a href=\"#\">Upcoming Tourney</a></li>\n          </ul>\n        </div>\n      </div>\n    </div>\n  ");
   return buffer;
   }
 function program2(depth0,data) {
@@ -72231,7 +72419,7 @@ function program4(depth0,data) {
   
 });
 
-},{"ember":2}],40:[function(require,module,exports){
+},{"ember":2}],44:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.ObjectController.extend({
@@ -72247,7 +72435,7 @@ module.exports = Ember.ObjectController.extend({
   }.property('players.@each.rank'),
 });
 
-},{"ember":2}],41:[function(require,module,exports){
+},{"ember":2}],45:[function(require,module,exports){
 module.exports=[
   {
     "id": 1,
@@ -72278,7 +72466,7 @@ module.exports=[
   }
 ]
 
-},{}],42:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 var DS = require('ember-data');
 
 module.exports = DS.Model.extend({
@@ -72287,7 +72475,7 @@ module.exports = DS.Model.extend({
   players: DS.hasMany('player')
 });
 
-},{"ember-data":1}],43:[function(require,module,exports){
+},{"ember-data":1}],47:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -72296,9 +72484,9 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],44:[function(require,module,exports){
-module.exports=require(29)
-},{"ember":2}],45:[function(require,module,exports){
+},{"ember":2}],48:[function(require,module,exports){
+module.exports=require(33)
+},{"ember":2}],49:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -72307,7 +72495,7 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],46:[function(require,module,exports){
+},{"ember":2}],50:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -72320,7 +72508,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   
 });
 
-},{"ember":2}],47:[function(require,module,exports){
+},{"ember":2}],51:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.ObjectController.extend({
@@ -72397,7 +72585,7 @@ module.exports = Ember.ObjectController.extend({
   }.property('matches'),
 });
 
-},{"ember":2}],48:[function(require,module,exports){
+},{"ember":2}],52:[function(require,module,exports){
 module.exports=[
   {
     "id": 1,
@@ -72415,7 +72603,7 @@ module.exports=[
   }
 ]
 
-},{}],49:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -72474,7 +72662,20 @@ function program4(depth0,data) {
   
 });
 
-},{"ember":2}],50:[function(require,module,exports){
+},{"ember":2}],54:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var compiler = require('ember').Handlebars;
+module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
+  
+
+
+  data.buffer.push("<h2 class=\"tourney-title\">\n  Tourney #23\n  <span class=\"label label-success active\" title=\"Been there\">+1</span>\n\n  <small class=\"tourney-meta pull-right\">\n    <b>20</b> Players / <b>4</b> Teams\n  </small>\n  <small class=\"nowrap\">July 04, 2014</small>\n</h2>\n\n<ul class=\"nav nav-pills gap-lg\">\n  <li class=\"active\"><a href=\"#\">Overview</a></li>\n  <li><a href=\"#\">Alpha</a></li>\n  <li><a href=\"#\">Bravo</a></li>\n  <li><a href=\"#\">Charlie <i class=\"flaticon-football117\"></i></a></li>\n  <li><a href=\"#\">Delta</a></li>\n</ul>\n\n<div class=\"row\">\n  <div class=\"col-md-9 col-md-push-3\">\n    <table class=\"table tourney-table\">\n      <thead>\n        <tr>\n          <th>Team</th>\n          <th title=\"Average Rating\">AVR</th>\n          <th title=\"Matches Played\">MP</th>\n          <th title=\"Won\">W</th>\n          <th title=\"Drawn\">D</th>\n          <th title=\"Lost\">L</th>\n          <th title=\"Goals For\">GF</th>\n          <th title=\"Goals Against\">GA</th>\n          <th title=\"Goal Difference\">±</th>\n          <th title=\"Points\">Pts</th>\n        </tr>\n      </thead>\n      <tbody>\n        <tr>\n          <th>Charlie <i class=\"flaticon-football117\"></i></th>\n          <td><span class=\"label label-info\">7.1</span></td>\n          <td>6</td>\n          <td>4</td>\n          <td>0</td>\n          <td>1</td>\n          <td>7</td>\n          <td>4</td>\n          <td>3</td>\n          <td>12</td>\n        </tr>\n        <tr class=\"success\">\n          <th>Bravo</th>\n          <td><span class=\"label label-info\">7.2</span></td>\n          <td>6</td>\n          <td>2</td>\n          <td>2</td>\n          <td>2</td>\n          <td>6</td>\n          <td>8</td>\n          <td>-2</td>\n          <td>8</td>\n        </tr>\n        <tr>\n          <th>Delta</th>\n          <td><span class=\"label label-info\">7.3</span></td>\n          <td>6</td>\n          <td>1</td>\n          <td>2</td>\n          <td>3</td>\n          <td>5</td>\n          <td>5</td>\n          <td>0</td>\n          <td>5</td>\n        </tr>\n        <tr>\n          <th>Alpha</th>\n          <td><span class=\"label label-info\">7.4</span></td>\n          <td>6</td>\n          <td>0</td>\n          <td>4</td>\n          <td>1</td>\n          <td>1</td>\n          <td>2</td>\n          <td>-1</td>\n          <td>4</td>\n        </tr>\n      </tbody>\n    </table>\n\n    <div class=\"row\">\n      <div class=\"col-md-6\">\n        <h3>Matches</h3>\n        <table class=\"table table-striped matches-table\">\n          <tbody>\n            <tr>\n              <td>Alpha</td> <td>0 : 1</td> <td><b>Charlie</b></td>\n            </tr>\n            <tr class=\"text-success\">\n              <td><b>Delta</b></td> <td>3 : 0</td> <td>Bravo</td>\n            </tr>\n            <tr class=\"text-success\">\n              <td>Charlie</td> <td>0 : 1</td> <td><b>Bravo</b></td>\n            </tr>\n            <tr>\n              <td>Delta</td> <td>0 : 0</td> <td>Alpha</td>\n            </tr>\n            <tr class=\"text-success\">\n              <td>Bravo</td> <td>0 : 0</td> <td>Alpha</td>\n            </tr>\n            <tr>\n              <td><b>Charlie</b></td> <td>1 : 0</td> <td>Delta</td>\n            </tr>\n            <tr class=\"text-success\">\n              <td>Alpha</td> <td>1 : 1</td> <td>Bravo</td>\n            </tr>\n            <tr>\n              <td>Delta</td> <td>1 : 2</td> <td><b>Charlie</b></td>\n            </tr>\n            <tr class=\"text-success\">\n              <td>Bravo</td> <td>2 : 3</td> <td><b>Charlie</b></td>\n            </tr>\n            <tr>\n              <td>Alpha</td> <td>0 : 0</td> <td>Delta</td>\n            </tr>\n            <tr class=\"text-success\">\n              <td><b>Bravo</b></td> <td>2 : 1</td> <td>Delta</td>\n            </tr>\n            <tr>\n              <td>Charlie</td> <td>0 : 0</td> <td>Alpha</td>\n            </tr>\n          </tbody>\n        </table>\n      </div>\n      <div class=\"col-md-6\">\n        <h3>Shooters</h3>\n        <table class=\"table table-striped shooters-table\">\n          <tbody>\n            <tr>\n              <td>1</td>\n              <td><a href=\"#\">Витя</a></td>\n              <td><span class=\"label label-info\">7</span></td>\n              <td>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n              </td>\n            </tr>\n            <tr>\n              <td>2</td>\n              <td><a href=\"#\">Серёга (GK)</a></td>\n              <td><span class=\"label label-primary\">8</span></td>\n              <td>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n              </td>\n            </tr>\n            <tr>\n              <td>3</td>\n              <td><a href=\"#\">Кирилл</a></td>\n              <td><span class=\"label label-warning\">9</span></td>\n              <td>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n              </td>\n            </tr>\n            <tr>\n              <td>4</td>\n              <td><a href=\"#\">Тимур</a></td>\n              <td><span class=\"label label-info\">6</span></td>\n              <td>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n              </td>\n            </tr>\n            <tr>\n              <td>5</td>\n              <td><a href=\"#\">Саша Дозер</a></td>\n              <td><span class=\"label label-default\">2</span></td>\n              <td>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n              </td>\n            </tr>\n            <tr class=\"success\">\n              <td>6</td>\n              <td><a href=\"#\">Витя</a></td>\n              <td><span class=\"label label-info\">7</span></td>\n              <td>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n              </td>\n            </tr>\n            <tr>\n              <td>7</td>\n              <td><a href=\"#\">Серёга (GK)</a></td>\n              <td><span class=\"label label-primary\">8</span></td>\n              <td>\n                <i class=\"flaticon-football28\"></i>\n                <i class=\"flaticon-football28\"></i>\n              </td>\n            </tr>\n            <tr>\n              <td>8</td>\n              <td><a href=\"#\">Кирилл</a></td>\n              <td><span class=\"label label-warning\">9</span></td>\n              <td>\n                <i class=\"flaticon-football28\"></i>\n              </td>\n            </tr>\n            <tr>\n              <td>9</td>\n              <td><a href=\"#\">Тимур</a></td>\n              <td><span class=\"label label-info\">6</span></td>\n              <td>\n                <i class=\"flaticon-football28\"></i>\n              </td>\n            </tr>\n            <tr>\n              <td>10</td>\n              <td><a href=\"#\">Саша Дозер</a></td>\n              <td><span class=\"label label-default\">2</span></td>\n              <td>\n                <i class=\"flaticon-football28\"></i>\n              </td>\n            </tr>\n          </tbody>\n        </table>\n      </div>\n    </div>\n  </div>\n  <div class=\"col-md-3 col-md-pull-9\">\n    <div class=\"panel panel-default\">\n      <div class=\"panel-heading\">\n        <h3 class=\"panel-title\">Alpha</h3>\n      </div>\n      <ul class=\"panel-body list-unstyled\">\n        <li>\n          <span class=\"label label-warning pull-right\">9</span>\n          <a href=\"#\">Кирилл</a>\n        </li>\n        <li>\n          <span class=\"label label-primary pull-right\">8</span>\n          <a href=\"#\">Серёга (GK)</a>\n        </li>\n        <li>\n          <span class=\"label label-info pull-right\">7</span>\n          <a href=\"#\">Витя</a>\n        </li>\n        <li>\n          <span class=\"label label-info pull-right\">6</span>\n          <a href=\"#\">Тимур</a>\n        </li>\n        <li>\n          <span class=\"label label-default pull-right\">2</span>\n          <a href=\"#\">Саша Дозер</a>\n        </li>\n      </ul>\n    </div>\n    <div class=\"panel panel-success\">\n      <div class=\"panel-heading\">\n        <h3 class=\"panel-title\">Bravo</h3>\n      </div>\n      <ul class=\"panel-body list-unstyled\">\n        <li>\n          <span class=\"label label-warning pull-right\">9</span>\n          <a href=\"#\">Кирилл</a>\n        </li>\n        <li>\n          <span class=\"label label-primary pull-right\">8</span>\n          <a href=\"#\">Серёга (GK)</a>\n        </li>\n        <li>\n          <span class=\"label label-info pull-right\">7</span>\n          <a href=\"#\">Витя</a>\n        </li>\n        <li>\n          <span class=\"label label-info pull-right\">6</span>\n          <a href=\"#\">Тимур</a>\n        </li>\n        <li>\n          <span class=\"label label-default pull-right\">2</span>\n          <a href=\"#\">Саша Дозер</a>\n        </li>\n      </ul>\n    </div>\n    <div class=\"panel panel-default\">\n      <div class=\"panel-heading\">\n        <i class=\"flaticon-football117 pull-right\"></i>\n        <h3 class=\"panel-title\">Charlie</h3>\n      </div>\n      <ul class=\"panel-body list-unstyled\">\n        <li>\n          <span class=\"label label-warning pull-right\">9</span>\n          <a href=\"#\">Кирилл</a>\n        </li>\n        <li>\n          <span class=\"label label-primary pull-right\">8</span>\n          <a href=\"#\">Серёга (GK)</a>\n        </li>\n        <li>\n          <span class=\"label label-info pull-right\">7</span>\n          <a href=\"#\">Витя</a>\n        </li>\n        <li>\n          <span class=\"label label-info pull-right\">6</span>\n          <a href=\"#\">Тимур</a>\n        </li>\n        <li>\n          <span class=\"label label-default pull-right\">2</span>\n          <a href=\"#\">Саша Дозер</a>\n        </li>\n      </ul>\n    </div>\n    <div class=\"panel panel-default\">\n      <div class=\"panel-heading\">\n        <h3 class=\"panel-title\">Delta</h3>\n      </div>\n      <ul class=\"panel-body list-unstyled\">\n        <li>\n          <span class=\"label label-warning pull-right\">9</span>\n          <a href=\"#\">Кирилл</a>\n        </li>\n        <li>\n          <span class=\"label label-primary pull-right\">8</span>\n          <a href=\"#\">Серёга (GK)</a>\n        </li>\n        <li>\n          <span class=\"label label-info pull-right\">7</span>\n          <a href=\"#\">Витя</a>\n        </li>\n        <li>\n          <span class=\"label label-info pull-right\">6</span>\n          <a href=\"#\">Тимур</a>\n        </li>\n        <li>\n          <span class=\"label label-default pull-right\">2</span>\n          <a href=\"#\">Саша Дозер</a>\n        </li>\n      </ul>\n    </div>\n  </div>\n</div>\n");
+  
+});
+
+},{"ember":2}],55:[function(require,module,exports){
 var DS = require('ember-data');
 
 module.exports = DS.Model.extend({
@@ -72488,7 +72689,7 @@ module.exports = DS.Model.extend({
   }),
 });
 
-},{"ember-data":1}],51:[function(require,module,exports){
+},{"ember-data":1}],56:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -72526,7 +72727,7 @@ function program2(depth0,data) {
   
 });
 
-},{"ember":2}],52:[function(require,module,exports){
+},{"ember":2}],57:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -72575,7 +72776,7 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],53:[function(require,module,exports){
+},{"ember":2}],58:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -72627,7 +72828,7 @@ function program1(depth0,data) {
   
 });
 
-},{"ember":2}],54:[function(require,module,exports){
+},{"ember":2}],59:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -72681,7 +72882,7 @@ function program3(depth0,data) {
   
 });
 
-},{"ember":2}],55:[function(require,module,exports){
+},{"ember":2}],60:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -72703,7 +72904,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   
 });
 
-},{"ember":2}],56:[function(require,module,exports){
+},{"ember":2}],61:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -72712,55 +72913,58 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],57:[function(require,module,exports){
+},{"ember":2}],62:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
-  var buffer = '', stack1, self=this, helperMissing=helpers.helperMissing;
+  var buffer = '', stack1, helper, options, self=this, helperMissing=helpers.helperMissing;
 
 function program1(depth0,data) {
   
   var buffer = '', stack1, helper, options;
-  data.buffer.push("\r\n        <tr>\r\n          <td>");
-  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(2, program2, data),contexts:[depth0,depth0],types:["STRING","ID"],data:data},helper ? helper.call(depth0, "tourney", "", options) : helperMissing.call(depth0, "link-to", "tourney", "", options));
+  data.buffer.push("\n        ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
+    'class': ("list-group-item")
+  },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(2, program2, data),contexts:[depth0,depth0],types:["STRING","ID"],data:data},helper ? helper.call(depth0, "tourney", "", options) : helperMissing.call(depth0, "link-to", "tourney", "", options));
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("</td>\r\n          <td>");
-  stack1 = helpers._triageMustache.call(depth0, "date", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("</td>\r\n          <td>wamg</td>\r\n          <td>list</td>\r\n          <td>\r\n            ");
-  stack1 = helpers['if'].call(depth0, "isPlayed", {hash:{},hashTypes:{},hashContexts:{},inverse:self.program(6, program6, data),fn:self.program(4, program4, data),contexts:[depth0],types:["ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\r\n          </td>\r\n        </tr>\r\n      ");
+  data.buffer.push("\n      ");
   return buffer;
   }
 function program2(depth0,data) {
   
-  var stack1;
-  stack1 = helpers._triageMustache.call(depth0, "name", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  var buffer = '', stack1;
+  data.buffer.push("\n          #");
+  stack1 = helpers._triageMustache.call(depth0, "id", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  else { data.buffer.push(''); }
+  data.buffer.push(" &mdash; ");
+  stack1 = helpers._triageMustache.call(depth0, "date", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n        ");
+  return buffer;
   }
 
 function program4(depth0,data) {
   
   
-  data.buffer.push("\r\n              played\r\n            ");
+  data.buffer.push("\n        Mockup\n      ");
   }
 
-function program6(depth0,data) {
-  
-  
-  data.buffer.push("\r\n              upcoming\r\n            ");
-  }
-
-  data.buffer.push("<div class=\"row\">\r\n  <table class=\"table\">\r\n    <thead>\r\n      <tr>\r\n        <th>tourney</th>\r\n        <th>date</th>\r\n        <th>league</th>\r\n        <th>players</th>\r\n        <th>status</th>\r\n      </tr>\r\n    </thead>\r\n    <tbody>\r\n      ");
+  data.buffer.push("<div class=\"row\">\n  <div class=\"col-lg-9 col-lg-push-3\">\n    ");
+  stack1 = helpers._triageMustache.call(depth0, "outlet", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n  </div>\n  <div class=\"col-lg-3 col-lg-pull-9\">\n    <div class=\"list-group\">\n      ");
   stack1 = helpers.each.call(depth0, {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[],types:[],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\r\n    </tbody>\r\n  </table>\r\n</div>\r\n");
+  data.buffer.push("\n      ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
+    'class': ("list-group-item")
+  },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(4, program4, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "tourneys.new", options) : helperMissing.call(depth0, "link-to", "tourneys.new", options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n    </div>\n  </div>\n</div>\n");
   return buffer;
   
 });
 
-},{"ember":2}]},{},[24])
+},{"ember":2}]},{},[28])

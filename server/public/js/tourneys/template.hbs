@@ -1,5 +1,8 @@
 <div class="row">
-  <div class="col-lg-3">
+  <div class="col-lg-9 col-lg-push-3">
+    {{outlet}}
+  </div>
+  <div class="col-lg-3 col-lg-pull-9">
     <div class="list-group">
       {{#each}}
         {{#link-to 'tourney' this class="list-group-item"}}
@@ -10,8 +13,5 @@
         Mockup
       {{/link-to}}
     </div>
-  </div>
-  <div class="col-lg-9">
-    {{outlet}}
   </div>
 </div>

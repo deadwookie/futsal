@@ -22,7 +22,9 @@ App.Router.map(function() {
   this.resource('tourney', {path: 'tourneys/:id'});
 
   this.resource('gameday', function() {
-
+    this.route('players');
+    this.route('teams');
+    this.route('matches');
   });
 });
 
@@ -31,8 +33,11 @@ App.ApplicationRoute = require('./app/route');
 App.templates.application = require('./app/template.hbs');
 
 // Gameday
-// App.templates.gameday = require('./gameday/template.hbs');
-
+App.GamedayIndexRoute = require('./gameday/index/route');
+App.templates.gameday = require('./gameday/template.hbs');
+App.templates['gameday/players'] = require('./gameday/players.hbs');
+App.templates['gameday/teams'] = require('./gameday/teams.hbs');
+App.templates['gameday/matches'] = require('./gameday/matches.hbs');
 
 
 // Player Model

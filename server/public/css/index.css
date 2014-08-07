@@ -6,11 +6,57 @@ body {
   font-size: 18px;
 }
 
+/* overwrites */
 .navbar-brand h1 {
   margin: 0;
   line-height: 20px;
 }
+.panel-heading > .pull-right {
+  line-height: 1;
+}
 
+.list-group-item > .pull-right {
+  margin-top: -1pt;
+}
+
+/* extras */
+.gap-no {
+  margin-bottom: 0;
+}
+.gap-sm {
+  margin-bottom: 5px;
+}
+.gap-md {
+  margin-bottom: 10px;
+}
+.gap-lg {
+  margin-bottom: 20px;
+}
+.gap-xl {
+  margin-bottom: 40px;
+}
+.lift-no {
+  margin-top: 0;
+}
+.lift-sm {
+  margin-top: -5px;
+}
+.lift-md {
+  margin-top: -10px;
+}
+.lift-lg {
+  margin-top: -20px;
+}
+.lift-xl {
+  margin-top: -40px;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+
+/* custom elements */
 .players-item {
   margin-bottom: 20px;
 }
@@ -31,6 +77,10 @@ body {
   width: 400px;
 }
 
+.tourney-title .tourney-meta {
+  margin-top: 8pt;
+}
+
 .tourney-table th {
   text-align: center;
 }
@@ -40,4 +90,12 @@ body {
 .tourney-table td {
   width: 9%;
   text-align: center;
+}
+
+.match-now .match-time {
+  font-size: 48px;
+  display: inline-block;
+}
+.match-now .match-score {
+  font-size: 36px;
 }

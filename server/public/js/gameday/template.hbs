@@ -1,0 +1,23 @@
+<h2 class="tourney-title">
+  Upcoming GameDay #23
+  <span class="label label-success active" title="I'm goin'">+1</span>
+
+  <small class="tourney-meta pull-right">
+    <b>19</b> Players / <b>4</b> Teams
+  </small>
+  <small class="nowrap">September 04, 2014</small>
+</h2>
+
+<ul class="nav nav-pills gap-lg">
+  {{#link-to "gameday.players" tagName="li" href=false}}
+    {{#link-to "gameday.players"}}Players{{/link-to}}
+  {{/link-to}}
+  {{#link-to "gameday.teams" tagName="li" href=false}}
+    {{#link-to "gameday.teams"}}Teams{{/link-to}}
+  {{/link-to}}
+  {{#link-to "gameday.matches" tagName="li" href=false}}
+    {{#link-to "gameday.matches"}}Matches{{/link-to}}
+  {{/link-to}}
+</ul>
+
+{{outlet}}
