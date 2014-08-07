@@ -13,17 +13,17 @@ module.exports = Ember.ObjectController.extend({
   attemptedTransition: null,
 
   init: function() {
-      // monitor a user's authentication status
-      var authRef = new Firebase(dbRoot + '/.info/authenticated');
-      authRef.on("value", function(snap) {
-        if (snap.val() === true) {
-          console.log("status monitor: authenticated");
-        } else {
-          console.log("status monitor: not authenticated");
-        }
-      }, this);
-
     this.authClient = new FirebaseSimpleLogin(dbRef, this.authCompleted.bind(this));
+
+    // monitor a user's authentication status
+    var authRef = new Firebase(dbRoot + '/.info/authenticated');
+    authRef.on("value", function(snap) {
+      if (snap.val() === true) {
+        console.log("status monitor: authenticated");
+      } else {
+        console.log("status monitor: not authenticated");
+      }
+    }, this);
   },
 
   authCompleted: function(error, user) {
