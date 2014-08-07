@@ -16,10 +16,14 @@ App.Router.map(function() {
   this.route('me', {path: '/'});
   this.resource('players');
   this.resource('player', {path: 'players/:id'});
-  this.resource('tourneys');
+  this.resource('tourneys', function() {
+    this.route('new');
+  });
   this.resource('tourney', {path: 'tourneys/:id'});
 
-  this.resource('gameday');
+  this.resource('gameday', function() {
+
+  });
 });
 
 // Application
@@ -27,7 +31,8 @@ App.ApplicationRoute = require('./app/route');
 App.templates.application = require('./app/template.hbs');
 
 // Gameday
-App.templates.gameday = require('./gameday/template.hbs');
+// App.templates.gameday = require('./gameday/template.hbs');
+
 
 
 // Player Model
@@ -52,6 +57,7 @@ App.Tourney.FIXTURES = require('./tourney/fixtures.json');
 App.TourneyRoute = require('./tourney/route');
 App.TourneyController = require('./tourney/controller');
 App.templates.tourney = require('./tourney/template.hbs');
+App.templates['tourneys/new'] = require('./tourney/mockup.hbs');
 App.templates.tourneyPlayers = require('./tourney/players.hbs');
 App.templates.tourneyTeams = require('./tourney/teams.hbs');
 App.templates.tourneyTable = require('./tourney/table.hbs');

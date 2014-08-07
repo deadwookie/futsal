@@ -1,30 +1,17 @@
 <div class="row">
-  <table class="table">
-    <thead>
-      <tr>
-        <th>tourney</th>
-        <th>date</th>
-        <th>league</th>
-        <th>players</th>
-        <th>status</th>
-      </tr>
-    </thead>
-    <tbody>
+  <div class="col-lg-3">
+    <div class="list-group">
       {{#each}}
-        <tr>
-          <td>{{#link-to 'tourney' this}}{{name}}{{/link-to}}</td>
-          <td>{{date}}</td>
-          <td>wamg</td>
-          <td>list</td>
-          <td>
-            {{#if isPlayed}}
-              played
-            {{else}}
-              upcoming
-            {{/if}}
-          </td>
-        </tr>
+        {{#link-to 'tourney' this class="list-group-item"}}
+          #{{id}} &mdash; {{date}}
+        {{/link-to}}
       {{/each}}
-    </tbody>
-  </table>
+      {{#link-to 'tourneys.new' class="list-group-item"}}
+        Mockup
+      {{/link-to}}
+    </div>
+  </div>
+  <div class="col-lg-9">
+    {{outlet}}
+  </div>
 </div>
