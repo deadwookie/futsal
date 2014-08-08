@@ -1,9 +1,10 @@
 var Ember = require('ember');
-var Firebase = require("firebase-client");
-var FirebaseSimpleLogin = require("firebase-simple-login");
+var Firebase = require('firebase-client');
+var FirebaseSimpleLogin = require('firebase-simple-login');
 
-// @TODO: get from config ...
-var dbRef = new Firebase("https://popping-fire-6658.firebaseio.com");
+// @FIXME: path?
+var config = require('../../../config/server.json');
+var dbRef = new Firebase('https://' + config.firebase.host);
 
 // @TODO: remember me. tick. attemptedTransition
 module.exports = Ember.ObjectController.extend({

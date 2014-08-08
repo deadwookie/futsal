@@ -73487,6 +73487,39 @@ return jQuery;
 }));
 
 },{}],30:[function(require,module,exports){
+module.exports={
+  "server": {
+    "ipaddress": "127.0.0.1",
+    "port": 11000,
+
+    "logFormat": "short",
+    "compressFromKb": 20
+  },
+  "terminator": {
+    "exit": true,
+    "signals": [
+      "SIGHUP", "SIGINT", "SIGQUIT", "SIGILL", "SIGTRAP", "SIGABRT",
+      "SIGBUS", "SIGFPE", "SIGUSR1", "SIGSEGV", "SIGUSR2", "SIGTERM"
+    ]
+  },
+  "session": {
+    "store": "firebase",
+    "name": "futsal.sid",
+    "secret": "who's better: maradona or messi?",
+    "resave": true,
+    "saveUninitialized": false
+  },
+  "firebase": {
+    "host": "popping-fire-6658.firebaseio.com"
+  },
+  "redis": {
+    "host": "pub-redis-15390.us-east-1-4.3.ec2.garantiadata.com",
+    "port": 15390,
+    "db": 0
+  }
+}
+
+},{}],31:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.ObjectController.extend({
@@ -73505,7 +73538,7 @@ module.exports = Ember.ObjectController.extend({
   }
 });
 
-},{"ember":2}],31:[function(require,module,exports){
+},{"ember":2}],32:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -73515,7 +73548,7 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],32:[function(require,module,exports){
+},{"ember":2}],33:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -73643,13 +73676,14 @@ function program16(depth0,data) {
   
 });
 
-},{"ember":2}],33:[function(require,module,exports){
+},{"ember":2}],34:[function(require,module,exports){
 var Ember = require('ember');
-var Firebase = require("firebase-client");
-var FirebaseSimpleLogin = require("firebase-simple-login");
+var Firebase = require('firebase-client');
+var FirebaseSimpleLogin = require('firebase-simple-login');
 
-// @TODO: get from config ...
-var dbRef = new Firebase("https://popping-fire-6658.firebaseio.com");
+// @FIXME: path?
+var config = require('../../../config/server.json');
+var dbRef = new Firebase('https://' + config.firebase.host);
 
 // @TODO: remember me. tick. attemptedTransition
 module.exports = Ember.ObjectController.extend({
@@ -73862,14 +73896,14 @@ module.exports = Ember.ObjectController.extend({
   }
 });
 
-},{"ember":2,"firebase-client":12,"firebase-simple-login":13}],34:[function(require,module,exports){
+},{"../../../config/server.json":30,"ember":2,"firebase-client":12,"firebase-simple-login":13}],35:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
 
 });
 
-},{"ember":2}],35:[function(require,module,exports){
+},{"ember":2}],36:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -73882,11 +73916,12 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   
 });
 
-},{"ember":2}],36:[function(require,module,exports){
+},{"ember":2}],37:[function(require,module,exports){
 var Ember = require('ember');
 var DS = require('ember-data');
 var EmberFire = require('emberfire');
 var Firebase = require("firebase-client");
+var config = require('../../config/server.json');
 
 var App = Ember.Application.create({
   LOG_TRANSITIONS: true,
@@ -73897,9 +73932,9 @@ var App = Ember.Application.create({
   }
 });
 
-// App.ApplicationAdapter = DS.FixtureAdapter.extend();
+// @TODO: get host from config
 App.ApplicationAdapter = DS.FirebaseAdapter.extend({
-  firebase: new Firebase('https://popping-fire-6658.firebaseio.com')
+  firebase: new Firebase('https://' + config.firebase.host)
 });
 App.templates = Ember.TEMPLATES;
 
@@ -73940,28 +73975,29 @@ App.templates.gameday = require('./gameday/template.hbs');
 
 // Player Model
 App.Player = require('./player/model');
-
-// App.Player.FIXTURES = require('./player/fixtures.json');
 App.PlayerAdapter = App.ApplicationAdapter.extend({
   pathForType: function(type) {
     return 'players';
   }
 });
 
-// Players
-App.PlayersRoute = require('./players/route');
-App.PlayersController = require('./players/controller');
-App.templates.players = require('./players/template.hbs');
-
 // Player
 App.PlayerRoute = require('./players/route');
 App.PlayerController = require('./player/controller');
 App.templates.player = require('./player/template.hbs');
 
+// Players
+App.PlayersRoute = require('./players/route');
+App.PlayersController = require('./players/controller');
+App.templates.players = require('./players/template.hbs');
 
 // Tourney Model
 App.Tourney = require('./tourney/model');
-// App.Tourney.FIXTURES = require('./tourney/fixtures.json');
+App.TourneyAdapter = App.ApplicationAdapter.extend({
+  pathForType: function(type) {
+    return 'tourneys';
+  }
+});
 
 // Tourney
 App.TourneyRoute = require('./tourney/route');
@@ -73978,7 +74014,11 @@ App.templates.tourneys = require('./tourneys/template.hbs');
 
 // Team Model
 App.Team = require('./team/model');
-// App.Team.FIXTURES = require('./team/fixtures.json');
+App.TeamAdapter = App.ApplicationAdapter.extend({
+  pathForType: function(type) {
+    return 'teams';
+  }
+});
 
 // Team
 App.TeamRoute = require('./team/route');
@@ -73991,7 +74031,11 @@ App.templates.teams = require('./teams/template.hbs');
 
 // Match Model
 App.Match = require('./match/model');
-// App.Match.FIXTURES = require('./match/fixtures.json');
+App.MatchAdapter = App.ApplicationAdapter.extend({
+  pathForType: function(type) {
+    return 'matches';
+  }
+});
 
 // Match
 App.MatchRoute = require('./match/route');
@@ -74005,7 +74049,7 @@ App.templates.matches = require('./matches/template.hbs');
 // Me
 App.MeRoute = require('./me/route');
 
-},{"./app/controller":30,"./app/route":31,"./app/template.hbs":32,"./auth/controller":33,"./auth/route":34,"./gameday/template.hbs":35,"./login/controller":37,"./login/route":38,"./login/template":39,"./match/controller":40,"./match/model":41,"./match/route":42,"./matches/controller":43,"./matches/route":44,"./matches/template.hbs":45,"./me/route":46,"./player/controller":47,"./player/model":48,"./player/template.hbs":50,"./players/controller":51,"./players/route":52,"./players/template.hbs":53,"./signup/controller":54,"./signup/route":55,"./signup/template":56,"./team/controller":57,"./team/model":58,"./team/route":59,"./teams/controller":60,"./teams/route":61,"./teams/template.hbs":62,"./tourney/controller":63,"./tourney/matches.hbs":64,"./tourney/model":65,"./tourney/players.hbs":66,"./tourney/route":67,"./tourney/table.hbs":68,"./tourney/teams.hbs":69,"./tourney/template.hbs":70,"./tourneys/route":71,"./tourneys/template.hbs":72,"ember":2,"ember-data":1,"emberfire":11,"firebase-client":12}],37:[function(require,module,exports){
+},{"../../config/server.json":30,"./app/controller":31,"./app/route":32,"./app/template.hbs":33,"./auth/controller":34,"./auth/route":35,"./gameday/template.hbs":36,"./login/controller":38,"./login/route":39,"./login/template":40,"./match/controller":41,"./match/model":42,"./match/route":43,"./matches/controller":44,"./matches/route":45,"./matches/template.hbs":46,"./me/route":47,"./player/controller":48,"./player/model":49,"./player/template.hbs":51,"./players/controller":52,"./players/route":53,"./players/template.hbs":54,"./signup/controller":55,"./signup/route":56,"./signup/template":57,"./team/controller":58,"./team/model":59,"./team/route":60,"./teams/controller":61,"./teams/route":62,"./teams/template.hbs":63,"./tourney/controller":64,"./tourney/matches.hbs":65,"./tourney/model":66,"./tourney/players.hbs":67,"./tourney/route":68,"./tourney/table.hbs":69,"./tourney/teams.hbs":70,"./tourney/template.hbs":71,"./tourneys/route":72,"./tourneys/template.hbs":73,"ember":2,"ember-data":1,"emberfire":11,"firebase-client":12}],38:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.ObjectController.extend({
@@ -74038,10 +74082,11 @@ module.exports = Ember.ObjectController.extend({
   }
 });
 
-},{"ember":2}],38:[function(require,module,exports){
+},{"ember":2}],39:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
+
   beforeModel: function(transition) {
     if (!this.get('auth').get('isAuthenticated')) {
       // lets try to _loginActiveSession
@@ -74055,7 +74100,7 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],39:[function(require,module,exports){
+},{"ember":2}],40:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -74108,7 +74153,7 @@ function program3(depth0,data) {
   
 });
 
-},{"ember":2}],40:[function(require,module,exports){
+},{"ember":2}],41:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.ObjectController.extend({
@@ -74126,7 +74171,7 @@ module.exports = Ember.ObjectController.extend({
   }.property('isPlayed'),
 });
 
-},{"ember":2}],41:[function(require,module,exports){
+},{"ember":2}],42:[function(require,module,exports){
 var DS = require('ember-data');
 
 module.exports = DS.Model.extend({
@@ -74140,7 +74185,7 @@ module.exports = DS.Model.extend({
   }),
 });
 
-},{"ember-data":1}],42:[function(require,module,exports){
+},{"ember-data":1}],43:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -74149,14 +74194,14 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],43:[function(require,module,exports){
+},{"ember":2}],44:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.ObjectController.extend({
 
 });
 
-},{"ember":2}],44:[function(require,module,exports){
+},{"ember":2}],45:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -74165,7 +74210,7 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],45:[function(require,module,exports){
+},{"ember":2}],46:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -74178,7 +74223,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   
 });
 
-},{"ember":2}],46:[function(require,module,exports){
+},{"ember":2}],47:[function(require,module,exports){
 var PlayerRoute = require('../player/route');
 
 // An alias to existed player
@@ -74204,7 +74249,7 @@ module.exports = PlayerRoute.extend({
   }
 });
 
-},{"../player/route":49}],47:[function(require,module,exports){
+},{"../player/route":50}],48:[function(require,module,exports){
 var Ember = require('ember');
 var md5 = require('MD5');
 
@@ -74214,17 +74259,18 @@ module.exports = Ember.ObjectController.extend({
   }.property('email')
 });
 
-},{"MD5":3,"ember":2}],48:[function(require,module,exports){
+},{"MD5":3,"ember":2}],49:[function(require,module,exports){
 var DS = require('ember-data');
 
 module.exports = DS.Model.extend({
   name: DS.attr('string'),
   email: DS.attr('string'),
   photo: DS.attr('string'),
-  rating: DS.attr('number')
+  rating: DS.attr('number'),
+  isAdmin: DS.attr('boolean', { defaultValue: false })
 });
 
-},{"ember-data":1}],49:[function(require,module,exports){
+},{"ember-data":1}],50:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -74233,7 +74279,7 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],50:[function(require,module,exports){
+},{"ember":2}],51:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -74255,7 +74301,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   
 });
 
-},{"ember":2}],51:[function(require,module,exports){
+},{"ember":2}],52:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.ArrayController.extend({
@@ -74266,7 +74312,7 @@ module.exports = Ember.ArrayController.extend({
   playersSorderByRank: Ember.computed.sort('model', 'playersSortedByRankDesc'),
 });
 
-},{"ember":2}],52:[function(require,module,exports){
+},{"ember":2}],53:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -74275,7 +74321,7 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],53:[function(require,module,exports){
+},{"ember":2}],54:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -74329,7 +74375,7 @@ function program4(depth0,data) {
   
 });
 
-},{"ember":2}],54:[function(require,module,exports){
+},{"ember":2}],55:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.ObjectController.extend({
@@ -74364,7 +74410,7 @@ module.exports = Ember.ObjectController.extend({
   }
 });
 
-},{"ember":2}],55:[function(require,module,exports){
+},{"ember":2}],56:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -74376,7 +74422,7 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],56:[function(require,module,exports){
+},{"ember":2}],57:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -74426,7 +74472,7 @@ function program1(depth0,data) {
   
 });
 
-},{"ember":2}],57:[function(require,module,exports){
+},{"ember":2}],58:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.ObjectController.extend({
@@ -74442,7 +74488,7 @@ module.exports = Ember.ObjectController.extend({
   }.property('players.@each.rank'),
 });
 
-},{"ember":2}],58:[function(require,module,exports){
+},{"ember":2}],59:[function(require,module,exports){
 var DS = require('ember-data');
 
 module.exports = DS.Model.extend({
@@ -74451,7 +74497,7 @@ module.exports = DS.Model.extend({
   players: DS.hasMany('player')
 });
 
-},{"ember-data":1}],59:[function(require,module,exports){
+},{"ember-data":1}],60:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -74460,9 +74506,9 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],60:[function(require,module,exports){
-module.exports=require(43)
 },{"ember":2}],61:[function(require,module,exports){
+module.exports=require(44)
+},{"ember":2}],62:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -74471,7 +74517,7 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],62:[function(require,module,exports){
+},{"ember":2}],63:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -74484,7 +74530,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   
 });
 
-},{"ember":2}],63:[function(require,module,exports){
+},{"ember":2}],64:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.ObjectController.extend({
@@ -74561,7 +74607,7 @@ module.exports = Ember.ObjectController.extend({
   }.property('matches'),
 });
 
-},{"ember":2}],64:[function(require,module,exports){
+},{"ember":2}],65:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -74620,7 +74666,7 @@ function program4(depth0,data) {
   
 });
 
-},{"ember":2}],65:[function(require,module,exports){
+},{"ember":2}],66:[function(require,module,exports){
 var DS = require('ember-data');
 
 module.exports = DS.Model.extend({
@@ -74634,7 +74680,7 @@ module.exports = DS.Model.extend({
   }),
 });
 
-},{"ember-data":1}],66:[function(require,module,exports){
+},{"ember-data":1}],67:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -74672,7 +74718,7 @@ function program2(depth0,data) {
   
 });
 
-},{"ember":2}],67:[function(require,module,exports){
+},{"ember":2}],68:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -74721,7 +74767,7 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],68:[function(require,module,exports){
+},{"ember":2}],69:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -74773,7 +74819,7 @@ function program1(depth0,data) {
   
 });
 
-},{"ember":2}],69:[function(require,module,exports){
+},{"ember":2}],70:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -74827,7 +74873,7 @@ function program3(depth0,data) {
   
 });
 
-},{"ember":2}],70:[function(require,module,exports){
+},{"ember":2}],71:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -74849,7 +74895,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   
 });
 
-},{"ember":2}],71:[function(require,module,exports){
+},{"ember":2}],72:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -74858,7 +74904,7 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],72:[function(require,module,exports){
+},{"ember":2}],73:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -74909,4 +74955,4 @@ function program6(depth0,data) {
   
 });
 
-},{"ember":2}]},{},[36])
+},{"ember":2}]},{},[37])

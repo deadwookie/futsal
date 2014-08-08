@@ -2,6 +2,7 @@ var Ember = require('ember');
 var DS = require('ember-data');
 var EmberFire = require('emberfire');
 var Firebase = require("firebase-client");
+var config = require('../../config/server.json');
 
 var App = Ember.Application.create({
   LOG_TRANSITIONS: true,
@@ -12,9 +13,9 @@ var App = Ember.Application.create({
   }
 });
 
-// App.ApplicationAdapter = DS.FixtureAdapter.extend();
+// @TODO: get host from config
 App.ApplicationAdapter = DS.FirebaseAdapter.extend({
-  firebase: new Firebase('https://popping-fire-6658.firebaseio.com')
+  firebase: new Firebase('https://' + config.firebase.host)
 });
 App.templates = Ember.TEMPLATES;
 
@@ -55,28 +56,29 @@ App.templates.gameday = require('./gameday/template.hbs');
 
 // Player Model
 App.Player = require('./player/model');
-
-// App.Player.FIXTURES = require('./player/fixtures.json');
 App.PlayerAdapter = App.ApplicationAdapter.extend({
   pathForType: function(type) {
     return 'players';
   }
 });
 
-// Players
-App.PlayersRoute = require('./players/route');
-App.PlayersController = require('./players/controller');
-App.templates.players = require('./players/template.hbs');
-
 // Player
 App.PlayerRoute = require('./players/route');
 App.PlayerController = require('./player/controller');
 App.templates.player = require('./player/template.hbs');
 
+// Players
+App.PlayersRoute = require('./players/route');
+App.PlayersController = require('./players/controller');
+App.templates.players = require('./players/template.hbs');
 
 // Tourney Model
 App.Tourney = require('./tourney/model');
-// App.Tourney.FIXTURES = require('./tourney/fixtures.json');
+App.TourneyAdapter = App.ApplicationAdapter.extend({
+  pathForType: function(type) {
+    return 'tourneys';
+  }
+});
 
 // Tourney
 App.TourneyRoute = require('./tourney/route');
@@ -93,7 +95,11 @@ App.templates.tourneys = require('./tourneys/template.hbs');
 
 // Team Model
 App.Team = require('./team/model');
-// App.Team.FIXTURES = require('./team/fixtures.json');
+App.TeamAdapter = App.ApplicationAdapter.extend({
+  pathForType: function(type) {
+    return 'teams';
+  }
+});
 
 // Team
 App.TeamRoute = require('./team/route');
@@ -106,7 +112,11 @@ App.templates.teams = require('./teams/template.hbs');
 
 // Match Model
 App.Match = require('./match/model');
-// App.Match.FIXTURES = require('./match/fixtures.json');
+App.MatchAdapter = App.ApplicationAdapter.extend({
+  pathForType: function(type) {
+    return 'matches';
+  }
+});
 
 // Match
 App.MatchRoute = require('./match/route');
