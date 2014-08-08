@@ -8,7 +8,7 @@ module.exports = PlayerRoute.extend({
   controllerName: 'player',
 
   model: function() {
-    return this._super({id: this.get('auth').get('currentUser')});
+    return this._super({id: this.get('auth').get('currentUser.id')});
   },
 
   beforeModel: function(transition) {

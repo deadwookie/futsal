@@ -59457,7 +59457,7 @@ requireModule("ember");
 }).call(global, undefined, undefined, undefined, undefined, function defineExport(ex) { module.exports = ex; });
 
 }).call(this,require("Zbi7gb"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"Zbi7gb":10,"handlebars":30,"jquery":31}],3:[function(require,module,exports){
+},{"Zbi7gb":10,"handlebars":28,"jquery":29}],3:[function(require,module,exports){
 (function (Buffer){
 (function(){
   var crypt = require('crypt'),
@@ -61201,167 +61201,8 @@ process.chdir = function (dir) {
 };
 
 },{}],11:[function(require,module,exports){
-"use strict";
-var template = require("./template")["default"] || require("./template");
-
-var Container = Ember.ContainerView.extend({
-
-  info: aliasToShow('info'),
-  success: aliasToShow('success'),
-  warning: aliasToShow('warning'),
-  alert: aliasToShow('alert'),
-  error: aliasToShow('error'),
-
-  classNames: ['ember-notify-cn'],
-  show: function(type, message, options) {
-    if (typeof message == 'object') {
-      options = message;
-      message = null;
-    }
-    var view = Notify.View.create({
-      message: message,
-      type: type
-    });
-    if (options) {
-      view.setProperties(options);
-    }
-    return this.pushObject(view);
-  }
-});
-
-function aliasToShow(type) {
-  return function(message, options) {
-    return this.show(type, message, options);
-  };
-}
-
-var Notify = Container.createWithMixins({
-  rootElement: null,
-  classNames: ['default-cn'],
-  init: function() {
-    this._super();
-    var that = this;
-    var observer = {
-      arrayWillChange: function(that, start, removeCount, addCount) {
-        that.appendTo(that.get('rootElement') || document.body);
-        that.removeArrayObserver(observer);
-      }
-    };
-    this.addArrayObserver(observer);
-  }
-});
-exports["default"] = Notify;
-exports.Container = Container;
-
-Notify.Container = Container;
-Notify.BaseView = Ember.View.extend({
-  classNames: ['ember-notify'],
-  classNameBindings: ['typeCss', 'visible:ember-notify-show', 'hidden:ember-notify-hidden'],
-  attributeBindings: ['data-alert'],
-  'data-alert': '',
-  defaultTemplate: template,
-  type: null, // normal (default), success, alert, secondary
-  hidden: Ember.computed.not('visible'),
-  closeAfter: 2500,
-  removeAfter: 250, // allow time for the close animation to finish
-  typeCss: function() {
-    var cssClass = this.get('type');
-    if (cssClass == 'error') cssClass = 'alert error';
-    return cssClass;
-  }.property('type'),
-  close: function() {
-    this.send('close');
-  },
-  didInsertElement: function() {
-    // ensure that the element is added to the DOM in it's hidden state, so that
-    // adding the 'ember-notify-show' class triggers the CSS transition
-    Ember.run.next(this, function() {
-      if (this.get('isDestroyed')) return;
-      this.set('visible', true);
-    });
-    var closeAfter;
-    if (!Ember.testing && (closeAfter = this.get('closeAfter'))) {
-      Ember.run.later(this, function() {
-        if (this.get('isDestroyed')) return;
-        this.set('visible', false);
-        this.send('close');
-      }, closeAfter);
-    }
-  },
-  actions: {
-    close: function() {
-      var that = this, removeAfter;
-      this.set('visible', false);
-      if (!Ember.testing) {
-        if (removeAfter = this.get('removeAfter')) {
-          Ember.run.later(this, close, removeAfter);
-        }
-      }
-      else {
-        close();
-      }
-      function close() {
-        var parentView = that.get('parentView');
-        if (parentView) parentView.removeObject(that);
-      }
-    }
-  }
-});
-
-Notify.FoundationView = Notify.BaseView.extend({
-  classNames: ['alert-box'],
-  classNameBindings: ['radius::']
-});
-Notify.BootstrapView = Notify.BaseView.extend({
-  classNames: ['alert'],
-  typeCss: function() {
-    var type = this.get('type');
-    if (type == 'error') type = 'danger';
-    return 'alert-%@'.fmt(type);
-  }.property('type')
-});
-
-Notify.setViewClass = function(view) {
-  Notify.View = view;
-};
-Notify.setViewClass(Notify.FoundationView);
-Notify.useBootstrap = function() {
-  this.setViewClass(Notify.BootstrapView);
-};
-
-Ember.Application.initializer({
-  name: 'ember-notify',
-  initialize: function(container, App) {
-    // set the rootElement of the Notify container to the first Ember Application
-    // instance that initializes
-    if (Notify.get('rootElement')) return;
-    Notify.set('rootElement', App.rootElement);
-  }
-});
-},{"./template":12}],12:[function(require,module,exports){
-"use strict";
-exports["default"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
-this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
-  var buffer = '', stack1, escapeExpression=this.escapeExpression;
-
-
-  stack1 = helpers._triageMustache.call(depth0, "view.message", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push(escapeExpression(helpers._triageMustache.call(depth0, "view.raw", {hash:{
-    'unescaped': ("true")
-  },hashTypes:{'unescaped': "STRING"},hashContexts:{'unescaped': depth0},contexts:[depth0],types:["ID"],data:data})));
-  data.buffer.push("<a ");
-  data.buffer.push(escapeExpression(helpers.action.call(depth0, "close", {hash:{
-    'target': ("view")
-  },hashTypes:{'target': "STRING"},hashContexts:{'target': depth0},contexts:[depth0],types:["STRING"],data:data})));
-  data.buffer.push("\n    class=\"close\">&times;</a>\n");
-  return buffer;
-
-});
-},{}],13:[function(require,module,exports){
 !function(){"use strict";if(void 0!==window.DS){var a=Ember.Namespace.create({VERSION:"1.1.3"});Ember.libraries&&Ember.libraries.registerCoreLibrary("EmberFire",a.VERSION);var b=Ember.RSVP.Promise,c=Ember.EnumerableUtils.map,d=Ember.EnumerableUtils.forEach,e=Ember.String.fmt;DS.FirebaseSerializer=DS.JSONSerializer.extend(Ember.Evented,{normalize:function(a,b){return a.eachRelationship(function(c,d){if("hasMany"===d.kind)if("object"!=typeof b[c]||Ember.isArray(b[c])||d.options.embedded===!0){if(Ember.isArray(b[c]))throw new Error(e('%@ relationship %@(\'%@\') must be a key/value map in Firebase. Example: { "%@": { "%@_id": true } }',[a.toString(),d.kind,d.type.typeKey,d.key,d.type.typeKey]))}else b[c]=Ember.keys(b[c])}),this._super.apply(this,arguments)},extractSingle:function(a,b,c){var d=(a.adapterFor(b),this.normalize(b,c));return b.eachRelationship(function(f,g){if(!Ember.isNone(c)&&!Ember.isNone(c[f])&&g.options.embedded===!0){var h,i,j=d[f],k=[];if("belongsTo"===g.kind){if("string"!=typeof j.id)throw new Error(e('Embedded relationship "%@" of "%@" must contain an "id" property in the payload',[g.type.typeKey,b]));k.push(j),d[f]=j.id}else{for(h in j)i=j[h],null!==i&&"object"==typeof i&&(i.id=h),k.push(i);d[f]=Ember.keys(d[f])}a.pushMany(g.type,k)}}),d},extractArray:function(a,b,d){return c(d,function(c){return this.extractSingle(a,b,c)},this)},serializeHasMany:function(a,b,c){var d=c.key,e=this.keyForRelationship?this.keyForRelationship(d,"hasMany"):d,f=DS.RelationshipChange.determineRelationshipType(a.constructor,c),g=["manyToNone","manyToMany","manyToOne"];g.indexOf(f)>-1&&(b[e]=Ember.A(a.get(d)).mapBy("id"))}}),DS.FirebaseAdapter=DS.Adapter.extend(Ember.Evented,{defaultSerializer:"-firebase",init:function(){if(!this.firebase||"object"!=typeof this.firebase)throw new Error("Please set the `firebase` property on the adapter.");this._ref=this.firebase.ref(),this._findAllMapForType={},this._recordCacheForType={},this._queue=[]},generateIdForRecord:function(){return this._ref.push().name()},_assignIdToPayload:function(a){var b=a.val();return null!==b&&"object"==typeof b&&"undefined"==typeof b.id&&(b.id=a.name()),b},find:function(a,c,d){var f=this,g=!1,h=this._getRef(c,d),i=a.serializerFor(c);return new b(function(b,j){h.on("value",function(k){var l=f._assignIdToPayload(k),m=a.getById(c,k.name());if(f._updateRecordCacheForType(c,l),g)null===l&&m&&!m.get("isDeleted")?f._enqueue(function(){a.getById(c,k.name()).deleteRecord()}):null!==l&&f._enqueue(function(){a.push(c,i.extractSingle(a,c,l))});else if(g=!0,null===l){a.hasRecordForId(c,d)&&a.dematerializeRecord(m);var n=new Error(e("no record was found at %@",[h.toString()]));n.recordId=d,f._enqueue(j,[n])}else f._enqueue(b,[l])},function(a){g||f._enqueue(j,[a])})},e("DS: FirebaseAdapter#find %@ to %@",[c,h.toString()]))},findMany:function(a,b,e){var f=c(e,function(c){return this.find(a,b,c)},this);return Ember.RSVP.allSettled(f).then(function(c){return c=Ember.A(c),d(c.filterBy("state","rejected"),function(c){var d=c.reason.recordId;if(a.hasRecordForId(b,d)){var e=a.getById(b,d);a.dematerializeRecord(e)}}),Ember.A(c.filterBy("state","fulfilled")).mapBy("value")})},findAll:function(a,c){var d=this,f=this._getRef(c);return new b(function(b,e){var g;d._findAllHasEventsForType(c)||(g=d._findAllAddEventListeners(a,c,f)),f.once("value",function(a){var e=[];g&&Ember.run(null,g.resolve),null===a.val()?d._enqueue(b,[e]):(a.forEach(function(a){var b=d._assignIdToPayload(a);d._updateRecordCacheForType(c,b),e.push(b)}),d._enqueue(b,[e]))},function(a){d._enqueue(e,[a])})},e("DS: FirebaseAdapter#findAll %@ to %@",[c,f.toString()]))},_findAllMapForType:void 0,_findAllHasEventsForType:function(a){return!Ember.isNone(this._findAllMapForType[a])},_findAllAddEventListeners:function(a,b,c){this._findAllMapForType[b]=!0;var d=Ember.RSVP.defer(),e=this,f=a.serializerFor(b),g=!1;return d.promise.then(function(){g=!0}),c.on("child_added",function(c){g&&e._handleChildValue(a,b,f,c)}),c.on("child_changed",function(c){g&&e._handleChildValue(a,b,f,c)}),c.on("child_removed",function(c){if(g){var d=a.getById(b,c.name());d&&!d.get("isDeleted")&&e._enqueue(function(){a.deleteRecord(d)})}}),d},_handleChildValue:function(a,b,c,d){var e=this._assignIdToPayload(d);this._enqueue(function(){a.push(b,c.extractSingle(a,b,e))})},createRecord:function(a,b,c){return this.updateRecord(a,b,c)},updateRecord:function(a,c,d){var f=this,g=this._getRef(c,d.id),h=Ember.get(f._recordCacheForType,e("%@.%@",[c.typeKey,d.get("id")]))||{};return this._getSerializedRecord(d).then(function(i){return new b(function(b,j){var k=Ember.A();d.eachRelationship(function(b,d){var e;switch(d.kind){case"hasMany":Ember.isArray(i[b])&&(e=f._saveHasManyRelationship(a,c,d,i[b],g,h),k.push(e),delete i[b]);break;case"belongsTo":"undefined"==typeof i[b]||null===i[b]||""===i[b]?delete i[b]:d.options.embedded===!0&&(e=f._saveBelongsToRecord(a,c,d,i[b],g),k.push(e),delete i[b])}}),Ember.RSVP.allSettled(k).then(function(a){a=Ember.A(a);var h=Ember.A(a.filterBy("state","rejected"));if(0!==h.get("length")){var k=new Error(e("Some errors were encountered while saving %@ %@",[c,d.id]));k.errors=h.mapBy("reason"),f._enqueue(j,[k])}g.update(i,function(a){a?f._enqueue(j,[a]):f._enqueue(b)})})})},e("DS: FirebaseAdapter#updateRecord %@ to %@",[c,g.toString()]))},_getSerializedRecord:function(a){var c=a.serialize({includeId:!1}),d=[];return a.eachRelationship(function(e,f){switch(f.kind){case"hasMany":d.push(b.cast(a.get(e)).then(function(a){c[e]=Ember.A(a).mapBy("id")}))}}),Ember.RSVP.all(d).then(function(){return c})},_saveHasManyRelationship:function(a,b,c,d,f,g){if(!Ember.isArray(d))throw new Error("hasMany relationships must must be an array");var h=this,i=Ember.A(g[c.key]);d=Ember.A(d);var j=d.filter(function(a){return!i.contains(a)}),k=d.filter(function(b){var d=c.type;return a.hasRecordForId(d,b)&&a.getById(d,b).get("isDirty")===!0});k=Ember.A(k.concat(j)).uniq().map(function(b){return h._saveHasManyRecord(a,c,f,b)});var l=i.filter(function(a){return!d.contains(a)});l=Ember.A(l).map(function(b){return h._removeHasManyRecord(a,c,f,b)});var m=k.concat(l);return Ember.RSVP.allSettled(m).then(function(a){var b=Ember.A(Ember.A(a).filterBy("state","rejected"));if(0===b.get("length"))return g[c.key]=d,a;var f=new Error(e("Some errors were encountered while saving a hasMany relationship %@ -> %@",[c.parentType,c.type]));throw f.errors=Ember.A(b).mapBy("reason"),f})},_saveHasManyRecord:function(a,c,d,e){var f=this,g=this._getRelationshipRef(d,c.key,e),h=a.getById(c.type,e),i=c.options.embedded===!0,j=i?h.serialize({includeId:!1}):!0;return new b(function(a,b){var c=function(c){c?("object"==typeof c&&(c.location=g.toString()),f._enqueue(b,[c])):f._enqueue(a)};i?g.update(j,c):g.set(j,c)})},_removeHasManyRecord:function(a,c,d,e){var f=this,g=this._getRelationshipRef(d,c.key,e);return new b(function(a,b){var c=function(c){c?("object"==typeof c&&(c.location=g.toString()),f._enqueue(b,[c])):f._enqueue(a)};g.remove(c)})},_saveBelongsToRecord:function(a,c,d,e,f){var g=this,h=f.child(d.key),i=a.getById(d.type,e),j=d.options.embedded===!0,k=j?i.serialize({includeId:!0}):!0;return new b(function(a,b){var c=function(c){c?("object"==typeof c&&(c.location=h.toString()),g._enqueue(b,[c])):g._enqueue(a)};j?h.update(k,c):h.set(k,c)})},deleteRecord:function(a,c,d){var f=this,g=this._getRef(c,d.get("id"));return new b(function(a,b){g.remove(function(c){c?f._enqueue(b,[c]):f._enqueue(a)})},e("DS: FirebaseAdapter#deleteRecord %@ to %@",[c,g.toString()]))},pathForType:function(a){var b=Ember.String.camelize(a);return Ember.String.pluralize(b)},_getRef:function(a,b){var c=this._ref;return a&&(c=c.child(this.pathForType(a.typeKey))),b&&(c=c.child(b)),c},_getRelationshipRef:function(a,b,c){return a.child(b).child(c)},_queueFlushDelay:1e3/60,_queueScheduleFlush:function(){Ember.run.later(this,this._queueFlush,this._queueFlushDelay)},_queueFlush:function(){d(this._queue,function(a){var b=a[0],c=a[1];b.apply(null,c)}),this._queue.length=0},_enqueue:function(a,b){var c=this._queue.push([a,b]);1===c&&this._queueScheduleFlush()},_recordCacheForType:void 0,_updateRecordCacheForType:function(a,b){if(b){var c=this,d=b.id,e=c._recordCacheForType,f=a.typeKey;a.eachRelationship(function(a,c){if("hasMany"===c.kind){var g=b[a];e[f]=e[f]||{},e[f][d]=e[f][d]||{},e[f][d][a]=Ember.isNone(g)?Ember.A():Ember.A(Ember.keys(g))}})}}}),Ember.onLoad("Ember.Application",function(a){a.initializer({name:"firebase",initialize:function(a,b){b.register("adapter:-firebase",DS.FirebaseAdapter),b.register("serializer:-firebase",DS.FirebaseSerializer)}})})}}();
-},{}],14:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 (function() {function g(a){throw a;}var j=void 0,k=!0,l=null,o=!1;function aa(a){return function(){return this[a]}}function r(a){return function(){return a}}var s,ba=this;function ca(){}function da(a){a.mb=function(){return a.bd?a.bd:a.bd=new a}}
 function ea(a){var b=typeof a;if("object"==b)if(a){if(a instanceof Array)return"array";if(a instanceof Object)return b;var c=Object.prototype.toString.call(a);if("[object Window]"==c)return"object";if("[object Array]"==c||"number"==typeof a.length&&"undefined"!=typeof a.splice&&"undefined"!=typeof a.propertyIsEnumerable&&!a.propertyIsEnumerable("splice"))return"array";if("[object Function]"==c||"undefined"!=typeof a.call&&"undefined"!=typeof a.propertyIsEnumerable&&!a.propertyIsEnumerable("call"))return"function"}else return"null";
 else if("function"==b&&"undefined"==typeof a.call)return"object";return b}function u(a){return a!==j}function fa(a){var b=ea(a);return"array"==b||"object"==b&&"number"==typeof a.length}function v(a){return"string"==typeof a}function ga(a){return"number"==typeof a}function ha(a){var b=typeof a;return"object"==b&&a!=l||"function"==b}Math.floor(2147483648*Math.random()).toString(36);function ia(a,b,c){return a.call.apply(a.bind,arguments)}
@@ -61509,7 +61350,7 @@ J.goOffline=function(){A("Firebase.goOffline",0,0,arguments.length);Y.mb().Ha()}
 J.enableLogging=Nb;J.ServerValue={TIMESTAMP:{".sv":"timestamp"}};J.INTERNAL=Z;J.Context=Y;})();
 module.exports = Firebase;
 
-},{}],15:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 (function() {var COMPILED=!0,goog=goog||{};goog.global=this;goog.DEBUG=!0;goog.LOCALE="en";goog.provide=function(a){if(!COMPILED){if(goog.isProvided_(a))throw Error('Namespace "'+a+'" already declared.');delete goog.implicitNamespaces_[a];for(var b=a;(b=b.substring(0,b.lastIndexOf(".")))&&!goog.getObjectByName(b);)goog.implicitNamespaces_[b]=!0}goog.exportPath_(a)};goog.setTestOnly=function(a){if(COMPILED&&!goog.DEBUG)throw a=a||"",Error("Importing test-only code into non-debug environment"+a?": "+a:".");};
 COMPILED||(goog.isProvided_=function(a){return!goog.implicitNamespaces_[a]&&!!goog.getObjectByName(a)},goog.implicitNamespaces_={});goog.exportPath_=function(a,b,c){a=a.split(".");c=c||goog.global;!(a[0]in c)&&c.execScript&&c.execScript("var "+a[0]);for(var d;a.length&&(d=a.shift());)!a.length&&goog.isDef(b)?c[d]=b:c=c[d]?c[d]:c[d]={}};goog.getObjectByName=function(a,b){for(var c=a.split("."),d=b||goog.global,e;e=c.shift();)if(goog.isDefAndNotNull(d[e]))d=d[e];else return null;return d};
 goog.globalize=function(a,b){var c=b||goog.global,d;for(d in a)c[d]=a[d]};goog.addDependency=function(a,b,c){if(!COMPILED){for(var d,a=a.replace(/\\/g,"/"),e=goog.dependencies_,f=0;d=b[f];f++){e.nameToPath[d]=a;a in e.pathToNames||(e.pathToNames[a]={});e.pathToNames[a][d]=true}for(d=0;b=c[d];d++){a in e.requires||(e.requires[a]={});e.requires[a][b]=true}}};goog.ENABLE_DEBUG_LOADER=!0;
@@ -61618,7 +61459,7 @@ FirebaseSimpleLogin.prototype.removeUser=function(a,b,c){fb.util.validation.vali
 FirebaseSimpleLogin.prototype.sendPasswordResetEmail=function(a,b){fb.util.validation.validateArgCount("FirebaseSimpleLogin.sendPasswordResetEmail",2,2,arguments.length);fb.util.validation.validateCallback("FirebaseSimpleLogin.sendPasswordResetEmail",2,b,!1);this.manageFirebaseUsers("sendPasswordResetEmail",{email:a},function(a,d){return b&&b(a,!!d)})};goog.exportProperty(FirebaseSimpleLogin.prototype,"sendPasswordResetEmail",FirebaseSimpleLogin.prototype.sendPasswordResetEmail);})();
 module.exports = FirebaseSimpleLogin;
 
-},{}],16:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 "use strict";
 /*globals Handlebars: true */
 var Handlebars = require("./handlebars.runtime")["default"];
@@ -61656,7 +61497,7 @@ Handlebars = create();
 Handlebars.create = create;
 
 exports["default"] = Handlebars;
-},{"./handlebars.runtime":17,"./handlebars/compiler/ast":19,"./handlebars/compiler/base":20,"./handlebars/compiler/compiler":21,"./handlebars/compiler/javascript-compiler":22}],17:[function(require,module,exports){
+},{"./handlebars.runtime":15,"./handlebars/compiler/ast":17,"./handlebars/compiler/base":18,"./handlebars/compiler/compiler":19,"./handlebars/compiler/javascript-compiler":20}],15:[function(require,module,exports){
 "use strict";
 /*globals Handlebars: true */
 var base = require("./handlebars/base");
@@ -61689,7 +61530,7 @@ var Handlebars = create();
 Handlebars.create = create;
 
 exports["default"] = Handlebars;
-},{"./handlebars/base":18,"./handlebars/exception":26,"./handlebars/runtime":27,"./handlebars/safe-string":28,"./handlebars/utils":29}],18:[function(require,module,exports){
+},{"./handlebars/base":16,"./handlebars/exception":24,"./handlebars/runtime":25,"./handlebars/safe-string":26,"./handlebars/utils":27}],16:[function(require,module,exports){
 "use strict";
 var Utils = require("./utils");
 var Exception = require("./exception")["default"];
@@ -61870,7 +61711,7 @@ exports.log = log;var createFrame = function(object) {
   return obj;
 };
 exports.createFrame = createFrame;
-},{"./exception":26,"./utils":29}],19:[function(require,module,exports){
+},{"./exception":24,"./utils":27}],17:[function(require,module,exports){
 "use strict";
 var Exception = require("../exception")["default"];
 
@@ -62098,7 +61939,7 @@ var AST = {
 // Must be exported as an object rather than the root of the module as the jison lexer
 // most modify the object to operate properly.
 exports["default"] = AST;
-},{"../exception":26}],20:[function(require,module,exports){
+},{"../exception":24}],18:[function(require,module,exports){
 "use strict";
 var parser = require("./parser")["default"];
 var AST = require("./ast")["default"];
@@ -62114,7 +61955,7 @@ function parse(input) {
 }
 
 exports.parse = parse;
-},{"./ast":19,"./parser":23}],21:[function(require,module,exports){
+},{"./ast":17,"./parser":21}],19:[function(require,module,exports){
 "use strict";
 var Exception = require("../exception")["default"];
 
@@ -62584,7 +62425,7 @@ exports.precompile = precompile;function compile(input, options, env) {
 }
 
 exports.compile = compile;
-},{"../exception":26}],22:[function(require,module,exports){
+},{"../exception":24}],20:[function(require,module,exports){
 "use strict";
 var COMPILER_REVISION = require("../base").COMPILER_REVISION;
 var REVISION_CHANGES = require("../base").REVISION_CHANGES;
@@ -63527,7 +63368,7 @@ JavaScriptCompiler.isValidJavaScriptVariableName = function(name) {
 };
 
 exports["default"] = JavaScriptCompiler;
-},{"../base":18,"../exception":26}],23:[function(require,module,exports){
+},{"../base":16,"../exception":24}],21:[function(require,module,exports){
 "use strict";
 /* jshint ignore:start */
 /* Jison generated parser */
@@ -64018,7 +63859,7 @@ function Parser () { this.yy = {}; }Parser.prototype = parser;parser.Parser = Pa
 return new Parser;
 })();exports["default"] = handlebars;
 /* jshint ignore:end */
-},{}],24:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 "use strict";
 var Visitor = require("./visitor")["default"];
 
@@ -64157,7 +63998,7 @@ PrintVisitor.prototype.content = function(content) {
 PrintVisitor.prototype.comment = function(comment) {
   return this.pad("{{! '" + comment.comment + "' }}");
 };
-},{"./visitor":25}],25:[function(require,module,exports){
+},{"./visitor":23}],23:[function(require,module,exports){
 "use strict";
 function Visitor() {}
 
@@ -64170,7 +64011,7 @@ Visitor.prototype = {
 };
 
 exports["default"] = Visitor;
-},{}],26:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 "use strict";
 
 var errorProps = ['description', 'fileName', 'lineNumber', 'message', 'name', 'number', 'stack'];
@@ -64199,7 +64040,7 @@ function Exception(message, node) {
 Exception.prototype = new Error();
 
 exports["default"] = Exception;
-},{}],27:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 "use strict";
 var Utils = require("./utils");
 var Exception = require("./exception")["default"];
@@ -64337,7 +64178,7 @@ exports.program = program;function invokePartial(partial, name, context, helpers
 exports.invokePartial = invokePartial;function noop() { return ""; }
 
 exports.noop = noop;
-},{"./base":18,"./exception":26,"./utils":29}],28:[function(require,module,exports){
+},{"./base":16,"./exception":24,"./utils":27}],26:[function(require,module,exports){
 "use strict";
 // Build out our basic SafeString type
 function SafeString(string) {
@@ -64349,7 +64190,7 @@ SafeString.prototype.toString = function() {
 };
 
 exports["default"] = SafeString;
-},{}],29:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 "use strict";
 /*jshint -W004 */
 var SafeString = require("./safe-string")["default"];
@@ -64426,7 +64267,7 @@ exports.escapeExpression = escapeExpression;function isEmpty(value) {
 }
 
 exports.isEmpty = isEmpty;
-},{"./safe-string":28}],30:[function(require,module,exports){
+},{"./safe-string":26}],28:[function(require,module,exports){
 // USAGE:
 // var handlebars = require('handlebars');
 
@@ -64453,7 +64294,7 @@ if (typeof require !== 'undefined' && require.extensions) {
   require.extensions[".hbs"] = extension;
 }
 
-},{"../dist/cjs/handlebars":16,"../dist/cjs/handlebars/compiler/printer":24,"../dist/cjs/handlebars/compiler/visitor":25,"fs":6}],31:[function(require,module,exports){
+},{"../dist/cjs/handlebars":14,"../dist/cjs/handlebars/compiler/printer":22,"../dist/cjs/handlebars/compiler/visitor":23,"fs":6}],29:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.1.1
  * http://jquery.com/
@@ -73645,31 +73486,37 @@ return jQuery;
 
 }));
 
-},{}],32:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.ObjectController.extend({
   isAuthenticated: function() {
     return this.get('auth').get('isAuthenticated');
-  }.property('auth.isAuthenticated')
-});
-
-},{"ember":2}],33:[function(require,module,exports){
-var Ember = require('ember');
-
-module.exports = Ember.Route.extend({
-  model: function(params) {
-    return this.get('auth').get('currentUser') ? this.store.find('player', this.get('auth').get('currentUser')) : null;
-  },
+  }.property('auth.isAuthenticated'),
 
   actions: {
     logout: function() {
-      return this.get('auth').logout();
+      this.get('auth').logout()
+        .then(function(error) {
+          console.dir('goto login');
+          // @FIXME: can't transition to login page due to auto login with active session there...
+          !error && this.transitionToRoute('login');
+        }.bind(this));
     }
   }
 });
 
-},{"ember":2}],34:[function(require,module,exports){
+},{"ember":2}],31:[function(require,module,exports){
+var Ember = require('ember');
+
+module.exports = Ember.Route.extend({
+  model: function(params) {
+    var userId = this.get('auth').get('currentUser.id');
+    return userId ? this.store.find('player', userId) : null;
+  }
+});
+
+},{"ember":2}],32:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -73797,106 +73644,221 @@ function program16(depth0,data) {
   
 });
 
-},{"ember":2}],35:[function(require,module,exports){
+},{"ember":2}],33:[function(require,module,exports){
 var Ember = require('ember');
 var Firebase = require("firebase-client");
 var FirebaseSimpleLogin = require("firebase-simple-login");
-var Notify = require('ember-notify');
 
-// Notify.useBootstrap();
+// @TODO: get from config ...
+var dbRef = new Firebase("https://popping-fire-6658.firebaseio.com");
 
-var dbRoot = "https://popping-fire-6658.firebaseio.com";
-var dbRef = new Firebase(dbRoot);
-var usersPath = dbRoot + "/players";
-
-// @TODO: rethink ...
+// @TODO: remember me. tick. attemptedTransition
 module.exports = Ember.ObjectController.extend({
-  isAuthenticated: false,
+
+  needs: ['player'],
+
+  /**
+  @property currentUser
+  @type {User}
+  @default null
+  */
   currentUser: null,
+  /**
+  @property isAuthenticated
+  @type {bool}
+  @default null
+  */
+  isAuthenticated: false,
+  /**
+  @property attemptedTransition
+  @type {transition}
+  @default null
+  */
   attemptedTransition: null,
-  notify: Notify.Container.create(),
 
   init: function() {
-    this.authClient = new FirebaseSimpleLogin(dbRef, this.authCompleted.bind(this));
-
-    // monitor a user's authentication status
-    var authRef = new Firebase(dbRoot + '/.info/authenticated');
-    authRef.on("value", function(snap) {
-      if (snap.val() === true) {
-        console.log("status monitor: authenticated");
-      } else {
-        console.log("status monitor: not authenticated");
-      }
-    }, this);
+    window.auth = this;
+    // tick. monitor a user's authentication status
+    // var authRef = new Firebase(dbRoot + '/.info/authenticated');
+    // authRef.on("value", function(snap) {
+    //   if (snap.val() === true) {
+    //     console.log("status monitor: authenticated");
+    //   } else {
+    //     console.log("status monitor: not authenticated");
+    //   }
+    // }, this);
   },
 
-  authCompleted: function(error, user) {
-    if (error) {
-      // an error occurred while attempting login
-      console.error('Authentication failed: ' + error);
-      // this.notify.useBootstrap();
-      this.notify.warning("Hmmn, that didn't work out.");
-      this.set('isAuthenticated', false);
-      this.set('currentUser', null);
-    } else if (user) {
-      // user authenticated with Firebase
-      console.log("User UID: " + user.uid + ", ID: " + user.id + ", Provider: " + user.provider);
-      this.set('isAuthenticated', true);
-      this.set('currentUser', user.uid);
+  /**
+  Logs a user in with an email in password.
+  If no arguments are given attempts to login a currently active session.
+  If user does not exist or no user is logged in promise will resolve with null.
 
-      // console.log('@TODO: goto transitionToRoute(attemptedTransition || me)');
-      // this.transitionToRoute(this.attemptedTransition || 'me');
+  @method login
+  @param {String} email The users email
+  @param {String} password The users password
+  @return {Promise} Returns a promise that resolves with the logged in User
+  */
+  login: function(email, password) {
+    if (email === undefined) {
+      return this._loginActiveSession();
     } else {
-      // user is logged out
-      console.log('Logged out');
-      this.set('isAuthenticated', false);
-      this.set('currentUser', null);
+      return this._loginWithCredentials(email, password);
     }
   },
 
-  login: function(form) {
-    this.authClient.login('password', {
-      email: form.email,
-      password: form.password,
-      rememberMe: form.rememberMe
+  /**
+
+  @method logout
+  @return {Promise} Returns a promise that resolves when the user is logged out.
+  */
+  logout: function() {
+    var self = this;
+    return new Ember.RSVP.Promise(function(resolve, reject) {
+      var authClient = new FirebaseSimpleLogin(dbRef, function(error, user) {
+        Ember.run(function() {
+          if (error) {
+            reject(error);
+          }
+          if (!user) {
+            self.set('currentUser', null);
+            self.set('isAuthenticated', false);
+            resolve(null);
+          }
+        });
+      });
+      authClient.logout();
     });
   },
 
-  signup: function(form) {
-    this.authClient.createUser(form.email, form.password, function(error, user) {
-      if (error) {
-        console.error('Signup failed: ' + error);
-      } else {
-        console.log("User UID: " + user.uid + ", ID: " + user.id + ', Email: ' + user.email);
+  /**
 
-        var userRef = new Firebase(usersPath);
-        userRef.child(user.uid).set({
-          name: form.name,
-          email: form.email,
-          rating: 0
+  @method createNewUser
+  @param {String} email
+  @param {String} password
+  @param {Object} optional data
+  @return {Promise} Returns a promsie that resolves with newly created user
+  */
+  createNewUser: function(email, password, options) {
+    options || (options = {});
+
+    var self = this;
+    var promise = new Ember.RSVP.Promise(function(resolve, reject) {
+        var authClient = new FirebaseSimpleLogin(dbRef, function(error, user) {
+          Ember.run(function() {
+            if (error)
+              reject(error);
+
+            if (user) {
+              var newUser = self.get('controllers.player').store.createRecord('player', {
+                id: user.id,
+                email: user.email,
+                name: options.name
+              });
+
+              var appUser = newUser.save().then(function(value) {
+                self.set('currentUser', value);
+                self.set('isAuthenticated', true);
+                return value;
+              });
+
+              resolve(appUser);
+            }
+          });
         });
 
-        console.log('SUCCESS! @TODO: goto transitionToRoute(login) or do login');
-        // this.transitionToRoute('login');
-      }
+        authClient.createUser(email, password, function(error, user) {
+          Ember.run(function() {
+            if (error)
+              reject(error);
+
+            if (user) {
+              authClient.login('password', {email: email, password: password});
+            }
+          });
+        });
     });
+
+    return promise;
   },
 
-  logout: function() {
-    this.authClient.logout();
-    console.log('SUCCESS! @TODO: goto transitionToRoute(login)');
-    // this.transitionToRoute('login');
+  _loginWithCredentials: function(email, password) {
+    var self = this;
+    // Setup a promise that creates the FirebaseSimpleLogin and resolves
+    var promise = new Ember.RSVP.Promise(function(resolve, reject) {
+      var authClient = new FirebaseSimpleLogin(dbRef, function(error, user) {
+        //First Time this fires error and user should be null. If connection successful
+        //Second Time will be due to login. In that case we should have user or error
+        Ember.run(function() {
+
+          // Handle posible errors.
+          if (error && error.code === 'INVALID_USER') {
+            resolve(null);
+          } else if (error) {
+            reject(error)
+          }
+
+          // Handle user
+          if (user) {
+            var appUser = self.get('controllers.player').store.find('player', user.id).then(function(appUser) {
+              self.set('currentUser', appUser);
+              appUser && self.set('isAuthenticated', true);
+              return appUser;
+            });
+
+            resolve(appUser);
+          }
+        });
+      });
+      authClient.login('password', {
+        email: email,
+        password: password
+      });
+    });
+
+    return promise;
+  },
+
+  _loginActiveSession: function() {
+    var self = this;
+    // Setup a promise that creates the FirebaseSimpleLogin and resolves
+    var promise = new Ember.RSVP.Promise(function(resolve, reject) {
+      var authClient = new FirebaseSimpleLogin(dbRef, function(error, user) {
+        // This callback should fire just once if no error or user than not logged in
+        Ember.run(function() {
+          if (!error && !user) {
+            resolve(null);
+          }
+
+          if (error) {
+            reject(error);
+          }
+
+          if (user) {
+            var appUser = self.get('controllers.player').store.find('player', user.id).then(function(value) {
+              self.set('currentUser', value);
+              value && self.set('isAuthenticated', true);
+              return value;
+            });
+
+            resolve(appUser);
+          }
+        });
+      });
+    });
+
+    return promise;
   }
 });
 
-},{"ember":2,"ember-notify":11,"firebase-client":14,"firebase-simple-login":15}],36:[function(require,module,exports){
+},{"ember":2,"firebase-client":12,"firebase-simple-login":13}],34:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
 
 });
 
-},{"ember":2}],37:[function(require,module,exports){
+},{"ember":2}],35:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -73909,7 +73871,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   
 });
 
-},{"ember":2}],38:[function(require,module,exports){
+},{"ember":2}],36:[function(require,module,exports){
 var Ember = require('ember');
 var DS = require('ember-data');
 var EmberFire = require('emberfire');
@@ -74032,46 +73994,57 @@ App.templates.matches = require('./matches/template.hbs');
 // Me
 App.MeRoute = require('./me/route');
 
-},{"./app/controller":32,"./app/route":33,"./app/template.hbs":34,"./auth/controller":35,"./auth/route":36,"./gameday/template.hbs":37,"./login/controller":39,"./login/route":40,"./login/template":41,"./match/controller":42,"./match/model":43,"./match/route":44,"./matches/controller":45,"./matches/route":46,"./matches/template.hbs":47,"./me/route":48,"./player/controller":49,"./player/model":50,"./player/template.hbs":52,"./players/controller":53,"./players/route":54,"./players/template.hbs":55,"./signup/controller":56,"./signup/route":57,"./signup/template":58,"./team/controller":59,"./team/model":60,"./team/route":61,"./teams/controller":62,"./teams/route":63,"./teams/template.hbs":64,"./tourney/controller":65,"./tourney/matches.hbs":66,"./tourney/model":67,"./tourney/players.hbs":68,"./tourney/route":69,"./tourney/table.hbs":70,"./tourney/teams.hbs":71,"./tourney/template.hbs":72,"./tourneys/route":73,"./tourneys/template.hbs":74,"ember":2,"ember-data":1,"emberfire":13,"firebase-client":14}],39:[function(require,module,exports){
+},{"./app/controller":30,"./app/route":31,"./app/template.hbs":32,"./auth/controller":33,"./auth/route":34,"./gameday/template.hbs":35,"./login/controller":37,"./login/route":38,"./login/template":39,"./match/controller":40,"./match/model":41,"./match/route":42,"./matches/controller":43,"./matches/route":44,"./matches/template.hbs":45,"./me/route":46,"./player/controller":47,"./player/model":48,"./player/template.hbs":50,"./players/controller":51,"./players/route":52,"./players/template.hbs":53,"./signup/controller":54,"./signup/route":55,"./signup/template":56,"./team/controller":57,"./team/model":58,"./team/route":59,"./teams/controller":60,"./teams/route":61,"./teams/template.hbs":62,"./tourney/controller":63,"./tourney/matches.hbs":64,"./tourney/model":65,"./tourney/players.hbs":66,"./tourney/route":67,"./tourney/table.hbs":68,"./tourney/teams.hbs":69,"./tourney/template.hbs":70,"./tourneys/route":71,"./tourneys/template.hbs":72,"ember":2,"ember-data":1,"emberfire":11,"firebase-client":12}],37:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.ObjectController.extend({
   email: null,
   password: null,
 
-  loginFailed: false,
-  isProcessing: false,
-
   reset: function() {
     this.setProperties({
       email: null,
-      name: null,
       password: null
     });
   },
 
   actions: {
     login: function() {
-      return this.get('auth').login({
-        email: this.get('email'),
-        password: this.get('password')
-      });
+      var email = this.get('email'),
+        password = this.get('password');
+
+      this.get('auth').login(email, password)
+        .then(function(value) {
+          if (!value) {
+            console.error('INVALID_USER');
+          }
+          this.reset();
+          this.transitionToRoute('me');
+        }.bind(this), function(reason) {
+          console.log(reason);
+        });
     }
   }
 });
 
-},{"ember":2}],40:[function(require,module,exports){
+},{"ember":2}],38:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
   beforeModel: function(transition) {
-    if (this.get('auth').get('isAuthenticated')) {
+    if (!this.get('auth').get('isAuthenticated')) {
+      // lets try to _loginActiveSession
+      this.get('auth').login().then(function(value) {
+       value && this.transitionTo('me');
+      }.bind(this));
+    } else {
+      // or just redirect to profile
       return this.transitionTo('me');
     }
   }
 });
 
-},{"ember":2}],41:[function(require,module,exports){
+},{"ember":2}],39:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -74082,7 +74055,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   
-  data.buffer.push("\n    <div class=\"alert\">Invalid username or password.</div>\n  ");
+  data.buffer.push("\r\n    <div class=\"alert\">Invalid username or password.</div>\r\n  ");
   }
 
 function program3(depth0,data) {
@@ -74095,36 +74068,36 @@ function program3(depth0,data) {
   data.buffer.push(escapeExpression(helpers.action.call(depth0, "login", {hash:{
     'on': ("submit")
   },hashTypes:{'on': "STRING"},hashContexts:{'on': depth0},contexts:[depth0],types:["STRING"],data:data})));
-  data.buffer.push(">\n  ");
+  data.buffer.push(">\r\n  ");
   stack1 = helpers['if'].call(depth0, "loginFailed", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n\n  <div class=\"form-group\">\n    <label for=\"\" class=\"col-sm-2 control-label\">Email</label>\n    <div class=\"col-xs-4\">\n      ");
+  data.buffer.push("\r\n\r\n  <div class=\"form-group\">\r\n    <label for=\"\" class=\"col-sm-2 control-label\">Email</label>\r\n    <div class=\"col-xs-4\">\r\n      ");
   data.buffer.push(escapeExpression((helper = helpers.input || (depth0 && depth0.input),options={hash:{
     'value': ("email"),
     'type': ("email"),
     'class': ("form-control")
   },hashTypes:{'value': "ID",'type': "STRING",'class': "STRING"},hashContexts:{'value': depth0,'type': depth0,'class': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "input", options))));
-  data.buffer.push("\n    </div>\n  </div>\n\n  <div class=\"form-group\">\n    <label for=\"\" class=\"col-sm-2 control-label\">Password</label>\n    <div class=\"col-xs-4\">\n      ");
+  data.buffer.push("\r\n    </div>\r\n  </div>\r\n\r\n  <div class=\"form-group\">\r\n    <label for=\"\" class=\"col-sm-2 control-label\">Password</label>\r\n    <div class=\"col-xs-4\">\r\n      ");
   data.buffer.push(escapeExpression((helper = helpers.input || (depth0 && depth0.input),options={hash:{
     'value': ("password"),
     'type': ("password"),
     'class': ("form-control")
   },hashTypes:{'value': "ID",'type': "STRING",'class': "STRING"},hashContexts:{'value': depth0,'type': depth0,'class': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "input", options))));
-  data.buffer.push("\n    </div>\n  </div>\n\n  <div class=\"form-group\">\n    <div class=\"col-sm-offset-2 col-sm-10\">\n      <button type=\"submit\" class=\"btn btn-primary\" ");
+  data.buffer.push("\r\n    </div>\r\n  </div>\r\n\r\n  <div class=\"form-group\">\r\n    <div class=\"col-sm-offset-2 col-sm-10\">\r\n      <button type=\"submit\" class=\"btn btn-primary\" ");
   data.buffer.push(escapeExpression(helpers['bind-attr'].call(depth0, {hash:{
     'disabled': ("isProcessing")
   },hashTypes:{'disabled': "STRING"},hashContexts:{'disabled': depth0},contexts:[],types:[],data:data})));
-  data.buffer.push(">Login</button>\n      OR\n      ");
+  data.buffer.push(">Login</button>\r\n      OR\r\n      ");
   stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
     'class': ("")
   },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(3, program3, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "signup", options) : helperMissing.call(depth0, "link-to", "signup", options));
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n    </div>\n  </div>\n</form>\n");
+  data.buffer.push("\r\n    </div>\r\n  </div>\r\n</form>\r\n");
   return buffer;
   
 });
 
-},{"ember":2}],42:[function(require,module,exports){
+},{"ember":2}],40:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.ObjectController.extend({
@@ -74142,7 +74115,7 @@ module.exports = Ember.ObjectController.extend({
   }.property('isPlayed'),
 });
 
-},{"ember":2}],43:[function(require,module,exports){
+},{"ember":2}],41:[function(require,module,exports){
 var DS = require('ember-data');
 
 module.exports = DS.Model.extend({
@@ -74156,7 +74129,7 @@ module.exports = DS.Model.extend({
   }),
 });
 
-},{"ember-data":1}],44:[function(require,module,exports){
+},{"ember-data":1}],42:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -74165,14 +74138,14 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],45:[function(require,module,exports){
+},{"ember":2}],43:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.ObjectController.extend({
 
 });
 
-},{"ember":2}],46:[function(require,module,exports){
+},{"ember":2}],44:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -74181,7 +74154,7 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],47:[function(require,module,exports){
+},{"ember":2}],45:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -74194,7 +74167,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   
 });
 
-},{"ember":2}],48:[function(require,module,exports){
+},{"ember":2}],46:[function(require,module,exports){
 var PlayerRoute = require('../player/route');
 
 // An alias to existed player
@@ -74205,7 +74178,7 @@ module.exports = PlayerRoute.extend({
   controllerName: 'player',
 
   model: function() {
-    return this._super({id: this.get('auth').get('currentUser')});
+    return this._super({id: this.get('auth').get('currentUser.id')});
   },
 
   beforeModel: function(transition) {
@@ -74220,7 +74193,7 @@ module.exports = PlayerRoute.extend({
   }
 });
 
-},{"../player/route":51}],49:[function(require,module,exports){
+},{"../player/route":49}],47:[function(require,module,exports){
 var Ember = require('ember');
 var md5 = require('MD5');
 
@@ -74230,7 +74203,7 @@ module.exports = Ember.ObjectController.extend({
   }.property('email')
 });
 
-},{"MD5":3,"ember":2}],50:[function(require,module,exports){
+},{"MD5":3,"ember":2}],48:[function(require,module,exports){
 var DS = require('ember-data');
 
 module.exports = DS.Model.extend({
@@ -74240,7 +74213,7 @@ module.exports = DS.Model.extend({
   rating: DS.attr('number')
 });
 
-},{"ember-data":1}],51:[function(require,module,exports){
+},{"ember-data":1}],49:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -74249,7 +74222,7 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],52:[function(require,module,exports){
+},{"ember":2}],50:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -74271,7 +74244,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   
 });
 
-},{"ember":2}],53:[function(require,module,exports){
+},{"ember":2}],51:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.ArrayController.extend({
@@ -74282,7 +74255,7 @@ module.exports = Ember.ArrayController.extend({
   playersSorderByRank: Ember.computed.sort('model', 'playersSortedByRankDesc'),
 });
 
-},{"ember":2}],54:[function(require,module,exports){
+},{"ember":2}],52:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -74291,7 +74264,7 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],55:[function(require,module,exports){
+},{"ember":2}],53:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -74345,36 +74318,44 @@ function program4(depth0,data) {
   
 });
 
-},{"ember":2}],56:[function(require,module,exports){
+},{"ember":2}],54:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.ObjectController.extend({
   email: null,
-  name: null,
   password: null,
+  name: null,
 
   reset: function() {
     this.setProperties({
       email: null,
-      name: null,
-      password: null
+      password: null,
+      name: null
     });
   },
 
   actions: {
     signup: function() {
-      return this.get('auth').signup({
-        email: this.get('email'),
-        name: this.get('name'),
-        password: this.get('password')
-      });
+      var email = this.get('email'),
+        password = this.get('password'),
+        userdata = {
+          name: this.get('name')
+        };
+
+      this.get('auth').createNewUser(email, password, userdata)
+        .then(function(value) {
+          this.reset();
+          this.transitionToRoute('me');
+        }.bind(this), function(reason) {
+          console.error(reason);
+        });
     }
   }
 });
 
-},{"ember":2}],57:[function(require,module,exports){
-module.exports=require(40)
-},{"ember":2}],58:[function(require,module,exports){
+},{"ember":2}],55:[function(require,module,exports){
+module.exports=require(38)
+},{"ember":2}],56:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -74392,39 +74373,39 @@ function program1(depth0,data) {
   data.buffer.push(escapeExpression(helpers.action.call(depth0, "signup", {hash:{
     'on': ("submit")
   },hashTypes:{'on': "STRING"},hashContexts:{'on': depth0},contexts:[depth0],types:["STRING"],data:data})));
-  data.buffer.push(">\n  <div class=\"form-group\">\n    <label for=\"\" class=\"col-sm-2 control-label\">Email</label>\n    <div class=\"col-xs-4\">\n      ");
+  data.buffer.push(">\r\n  <div class=\"form-group\">\r\n    <label for=\"\" class=\"col-sm-2 control-label\">Email</label>\r\n    <div class=\"col-xs-4\">\r\n      ");
   data.buffer.push(escapeExpression((helper = helpers.input || (depth0 && depth0.input),options={hash:{
     'value': ("email"),
     'type': ("email"),
     'class': ("form-control")
   },hashTypes:{'value': "ID",'type': "STRING",'class': "STRING"},hashContexts:{'value': depth0,'type': depth0,'class': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "input", options))));
-  data.buffer.push("\n    </div>\n  </div>\n\n  <div class=\"form-group\">\n    <label for=\"\" class=\"col-sm-2 control-label\">Username</label>\n    <div class=\"col-xs-4\">\n      ");
+  data.buffer.push("\r\n    </div>\r\n  </div>\r\n\r\n  <div class=\"form-group\">\r\n    <label for=\"\" class=\"col-sm-2 control-label\">Username</label>\r\n    <div class=\"col-xs-4\">\r\n      ");
   data.buffer.push(escapeExpression((helper = helpers.input || (depth0 && depth0.input),options={hash:{
     'value': ("name"),
     'type': ("text"),
     'class': ("form-control")
   },hashTypes:{'value': "ID",'type': "STRING",'class': "STRING"},hashContexts:{'value': depth0,'type': depth0,'class': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "input", options))));
-  data.buffer.push("\n    </div>\n  </div>\n\n  <div class=\"form-group\">\n    <label for=\"\" class=\"col-sm-2 control-label\">Password</label>\n    <div class=\"col-xs-4\">\n      ");
+  data.buffer.push("\r\n    </div>\r\n  </div>\r\n\r\n  <div class=\"form-group\">\r\n    <label for=\"\" class=\"col-sm-2 control-label\">Password</label>\r\n    <div class=\"col-xs-4\">\r\n      ");
   data.buffer.push(escapeExpression((helper = helpers.input || (depth0 && depth0.input),options={hash:{
     'value': ("password"),
     'type': ("password"),
     'class': ("form-control")
   },hashTypes:{'value': "ID",'type': "STRING",'class': "STRING"},hashContexts:{'value': depth0,'type': depth0,'class': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "input", options))));
-  data.buffer.push("\n    </div>\n  </div>\n\n  <div class=\"form-group\">\n    <div class=\"col-sm-offset-2 col-sm-10\">\n      <button type=\"submit\" class=\"btn btn-primary\" ");
+  data.buffer.push("\r\n    </div>\r\n  </div>\r\n\r\n  <div class=\"form-group\">\r\n    <div class=\"col-sm-offset-2 col-sm-10\">\r\n      <button type=\"submit\" class=\"btn btn-primary\" ");
   data.buffer.push(escapeExpression(helpers['bind-attr'].call(depth0, {hash:{
     'disabled': ("isProcessing")
   },hashTypes:{'disabled': "STRING"},hashContexts:{'disabled': depth0},contexts:[],types:[],data:data})));
-  data.buffer.push(">Sign Up</button>\n      OR\n      ");
+  data.buffer.push(">Sign Up</button>\r\n      OR\r\n      ");
   stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
     'class': ("")
   },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "login", options) : helperMissing.call(depth0, "link-to", "login", options));
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n    </div>\n  </div>\n</form>\n");
+  data.buffer.push("\r\n    </div>\r\n  </div>\r\n</form>\r\n");
   return buffer;
   
 });
 
-},{"ember":2}],59:[function(require,module,exports){
+},{"ember":2}],57:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.ObjectController.extend({
@@ -74440,7 +74421,7 @@ module.exports = Ember.ObjectController.extend({
   }.property('players.@each.rank'),
 });
 
-},{"ember":2}],60:[function(require,module,exports){
+},{"ember":2}],58:[function(require,module,exports){
 var DS = require('ember-data');
 
 module.exports = DS.Model.extend({
@@ -74449,7 +74430,7 @@ module.exports = DS.Model.extend({
   players: DS.hasMany('player')
 });
 
-},{"ember-data":1}],61:[function(require,module,exports){
+},{"ember-data":1}],59:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -74458,9 +74439,9 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],62:[function(require,module,exports){
-module.exports=require(45)
-},{"ember":2}],63:[function(require,module,exports){
+},{"ember":2}],60:[function(require,module,exports){
+module.exports=require(43)
+},{"ember":2}],61:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -74469,7 +74450,7 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],64:[function(require,module,exports){
+},{"ember":2}],62:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -74482,7 +74463,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   
 });
 
-},{"ember":2}],65:[function(require,module,exports){
+},{"ember":2}],63:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.ObjectController.extend({
@@ -74559,7 +74540,7 @@ module.exports = Ember.ObjectController.extend({
   }.property('matches'),
 });
 
-},{"ember":2}],66:[function(require,module,exports){
+},{"ember":2}],64:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -74618,7 +74599,7 @@ function program4(depth0,data) {
   
 });
 
-},{"ember":2}],67:[function(require,module,exports){
+},{"ember":2}],65:[function(require,module,exports){
 var DS = require('ember-data');
 
 module.exports = DS.Model.extend({
@@ -74632,7 +74613,7 @@ module.exports = DS.Model.extend({
   }),
 });
 
-},{"ember-data":1}],68:[function(require,module,exports){
+},{"ember-data":1}],66:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -74670,7 +74651,7 @@ function program2(depth0,data) {
   
 });
 
-},{"ember":2}],69:[function(require,module,exports){
+},{"ember":2}],67:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -74719,7 +74700,7 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],70:[function(require,module,exports){
+},{"ember":2}],68:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -74771,7 +74752,7 @@ function program1(depth0,data) {
   
 });
 
-},{"ember":2}],71:[function(require,module,exports){
+},{"ember":2}],69:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -74825,7 +74806,7 @@ function program3(depth0,data) {
   
 });
 
-},{"ember":2}],72:[function(require,module,exports){
+},{"ember":2}],70:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -74847,7 +74828,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   
 });
 
-},{"ember":2}],73:[function(require,module,exports){
+},{"ember":2}],71:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -74856,7 +74837,7 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],74:[function(require,module,exports){
+},{"ember":2}],72:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -74867,16 +74848,16 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = '', stack1, helper, options;
-  data.buffer.push("\n        <tr>\n          <td>");
+  data.buffer.push("\r\n        <tr>\r\n          <td>");
   stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(2, program2, data),contexts:[depth0,depth0],types:["STRING","ID"],data:data},helper ? helper.call(depth0, "tourney", "", options) : helperMissing.call(depth0, "link-to", "tourney", "", options));
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("</td>\n          <td>");
+  data.buffer.push("</td>\r\n          <td>");
   stack1 = helpers._triageMustache.call(depth0, "date", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("</td>\n          <td>wamg</td>\n          <td>list</td>\n          <td>\n            ");
+  data.buffer.push("</td>\r\n          <td>wamg</td>\r\n          <td>list</td>\r\n          <td>\r\n            ");
   stack1 = helpers['if'].call(depth0, "isPlayed", {hash:{},hashTypes:{},hashContexts:{},inverse:self.program(6, program6, data),fn:self.program(4, program4, data),contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n          </td>\n        </tr>\n      ");
+  data.buffer.push("\r\n          </td>\r\n        </tr>\r\n      ");
   return buffer;
   }
 function program2(depth0,data) {
@@ -74890,21 +74871,21 @@ function program2(depth0,data) {
 function program4(depth0,data) {
   
   
-  data.buffer.push("\n              played\n            ");
+  data.buffer.push("\r\n              played\r\n            ");
   }
 
 function program6(depth0,data) {
   
   
-  data.buffer.push("\n              upcoming\n            ");
+  data.buffer.push("\r\n              upcoming\r\n            ");
   }
 
-  data.buffer.push("<div class=\"row\">\n  <table class=\"table\">\n    <thead>\n      <tr>\n        <th>tourney</th>\n        <th>date</th>\n        <th>league</th>\n        <th>players</th>\n        <th>status</th>\n      </tr>\n    </thead>\n    <tbody>\n      ");
+  data.buffer.push("<div class=\"row\">\r\n  <table class=\"table\">\r\n    <thead>\r\n      <tr>\r\n        <th>tourney</th>\r\n        <th>date</th>\r\n        <th>league</th>\r\n        <th>players</th>\r\n        <th>status</th>\r\n      </tr>\r\n    </thead>\r\n    <tbody>\r\n      ");
   stack1 = helpers.each.call(depth0, {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[],types:[],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n    </tbody>\n  </table>\n</div>\n");
+  data.buffer.push("\r\n    </tbody>\r\n  </table>\r\n</div>\r\n");
   return buffer;
   
 });
 
-},{"ember":2}]},{},[38])
+},{"ember":2}]},{},[36])
