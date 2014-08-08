@@ -71580,9 +71580,10 @@ function program1(depth0,data) {
 function program2(depth0,data) {
   
   var buffer = '', stack1;
-  data.buffer.push("<i class=\"flaticon-football118 fa-lg\"></i> ");
+  data.buffer.push("\n            <i class=\"flaticon-football118 fa-lg\"></i> ");
   stack1 = helpers._triageMustache.call(depth0, "model.name", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n          ");
   return buffer;
   }
 
@@ -71598,7 +71599,7 @@ function program4(depth0,data) {
 function program5(depth0,data) {
   
   
-  data.buffer.push("<i class=\"flaticon-football120 fa-lg\"></i> Players");
+  data.buffer.push("\n            <i class=\"flaticon-football120 fa-lg\"></i> Players\n            <i class=\"fa fa-exclamation-circle text-danger\" title=\"Somebody waits for your Vote!\"></i>\n          ");
   }
 
 function program7(depth0,data) {
@@ -71613,7 +71614,7 @@ function program7(depth0,data) {
 function program8(depth0,data) {
   
   
-  data.buffer.push("<i class=\"flaticon-football117 fa-lg\"></i> Tourneys");
+  data.buffer.push("\n            <i class=\"flaticon-football117 fa-lg\"></i> Tourneys\n          ");
   }
 
 function program10(depth0,data) {
@@ -71882,6 +71883,10 @@ App.Router.map(function() {
     this.route('teams');
     this.route('matches');
   });
+
+  this.resource('voting', function() {
+    this.route('player', {path: ':id'});
+  });
 });
 
 // Application
@@ -71895,9 +71900,18 @@ App.templates['gameday/players'] = require('./gameday/players.hbs');
 App.templates['gameday/teams'] = require('./gameday/teams.hbs');
 App.templates['gameday/matches'] = require('./gameday/matches.hbs');
 
+// Voting
+App.VotingRoute = require('./voting/route');
+App.VotingController = require('./voting/controller');
+App.templates.voting = require('./voting/template.hbs');
+
+App.VotingPlayerController = require('./voting/player/controller');
+App.VotingPlayerRoute = require('./voting/player/route');
+App.templates['voting/player'] = require('./voting/player/template.hbs');
 
 // Player Model
 App.Player = require('./player/model');
+App.PlayerController = require('./player/controller');
 App.Player.FIXTURES = require('./player/fixtures.json');
 
 // Players
@@ -71957,7 +71971,7 @@ App.templates.matches = require('./matches/template.hbs');
 // Me
 App.MeRoute = require('./me/route');
 
-},{"./app/route":21,"./app/template.hbs":22,"./gameday/index/route":23,"./gameday/matches.hbs":24,"./gameday/players.hbs":25,"./gameday/teams.hbs":26,"./gameday/template.hbs":27,"./match/controller":29,"./match/fixtures.json":30,"./match/model":31,"./match/route":32,"./matches/controller":33,"./matches/route":34,"./matches/template.hbs":35,"./me/route":36,"./player/fixtures.json":37,"./player/model":38,"./player/template.hbs":40,"./players/controller":41,"./players/route":42,"./players/template.hbs":43,"./team/controller":44,"./team/fixtures.json":45,"./team/model":46,"./team/route":47,"./teams/controller":48,"./teams/route":49,"./teams/template.hbs":50,"./tourney/controller":51,"./tourney/fixtures.json":52,"./tourney/matches.hbs":53,"./tourney/mockup.hbs":54,"./tourney/model":55,"./tourney/players.hbs":56,"./tourney/route":57,"./tourney/table.hbs":58,"./tourney/teams.hbs":59,"./tourney/template.hbs":60,"./tourneys/route":61,"./tourneys/template.hbs":62,"ember":2,"ember-data":1}],29:[function(require,module,exports){
+},{"./app/route":21,"./app/template.hbs":22,"./gameday/index/route":23,"./gameday/matches.hbs":24,"./gameday/players.hbs":25,"./gameday/teams.hbs":26,"./gameday/template.hbs":27,"./match/controller":29,"./match/fixtures.json":30,"./match/model":31,"./match/route":32,"./matches/controller":33,"./matches/route":34,"./matches/template.hbs":35,"./me/route":36,"./player/controller":37,"./player/fixtures.json":38,"./player/model":39,"./player/template.hbs":41,"./players/controller":42,"./players/route":43,"./players/template.hbs":44,"./team/controller":45,"./team/fixtures.json":46,"./team/model":47,"./team/route":48,"./teams/controller":49,"./teams/route":50,"./teams/template.hbs":51,"./tourney/controller":52,"./tourney/fixtures.json":53,"./tourney/matches.hbs":54,"./tourney/mockup.hbs":55,"./tourney/model":56,"./tourney/players.hbs":57,"./tourney/route":58,"./tourney/table.hbs":59,"./tourney/teams.hbs":60,"./tourney/template.hbs":61,"./tourneys/route":62,"./tourneys/template.hbs":63,"./voting/controller":64,"./voting/player/controller":65,"./voting/player/route":66,"./voting/player/template.hbs":67,"./voting/route":68,"./voting/template.hbs":69,"ember":2,"ember-data":1}],29:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.ObjectController.extend({
@@ -72153,7 +72167,24 @@ module.exports = PlayerRoute.extend({
   }
 });
 
-},{"../player/route":39}],37:[function(require,module,exports){
+},{"../player/route":40}],37:[function(require,module,exports){
+var Ember = require('ember');
+
+module.exports = Ember.ObjectController.extend({
+  isVoted: function() {
+    return this.get('rating') % 2;
+  }.property('rating'),
+
+  isGoingTo: function() {
+    return this.get('name').length % 2;
+  }.property('name'),
+
+  isLocked: function() {
+    return this.get('isVoted') && this.get('id') % 2;
+  }.property('isVoted')
+});
+
+},{"ember":2}],38:[function(require,module,exports){
 module.exports=[
   {
     "id": 1,
@@ -72307,7 +72338,7 @@ module.exports=[
   }
 ]
 
-},{}],38:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 var DS = require('ember-data');
 
 module.exports = DS.Model.extend({
@@ -72316,7 +72347,7 @@ module.exports = DS.Model.extend({
   rating: DS.attr('number')
 });
 
-},{"ember-data":1}],39:[function(require,module,exports){
+},{"ember-data":1}],40:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -72325,7 +72356,7 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],40:[function(require,module,exports){
+},{"ember":2}],41:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -72340,17 +72371,19 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   data.buffer.push("\n        <!--\n          1..4 default\n          4..6 info\n          6..8 primary\n          8..9 success\n          9..10 warning\n          10.. danger\n         -->\n        <span class=\"label label-primary\">");
   stack1 = helpers._triageMustache.call(depth0, "rating", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("</span>\n      </h1>\n      <dl class=\"dl-horizontal lead pull-right\">\n        <dt>Shoot</dt>\n        <dd><span class=\"label label-info\">5.0</span></dd>\n        <dt>Pass</dt>\n        <dd><span class=\"label label-warning\">9.1</span></dd>\n        <dt>Dribble</dt>\n        <dd><span class=\"label label-default\">3.1</span></dd>\n        <dt>Pace</dt>\n        <dd><span class=\"label label-primary\">6.3</span></dd>\n        <dt>Defence</dt>\n        <dd><span class=\"label label-success\">8.5</span></dd>\n        <dt>Goal Keeper</dt>\n        <dd><span class=\"label label-info\">5.4</span></dd>\n      </dl>\n    </div>\n    <div class=\"col-lg-4\">\n      <img src=\"");
+  data.buffer.push("</span>\n      </h1>\n      <dl class=\"dl-horizontal lead pull-right\">\n        <dt>Shoot</dt>\n        <dd><span class=\"label label-info\">5.0</span></dd>\n        <dt>Pass</dt>\n        <dd><span class=\"label label-warning\">9.1</span></dd>\n        <dt>Dribble</dt>\n        <dd><span class=\"label label-default\">3.1</span></dd>\n        <dt>Pace</dt>\n        <dd><span class=\"label label-primary\">6.3</span></dd>\n        <dt>Defence</dt>\n        <dd><span class=\"label label-success\">8.5</span></dd>\n        <dt>Goal Keeper</dt>\n        <dd><span class=\"label label-info\">5.4</span></dd>\n      </dl>\n      <p class=\"text-muted pull-right\"><em>* Based on 12 Votes</em></p>\n    </div>\n    <div class=\"col-lg-4\">\n      <img src=\"");
   data.buffer.push(escapeExpression(helpers.unbound.call(depth0, "photo", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data})));
   data.buffer.push("?size=400px\" alt=\"photo\" class=\"img-thumbnail img-responsive\">\n    </div>\n    <div class=\"col-lg-4\">\n      <br>\n      <dl>\n        <dt>Last played Tourney:</dt>\n        <dd><a href=\"#\"><i class=\"flaticon-football117\"></i> July 04</a></dd>\n        <dt>Tourneys won:</dt>\n        <dd>3 of 7</dd>\n        <dt>Matches won:</dt>\n        <dd>21 of 42</dd>\n        <dt>Goals scored:</dt>\n        <dd>13</dd>\n        <dt>Favorite teammate:</dt>\n        <dd><a href=\"#\">Dmitry B. <span class=\"label label-success\">8.2</span></a></dd>\n      </dl>\n    </div>\n  </div>\n</div>\n");
   return buffer;
   
 });
 
-},{"ember":2}],41:[function(require,module,exports){
+},{"ember":2}],42:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.ArrayController.extend({
+  itemController: 'player',
+
   sortProperties: ['rating'],
   sortAscending: false,
 
@@ -72358,7 +72391,7 @@ module.exports = Ember.ArrayController.extend({
   playersSorderByRank: Ember.computed.sort('model', 'playersSortedByRankDesc'),
 });
 
-},{"ember":2}],42:[function(require,module,exports){
+},{"ember":2}],43:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -72367,7 +72400,7 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],43:[function(require,module,exports){
+},{"ember":2}],44:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -72386,7 +72419,10 @@ function program1(depth0,data) {
   data.buffer.push("\n        <div class=\"media-body\">\n          <h3 class=\"media-heading\">\n            ");
   stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(4, program4, data),contexts:[depth0,depth0],types:["STRING","ID"],data:data},helper ? helper.call(depth0, "player", "", options) : helperMissing.call(depth0, "link-to", "player", "", options));
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n          </h3>\n          <ul class=\"list-unstyled\">\n            <li><i class=\"fa fa-check-circle\"></i> Voted (<a href=\"#\">Re-Vote</a>)</li>\n            <li><b class=\"text-success\">+1</b> on <a href=\"#\">Upcoming Tourney</a></li>\n          </ul>\n        </div>\n      </div>\n    </div>\n  ");
+  data.buffer.push("\n          </h3>\n          <ul class=\"list-unstyled\">\n            <li>\n              ");
+  stack1 = helpers['if'].call(depth0, "isVoted", {hash:{},hashTypes:{},hashContexts:{},inverse:self.program(12, program12, data),fn:self.program(6, program6, data),contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n            </li>\n            \n          </ul>\n        </div>\n      </div>\n    </div>\n  ");
   return buffer;
   }
 function program2(depth0,data) {
@@ -72411,6 +72447,53 @@ function program4(depth0,data) {
   return buffer;
   }
 
+function program6(depth0,data) {
+  
+  var buffer = '', stack1;
+  data.buffer.push("\n                <i class=\"fa fa-check-circle\"></i> Voted\n                ");
+  stack1 = helpers['if'].call(depth0, "isLocked", {hash:{},hashTypes:{},hashContexts:{},inverse:self.program(9, program9, data),fn:self.program(7, program7, data),contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n              ");
+  return buffer;
+  }
+function program7(depth0,data) {
+  
+  var buffer = '';
+  return buffer;
+  }
+
+function program9(depth0,data) {
+  
+  var buffer = '', stack1, helper, options;
+  data.buffer.push("\n                  (");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(10, program10, data),contexts:[depth0,depth0],types:["STRING","ID"],data:data},helper ? helper.call(depth0, "voting.player", "", options) : helperMissing.call(depth0, "link-to", "voting.player", "", options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push(")\n                ");
+  return buffer;
+  }
+function program10(depth0,data) {
+  
+  
+  data.buffer.push("Re-Vote");
+  }
+
+function program12(depth0,data) {
+  
+  var buffer = '', stack1, helper, options;
+  data.buffer.push("\n                ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
+    'class': ("text-danger")
+  },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(13, program13, data),contexts:[depth0,depth0],types:["STRING","ID"],data:data},helper ? helper.call(depth0, "voting.player", "", options) : helperMissing.call(depth0, "link-to", "voting.player", "", options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n              ");
+  return buffer;
+  }
+function program13(depth0,data) {
+  
+  
+  data.buffer.push("<i class=\"fa fa-exclamation-circle\"></i> Vote Now!");
+  }
+
   data.buffer.push("<div class=\"row players-list\">\n  ");
   stack1 = helpers.each.call(depth0, {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[],types:[],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
@@ -72419,7 +72502,7 @@ function program4(depth0,data) {
   
 });
 
-},{"ember":2}],44:[function(require,module,exports){
+},{"ember":2}],45:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.ObjectController.extend({
@@ -72435,7 +72518,7 @@ module.exports = Ember.ObjectController.extend({
   }.property('players.@each.rank'),
 });
 
-},{"ember":2}],45:[function(require,module,exports){
+},{"ember":2}],46:[function(require,module,exports){
 module.exports=[
   {
     "id": 1,
@@ -72466,7 +72549,7 @@ module.exports=[
   }
 ]
 
-},{}],46:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 var DS = require('ember-data');
 
 module.exports = DS.Model.extend({
@@ -72475,7 +72558,7 @@ module.exports = DS.Model.extend({
   players: DS.hasMany('player')
 });
 
-},{"ember-data":1}],47:[function(require,module,exports){
+},{"ember-data":1}],48:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -72484,9 +72567,9 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],48:[function(require,module,exports){
-module.exports=require(33)
 },{"ember":2}],49:[function(require,module,exports){
+module.exports=require(33)
+},{"ember":2}],50:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -72495,7 +72578,7 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],50:[function(require,module,exports){
+},{"ember":2}],51:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -72508,7 +72591,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   
 });
 
-},{"ember":2}],51:[function(require,module,exports){
+},{"ember":2}],52:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.ObjectController.extend({
@@ -72585,7 +72668,7 @@ module.exports = Ember.ObjectController.extend({
   }.property('matches'),
 });
 
-},{"ember":2}],52:[function(require,module,exports){
+},{"ember":2}],53:[function(require,module,exports){
 module.exports=[
   {
     "id": 1,
@@ -72603,7 +72686,7 @@ module.exports=[
   }
 ]
 
-},{}],53:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -72662,7 +72745,7 @@ function program4(depth0,data) {
   
 });
 
-},{"ember":2}],54:[function(require,module,exports){
+},{"ember":2}],55:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -72675,7 +72758,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   
 });
 
-},{"ember":2}],55:[function(require,module,exports){
+},{"ember":2}],56:[function(require,module,exports){
 var DS = require('ember-data');
 
 module.exports = DS.Model.extend({
@@ -72689,7 +72772,7 @@ module.exports = DS.Model.extend({
   }),
 });
 
-},{"ember-data":1}],56:[function(require,module,exports){
+},{"ember-data":1}],57:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -72727,7 +72810,7 @@ function program2(depth0,data) {
   
 });
 
-},{"ember":2}],57:[function(require,module,exports){
+},{"ember":2}],58:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -72776,7 +72859,7 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],58:[function(require,module,exports){
+},{"ember":2}],59:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -72828,7 +72911,7 @@ function program1(depth0,data) {
   
 });
 
-},{"ember":2}],59:[function(require,module,exports){
+},{"ember":2}],60:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -72882,7 +72965,7 @@ function program3(depth0,data) {
   
 });
 
-},{"ember":2}],60:[function(require,module,exports){
+},{"ember":2}],61:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -72904,7 +72987,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   
 });
 
-},{"ember":2}],61:[function(require,module,exports){
+},{"ember":2}],62:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -72913,7 +72996,7 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],62:[function(require,module,exports){
+},{"ember":2}],63:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -72963,6 +73046,163 @@ function program4(depth0,data) {
   },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(4, program4, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "tourneys.new", options) : helperMissing.call(depth0, "link-to", "tourneys.new", options));
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
   data.buffer.push("\n    </div>\n  </div>\n</div>\n");
+  return buffer;
+  
+});
+
+},{"ember":2}],64:[function(require,module,exports){
+var Ember = require('ember');
+
+module.exports = Ember.ArrayController.extend({
+  itemController: 'player',
+  sortProperties: ['isVoted', 'rating'],
+  sortAscending: false
+});
+
+},{"ember":2}],65:[function(require,module,exports){
+var Ember = require('ember');
+
+module.exports = Ember.ObjectController.extend({
+  // todo: need: ['player']
+  isVoted: function() {
+    return this.get('rating') % 2;
+  }.property('rating'),
+
+  isLocked: function() {
+    return this.get('isVoted') && this.get('id') % 2;
+  }.property('isVoted')
+});
+
+},{"ember":2}],66:[function(require,module,exports){
+module.exports=require(40)
+},{"ember":2}],67:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var compiler = require('ember').Handlebars;
+module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
+  var buffer = '', stack1, helper, options, escapeExpression=this.escapeExpression, self=this, helperMissing=helpers.helperMissing;
+
+function program1(depth0,data) {
+  
+  var buffer = '';
+  data.buffer.push("\n      <img src=\"");
+  data.buffer.push(escapeExpression(helpers.unbound.call(depth0, "photo", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data})));
+  data.buffer.push("?size=180px\" alt=\"photo\" class=\"media-object img-thumbnail\">\n    ");
+  return buffer;
+  }
+
+function program3(depth0,data) {
+  
+  var buffer = '', stack1;
+  data.buffer.push("\n          ");
+  stack1 = helpers._triageMustache.call(depth0, "name", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push(" <span class=\"label label-primary\">");
+  stack1 = helpers._triageMustache.call(depth0, "rating", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("</span>\n        ");
+  return buffer;
+  }
+
+function program5(depth0,data) {
+  
+  
+  data.buffer.push("Aug 28");
+  }
+
+function program7(depth0,data) {
+  
+  
+  data.buffer.push("\n        <p class=\"text-danger\">\n          <i class=\"fa fa-exclamation-circle\"></i>\n          You already voted for this player on Aug 26.<br>\n          You can Re-Vote <strong>only once per week</strong>.\n        </p>\n      ");
+  }
+
+function program9(depth0,data) {
+  
+  var buffer = '', stack1;
+  data.buffer.push("\n        ");
+  stack1 = helpers['if'].call(depth0, "isVoted", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(10, program10, data),contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n      ");
+  return buffer;
+  }
+function program10(depth0,data) {
+  
+  
+  data.buffer.push("\n          <p class=\"text-success\">\n            <i class=\"fa fa-check-circle\"></i>\n            You already voted for this player on Aug 13.\n          </p>\n        ");
+  }
+
+  data.buffer.push("<div class=\"well\">\n  <div class=\"media\">\n    ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
+    'class': ("pull-left")
+  },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0,depth0],types:["STRING","ID"],data:data},helper ? helper.call(depth0, "player", "", options) : helperMissing.call(depth0, "link-to", "player", "", options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n    <div class=\"media-body\">\n      <h3 class=\"media-heading\">\n        ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(3, program3, data),contexts:[depth0,depth0],types:["STRING","ID"],data:data},helper ? helper.call(depth0, "player", "", options) : helperMissing.call(depth0, "link-to", "player", "", options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n      </h3>\n      <ul class=\"list-unstyled\">\n        <li>\n          Won 3 tourneys of 8 total played <em class=\"text-muted\">&mdash; 3 goals scored</em>\n        </li>\n        <li>\n          Last time played together on ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(5, program5, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "tourneys.new", options) : helperMissing.call(depth0, "link-to", "tourneys.new", options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n          <em class=\"text-muted\">&mdash; 8 times in total</em>\n        </li>\n        <li>\n          Last time played in one team on ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(5, program5, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "tourneys.new", options) : helperMissing.call(depth0, "link-to", "tourneys.new", options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n          <em class=\"text-muted\">&mdash; 3 times in total</em>\n        </li>\n      </ul>\n      ");
+  stack1 = helpers['if'].call(depth0, "isLocked", {hash:{},hashTypes:{},hashContexts:{},inverse:self.program(9, program9, data),fn:self.program(7, program7, data),contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n    </div>\n  </div>\n</div>\n\n<form role=\"form\" class=\"voting-form gap-lg\">\n  <h3>Shoot<b class=\"text-danger\">*</b> <small>Everything to Goal</small></h3>\n  <table class=\"table table-striped gap-xl lift-md voting-table\">\n    <thead>\n      <tr>\n        <th></th>\n        <th class=\"rate\"><label for=\"voting-shoot-1\">1</label></th>\n        <th class=\"rate\"><label for=\"voting-shoot-2\">2</label></th>\n        <th class=\"rate\"><label for=\"voting-shoot-3\">3</label></th>\n        <th class=\"rate\"><label for=\"voting-shoot-4\">4</label></th>\n        <th class=\"rate\"><label for=\"voting-shoot-5\">5</label></th>\n        <th class=\"rate\"><label for=\"voting-shoot-6\">6</label></th>\n        <th class=\"rate\"><label for=\"voting-shoot-7\">7</label></th>\n        <th class=\"rate\"><label for=\"voting-shoot-8\">8</label></th>\n        <th class=\"rate\"><label for=\"voting-shoot-9\">9</label></th>\n        <th class=\"rate\"><label for=\"voting-shoot-10\">10</label></th>\n        <th></th>\n      <tr>\n    </thead>\n    <tbody>\n      <tr>\n        <td class=\"text-muted text-right\"><em>Looser</em></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"shoot\" value=\"1\" id=\"voting-shoot-1\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"shoot\" value=\"2\" id=\"voting-shoot-2\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"shoot\" value=\"3\" id=\"voting-shoot-3\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"shoot\" value=\"4\" id=\"voting-shoot-4\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"shoot\" value=\"5\" id=\"voting-shoot-5\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"shoot\" value=\"6\" id=\"voting-shoot-6\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"shoot\" value=\"7\" id=\"voting-shoot-7\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"shoot\" value=\"8\" id=\"voting-shoot-8\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"shoot\" value=\"9\" id=\"voting-shoot-9\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"shoot\" value=\"10\" id=\"voting-shoot-10\"></td>\n        <td class=\"text-muted text-left\"><em>Winner</em></td>\n      </tr>\n    </tbody>\n  </table>\n  <h3>Pass<b class=\"text-danger\">*</b> <small>Accuracy, Time and Observation</small></h3>\n  <table class=\"table table-striped gap-xl lift-md voting-table\">\n    <thead>\n      <tr>\n        <th></th>\n        <th class=\"rate\"><label for=\"voting-pass-1\">1</label></th>\n        <th class=\"rate\"><label for=\"voting-pass-2\">2</label></th>\n        <th class=\"rate\"><label for=\"voting-pass-3\">3</label></th>\n        <th class=\"rate\"><label for=\"voting-pass-4\">4</label></th>\n        <th class=\"rate\"><label for=\"voting-pass-5\">5</label></th>\n        <th class=\"rate\"><label for=\"voting-pass-6\">6</label></th>\n        <th class=\"rate\"><label for=\"voting-pass-7\">7</label></th>\n        <th class=\"rate\"><label for=\"voting-pass-8\">8</label></th>\n        <th class=\"rate\"><label for=\"voting-pass-9\">9</label></th>\n        <th class=\"rate\"><label for=\"voting-pass-10\">10</label></th>\n        <th></th>\n      <tr>\n    </thead>\n    <tbody>\n      <tr>\n        <td class=\"text-muted text-right\"><em>Looser</em></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"pass\" value=\"1\" id=\"voting-pass-1\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"pass\" value=\"2\" id=\"voting-pass-2\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"pass\" value=\"3\" id=\"voting-pass-3\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"pass\" value=\"4\" id=\"voting-pass-4\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"pass\" value=\"5\" id=\"voting-pass-5\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"pass\" value=\"6\" id=\"voting-pass-6\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"pass\" value=\"7\" id=\"voting-pass-7\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"pass\" value=\"8\" id=\"voting-pass-8\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"pass\" value=\"9\" id=\"voting-pass-9\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"pass\" value=\"10\" id=\"voting-pass-10\"></td>\n        <td class=\"text-muted text-left\"><em>Winner</em></td>\n      </tr>\n    </tbody>\n  </table>\n  <h3>Dribble<b class=\"text-danger\">*</b> <small>Stop the ball, Lead the ball, Fint the ball</small></h3>\n  <table class=\"table table-striped gap-xl lift-md voting-table\">\n    <thead>\n      <tr>\n        <th></th>\n        <th class=\"rate\"><label for=\"voting-dribble-1\">1</label></th>\n        <th class=\"rate\"><label for=\"voting-dribble-2\">2</label></th>\n        <th class=\"rate\"><label for=\"voting-dribble-3\">3</label></th>\n        <th class=\"rate\"><label for=\"voting-dribble-4\">4</label></th>\n        <th class=\"rate\"><label for=\"voting-dribble-5\">5</label></th>\n        <th class=\"rate\"><label for=\"voting-dribble-6\">6</label></th>\n        <th class=\"rate\"><label for=\"voting-dribble-7\">7</label></th>\n        <th class=\"rate\"><label for=\"voting-dribble-8\">8</label></th>\n        <th class=\"rate\"><label for=\"voting-dribble-9\">9</label></th>\n        <th class=\"rate\"><label for=\"voting-dribble-10\">10</label></th>\n        <th></th>\n      <tr>\n    </thead>\n    <tbody>\n      <tr>\n        <td class=\"text-muted text-right\"><em>Looser</em></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"dribble\" value=\"1\" id=\"voting-dribble-1\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"dribble\" value=\"2\" id=\"voting-dribble-2\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"dribble\" value=\"3\" id=\"voting-dribble-3\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"dribble\" value=\"4\" id=\"voting-dribble-4\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"dribble\" value=\"5\" id=\"voting-dribble-5\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"dribble\" value=\"6\" id=\"voting-dribble-6\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"dribble\" value=\"7\" id=\"voting-dribble-7\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"dribble\" value=\"8\" id=\"voting-dribble-8\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"dribble\" value=\"9\" id=\"voting-dribble-9\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"dribble\" value=\"10\" id=\"voting-dribble-10\"></td>\n        <td class=\"text-muted text-left\"><em>Winner</em></td>\n      </tr>\n    </tbody>\n  </table>\n  <h3>Pace<b class=\"text-danger\">*</b> <small>Speed, Stamina, Run until death</small></h3>\n  <table class=\"table table-striped gap-xl lift-md voting-table\">\n    <thead>\n      <tr>\n        <th></th>\n        <th class=\"rate\"><label for=\"voting-pace-1\">1</label></th>\n        <th class=\"rate\"><label for=\"voting-pace-2\">2</label></th>\n        <th class=\"rate\"><label for=\"voting-pace-3\">3</label></th>\n        <th class=\"rate\"><label for=\"voting-pace-4\">4</label></th>\n        <th class=\"rate\"><label for=\"voting-pace-5\">5</label></th>\n        <th class=\"rate\"><label for=\"voting-pace-6\">6</label></th>\n        <th class=\"rate\"><label for=\"voting-pace-7\">7</label></th>\n        <th class=\"rate\"><label for=\"voting-pace-8\">8</label></th>\n        <th class=\"rate\"><label for=\"voting-pace-9\">9</label></th>\n        <th class=\"rate\"><label for=\"voting-pace-10\">10</label></th>\n        <th></th>\n      <tr>\n    </thead>\n    <tbody>\n      <tr>\n        <td class=\"text-muted text-right\"><em>Looser</em></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"pace\" value=\"1\" id=\"voting-pace-1\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"pace\" value=\"2\" id=\"voting-pace-2\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"pace\" value=\"3\" id=\"voting-pace-3\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"pace\" value=\"4\" id=\"voting-pace-4\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"pace\" value=\"5\" id=\"voting-pace-5\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"pace\" value=\"6\" id=\"voting-pace-6\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"pace\" value=\"7\" id=\"voting-pace-7\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"pace\" value=\"8\" id=\"voting-pace-8\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"pace\" value=\"9\" id=\"voting-pace-9\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"pace\" value=\"10\" id=\"voting-pace-10\"></td>\n        <td class=\"text-muted text-left\"><em>Winner</em></td>\n      </tr>\n    </tbody>\n  </table>\n  <h3>Defence<b class=\"text-danger\">*</b> <small>Take the ball, Stand like a wall, Cover your teammate</small></h3>\n  <table class=\"table table-striped gap-xl lift-md voting-table\">\n    <thead>\n      <tr>\n        <th></th>\n        <th class=\"rate\"><label for=\"voting-def-1\">1</label></th>\n        <th class=\"rate\"><label for=\"voting-def-2\">2</label></th>\n        <th class=\"rate\"><label for=\"voting-def-3\">3</label></th>\n        <th class=\"rate\"><label for=\"voting-def-4\">4</label></th>\n        <th class=\"rate\"><label for=\"voting-def-5\">5</label></th>\n        <th class=\"rate\"><label for=\"voting-def-6\">6</label></th>\n        <th class=\"rate\"><label for=\"voting-def-7\">7</label></th>\n        <th class=\"rate\"><label for=\"voting-def-8\">8</label></th>\n        <th class=\"rate\"><label for=\"voting-def-9\">9</label></th>\n        <th class=\"rate\"><label for=\"voting-def-10\">10</label></th>\n        <th></th>\n      <tr>\n    </thead>\n    <tbody>\n      <tr>\n        <td class=\"text-muted text-right\"><em>Looser</em></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"def\" value=\"1\" id=\"voting-def-1\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"def\" value=\"2\" id=\"voting-def-2\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"def\" value=\"3\" id=\"voting-def-3\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"def\" value=\"4\" id=\"voting-def-4\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"def\" value=\"5\" id=\"voting-def-5\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"def\" value=\"6\" id=\"voting-def-6\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"def\" value=\"7\" id=\"voting-def-7\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"def\" value=\"8\" id=\"voting-def-8\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"def\" value=\"9\" id=\"voting-def-9\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"def\" value=\"10\" id=\"voting-def-10\"></td>\n        <td class=\"text-muted text-left\"><em>Winner</em></td>\n      </tr>\n    </tbody>\n  </table>\n  <h3>Goal Keeper<b class=\"text-danger\">*</b> <small>No comments</small></h3>\n  <table class=\"table table-striped gap-xl lift-md voting-table\">\n    <thead>\n      <tr>\n        <th></th>\n        <th class=\"rate\"><label for=\"voting-gk-1\">1</label></th>\n        <th class=\"rate\"><label for=\"voting-gk-2\">2</label></th>\n        <th class=\"rate\"><label for=\"voting-gk-3\">3</label></th>\n        <th class=\"rate\"><label for=\"voting-gk-4\">4</label></th>\n        <th class=\"rate\"><label for=\"voting-gk-5\">5</label></th>\n        <th class=\"rate\"><label for=\"voting-gk-6\">6</label></th>\n        <th class=\"rate\"><label for=\"voting-gk-7\">7</label></th>\n        <th class=\"rate\"><label for=\"voting-gk-8\">8</label></th>\n        <th class=\"rate\"><label for=\"voting-gk-9\">9</label></th>\n        <th class=\"rate\"><label for=\"voting-gk-10\">10</label></th>\n        <th></th>\n      <tr>\n    </thead>\n    <tbody>\n      <tr>\n        <td class=\"text-muted text-right\"><em>Looser</em></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"gk\" value=\"1\" id=\"voting-gk-1\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"gk\" value=\"2\" id=\"voting-gk-2\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"gk\" value=\"3\" id=\"voting-gk-3\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"gk\" value=\"4\" id=\"voting-gk-4\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"gk\" value=\"5\" id=\"voting-gk-5\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"gk\" value=\"6\" id=\"voting-gk-6\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"gk\" value=\"7\" id=\"voting-gk-7\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"gk\" value=\"8\" id=\"voting-gk-8\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"gk\" value=\"9\" id=\"voting-gk-9\"></td>\n        <td class=\"rate\"><input type=\"radio\" name=\"gk\" value=\"10\" id=\"voting-gk-10\"></td>\n        <td class=\"text-muted text-left\"><em>Winner</em></td>\n      </tr>\n    </tbody>\n  </table>\n\n  <button class=\"btn btn-success fa-lg\"><i class=\"fa-lg flaticon-sports24\"></i> Vote and go to Next</button>\n  <button class=\"btn btn-default fa-lg\"><i class=\"fa-lg flaticon-football72\"></i> Skip</button>\n</form>\n");
+  return buffer;
+  
+});
+
+},{"ember":2}],68:[function(require,module,exports){
+module.exports=require(43)
+},{"ember":2}],69:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var compiler = require('ember').Handlebars;
+module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
+  var buffer = '', stack1, self=this, helperMissing=helpers.helperMissing;
+
+function program1(depth0,data) {
+  
+  var buffer = '', stack1, helper, options;
+  data.buffer.push("\n          ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
+    'classNameBindings': (":list-group-item isVoted:list-group-item-success")
+  },hashTypes:{'classNameBindings': "STRING"},hashContexts:{'classNameBindings': depth0},inverse:self.noop,fn:self.program(2, program2, data),contexts:[depth0,depth0],types:["STRING","ID"],data:data},helper ? helper.call(depth0, "voting.player", "", options) : helperMissing.call(depth0, "link-to", "voting.player", "", options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n        ");
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  var buffer = '', stack1;
+  data.buffer.push("\n            <span class=\"label label-primary pull-right\">");
+  stack1 = helpers._triageMustache.call(depth0, "rating", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("</span>\n            ");
+  stack1 = helpers._triageMustache.call(depth0, "name", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n            ");
+  stack1 = helpers['if'].call(depth0, "isLocked", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(3, program3, data),contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n          ");
+  return buffer;
+  }
+function program3(depth0,data) {
+  
+  
+  data.buffer.push("<i class=\"fa fa-lock\"></i>");
+  }
+
+  data.buffer.push("<div class=\"row\">\n  <div class=\"col-sm-9 col-sm-push-3\">\n    ");
+  stack1 = helpers._triageMustache.call(depth0, "outlet", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n  </div>\n  <div class=\"col-sm-3 col-sm-pull-9\">\n    <div class=\"panel panel-default\">\n      <div class=\"panel-heading\">\n        <label style=\"font-weight: normal\">\n          <input type=\"checkbox\">\n          Filter to No Votes Only\n        </label>\n      </div>\n      <div class=\"list-group\">\n        ");
+  stack1 = helpers.each.call(depth0, "controller", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n      </div>\n    </div>\n  </div>\n</div>\n");
   return buffer;
   
 });

@@ -1,0 +1,257 @@
+<div class="well">
+  <div class="media">
+    {{#link-to "player" this class="pull-left"}}
+      <img src="{{unbound photo}}?size=180px" alt="photo" class="media-object img-thumbnail">
+    {{/link-to}}
+    <div class="media-body">
+      <h3 class="media-heading">
+        {{#link-to "player" this}}
+          {{name}} <span class="label label-primary">{{rating}}</span>
+        {{/link-to}}
+      </h3>
+      <ul class="list-unstyled">
+        <li>
+          Won 3 tourneys of 8 total played <em class="text-muted">&mdash; 3 goals scored</em>
+        </li>
+        <li>
+          Last time played together on {{#link-to "tourneys.new"}}Aug 28{{/link-to}}
+          <em class="text-muted">&mdash; 8 times in total</em>
+        </li>
+        <li>
+          Last time played in one team on {{#link-to "tourneys.new"}}Aug 28{{/link-to}}
+          <em class="text-muted">&mdash; 3 times in total</em>
+        </li>
+      </ul>
+      {{#if isLocked}}
+        <p class="text-danger">
+          <i class="fa fa-exclamation-circle"></i>
+          You already voted for this player on Aug 26.<br>
+          You can Re-Vote <strong>only once per week</strong>.
+        </p>
+      {{else}}
+        {{#if isVoted}}
+          <p class="text-success">
+            <i class="fa fa-check-circle"></i>
+            You already voted for this player on Aug 13.
+          </p>
+        {{/if}}
+      {{/if}}
+    </div>
+  </div>
+</div>
+
+<form role="form" class="voting-form gap-lg">
+  <h3>Shoot<b class="text-danger">*</b> <small>Everything to Goal</small></h3>
+  <table class="table table-striped gap-xl lift-md voting-table">
+    <thead>
+      <tr>
+        <th></th>
+        <th class="rate"><label for="voting-shoot-1">1</label></th>
+        <th class="rate"><label for="voting-shoot-2">2</label></th>
+        <th class="rate"><label for="voting-shoot-3">3</label></th>
+        <th class="rate"><label for="voting-shoot-4">4</label></th>
+        <th class="rate"><label for="voting-shoot-5">5</label></th>
+        <th class="rate"><label for="voting-shoot-6">6</label></th>
+        <th class="rate"><label for="voting-shoot-7">7</label></th>
+        <th class="rate"><label for="voting-shoot-8">8</label></th>
+        <th class="rate"><label for="voting-shoot-9">9</label></th>
+        <th class="rate"><label for="voting-shoot-10">10</label></th>
+        <th></th>
+      <tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="text-muted text-right"><em>Looser</em></td>
+        <td class="rate"><input type="radio" name="shoot" value="1" id="voting-shoot-1"></td>
+        <td class="rate"><input type="radio" name="shoot" value="2" id="voting-shoot-2"></td>
+        <td class="rate"><input type="radio" name="shoot" value="3" id="voting-shoot-3"></td>
+        <td class="rate"><input type="radio" name="shoot" value="4" id="voting-shoot-4"></td>
+        <td class="rate"><input type="radio" name="shoot" value="5" id="voting-shoot-5"></td>
+        <td class="rate"><input type="radio" name="shoot" value="6" id="voting-shoot-6"></td>
+        <td class="rate"><input type="radio" name="shoot" value="7" id="voting-shoot-7"></td>
+        <td class="rate"><input type="radio" name="shoot" value="8" id="voting-shoot-8"></td>
+        <td class="rate"><input type="radio" name="shoot" value="9" id="voting-shoot-9"></td>
+        <td class="rate"><input type="radio" name="shoot" value="10" id="voting-shoot-10"></td>
+        <td class="text-muted text-left"><em>Winner</em></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3>Pass<b class="text-danger">*</b> <small>Accuracy, Time and Observation</small></h3>
+  <table class="table table-striped gap-xl lift-md voting-table">
+    <thead>
+      <tr>
+        <th></th>
+        <th class="rate"><label for="voting-pass-1">1</label></th>
+        <th class="rate"><label for="voting-pass-2">2</label></th>
+        <th class="rate"><label for="voting-pass-3">3</label></th>
+        <th class="rate"><label for="voting-pass-4">4</label></th>
+        <th class="rate"><label for="voting-pass-5">5</label></th>
+        <th class="rate"><label for="voting-pass-6">6</label></th>
+        <th class="rate"><label for="voting-pass-7">7</label></th>
+        <th class="rate"><label for="voting-pass-8">8</label></th>
+        <th class="rate"><label for="voting-pass-9">9</label></th>
+        <th class="rate"><label for="voting-pass-10">10</label></th>
+        <th></th>
+      <tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="text-muted text-right"><em>Looser</em></td>
+        <td class="rate"><input type="radio" name="pass" value="1" id="voting-pass-1"></td>
+        <td class="rate"><input type="radio" name="pass" value="2" id="voting-pass-2"></td>
+        <td class="rate"><input type="radio" name="pass" value="3" id="voting-pass-3"></td>
+        <td class="rate"><input type="radio" name="pass" value="4" id="voting-pass-4"></td>
+        <td class="rate"><input type="radio" name="pass" value="5" id="voting-pass-5"></td>
+        <td class="rate"><input type="radio" name="pass" value="6" id="voting-pass-6"></td>
+        <td class="rate"><input type="radio" name="pass" value="7" id="voting-pass-7"></td>
+        <td class="rate"><input type="radio" name="pass" value="8" id="voting-pass-8"></td>
+        <td class="rate"><input type="radio" name="pass" value="9" id="voting-pass-9"></td>
+        <td class="rate"><input type="radio" name="pass" value="10" id="voting-pass-10"></td>
+        <td class="text-muted text-left"><em>Winner</em></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3>Dribble<b class="text-danger">*</b> <small>Stop the ball, Lead the ball, Fint the ball</small></h3>
+  <table class="table table-striped gap-xl lift-md voting-table">
+    <thead>
+      <tr>
+        <th></th>
+        <th class="rate"><label for="voting-dribble-1">1</label></th>
+        <th class="rate"><label for="voting-dribble-2">2</label></th>
+        <th class="rate"><label for="voting-dribble-3">3</label></th>
+        <th class="rate"><label for="voting-dribble-4">4</label></th>
+        <th class="rate"><label for="voting-dribble-5">5</label></th>
+        <th class="rate"><label for="voting-dribble-6">6</label></th>
+        <th class="rate"><label for="voting-dribble-7">7</label></th>
+        <th class="rate"><label for="voting-dribble-8">8</label></th>
+        <th class="rate"><label for="voting-dribble-9">9</label></th>
+        <th class="rate"><label for="voting-dribble-10">10</label></th>
+        <th></th>
+      <tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="text-muted text-right"><em>Looser</em></td>
+        <td class="rate"><input type="radio" name="dribble" value="1" id="voting-dribble-1"></td>
+        <td class="rate"><input type="radio" name="dribble" value="2" id="voting-dribble-2"></td>
+        <td class="rate"><input type="radio" name="dribble" value="3" id="voting-dribble-3"></td>
+        <td class="rate"><input type="radio" name="dribble" value="4" id="voting-dribble-4"></td>
+        <td class="rate"><input type="radio" name="dribble" value="5" id="voting-dribble-5"></td>
+        <td class="rate"><input type="radio" name="dribble" value="6" id="voting-dribble-6"></td>
+        <td class="rate"><input type="radio" name="dribble" value="7" id="voting-dribble-7"></td>
+        <td class="rate"><input type="radio" name="dribble" value="8" id="voting-dribble-8"></td>
+        <td class="rate"><input type="radio" name="dribble" value="9" id="voting-dribble-9"></td>
+        <td class="rate"><input type="radio" name="dribble" value="10" id="voting-dribble-10"></td>
+        <td class="text-muted text-left"><em>Winner</em></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3>Pace<b class="text-danger">*</b> <small>Speed, Stamina, Run until death</small></h3>
+  <table class="table table-striped gap-xl lift-md voting-table">
+    <thead>
+      <tr>
+        <th></th>
+        <th class="rate"><label for="voting-pace-1">1</label></th>
+        <th class="rate"><label for="voting-pace-2">2</label></th>
+        <th class="rate"><label for="voting-pace-3">3</label></th>
+        <th class="rate"><label for="voting-pace-4">4</label></th>
+        <th class="rate"><label for="voting-pace-5">5</label></th>
+        <th class="rate"><label for="voting-pace-6">6</label></th>
+        <th class="rate"><label for="voting-pace-7">7</label></th>
+        <th class="rate"><label for="voting-pace-8">8</label></th>
+        <th class="rate"><label for="voting-pace-9">9</label></th>
+        <th class="rate"><label for="voting-pace-10">10</label></th>
+        <th></th>
+      <tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="text-muted text-right"><em>Looser</em></td>
+        <td class="rate"><input type="radio" name="pace" value="1" id="voting-pace-1"></td>
+        <td class="rate"><input type="radio" name="pace" value="2" id="voting-pace-2"></td>
+        <td class="rate"><input type="radio" name="pace" value="3" id="voting-pace-3"></td>
+        <td class="rate"><input type="radio" name="pace" value="4" id="voting-pace-4"></td>
+        <td class="rate"><input type="radio" name="pace" value="5" id="voting-pace-5"></td>
+        <td class="rate"><input type="radio" name="pace" value="6" id="voting-pace-6"></td>
+        <td class="rate"><input type="radio" name="pace" value="7" id="voting-pace-7"></td>
+        <td class="rate"><input type="radio" name="pace" value="8" id="voting-pace-8"></td>
+        <td class="rate"><input type="radio" name="pace" value="9" id="voting-pace-9"></td>
+        <td class="rate"><input type="radio" name="pace" value="10" id="voting-pace-10"></td>
+        <td class="text-muted text-left"><em>Winner</em></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3>Defence<b class="text-danger">*</b> <small>Take the ball, Stand like a wall, Cover your teammate</small></h3>
+  <table class="table table-striped gap-xl lift-md voting-table">
+    <thead>
+      <tr>
+        <th></th>
+        <th class="rate"><label for="voting-def-1">1</label></th>
+        <th class="rate"><label for="voting-def-2">2</label></th>
+        <th class="rate"><label for="voting-def-3">3</label></th>
+        <th class="rate"><label for="voting-def-4">4</label></th>
+        <th class="rate"><label for="voting-def-5">5</label></th>
+        <th class="rate"><label for="voting-def-6">6</label></th>
+        <th class="rate"><label for="voting-def-7">7</label></th>
+        <th class="rate"><label for="voting-def-8">8</label></th>
+        <th class="rate"><label for="voting-def-9">9</label></th>
+        <th class="rate"><label for="voting-def-10">10</label></th>
+        <th></th>
+      <tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="text-muted text-right"><em>Looser</em></td>
+        <td class="rate"><input type="radio" name="def" value="1" id="voting-def-1"></td>
+        <td class="rate"><input type="radio" name="def" value="2" id="voting-def-2"></td>
+        <td class="rate"><input type="radio" name="def" value="3" id="voting-def-3"></td>
+        <td class="rate"><input type="radio" name="def" value="4" id="voting-def-4"></td>
+        <td class="rate"><input type="radio" name="def" value="5" id="voting-def-5"></td>
+        <td class="rate"><input type="radio" name="def" value="6" id="voting-def-6"></td>
+        <td class="rate"><input type="radio" name="def" value="7" id="voting-def-7"></td>
+        <td class="rate"><input type="radio" name="def" value="8" id="voting-def-8"></td>
+        <td class="rate"><input type="radio" name="def" value="9" id="voting-def-9"></td>
+        <td class="rate"><input type="radio" name="def" value="10" id="voting-def-10"></td>
+        <td class="text-muted text-left"><em>Winner</em></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3>Goal Keeper<b class="text-danger">*</b> <small>No comments</small></h3>
+  <table class="table table-striped gap-xl lift-md voting-table">
+    <thead>
+      <tr>
+        <th></th>
+        <th class="rate"><label for="voting-gk-1">1</label></th>
+        <th class="rate"><label for="voting-gk-2">2</label></th>
+        <th class="rate"><label for="voting-gk-3">3</label></th>
+        <th class="rate"><label for="voting-gk-4">4</label></th>
+        <th class="rate"><label for="voting-gk-5">5</label></th>
+        <th class="rate"><label for="voting-gk-6">6</label></th>
+        <th class="rate"><label for="voting-gk-7">7</label></th>
+        <th class="rate"><label for="voting-gk-8">8</label></th>
+        <th class="rate"><label for="voting-gk-9">9</label></th>
+        <th class="rate"><label for="voting-gk-10">10</label></th>
+        <th></th>
+      <tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="text-muted text-right"><em>Looser</em></td>
+        <td class="rate"><input type="radio" name="gk" value="1" id="voting-gk-1"></td>
+        <td class="rate"><input type="radio" name="gk" value="2" id="voting-gk-2"></td>
+        <td class="rate"><input type="radio" name="gk" value="3" id="voting-gk-3"></td>
+        <td class="rate"><input type="radio" name="gk" value="4" id="voting-gk-4"></td>
+        <td class="rate"><input type="radio" name="gk" value="5" id="voting-gk-5"></td>
+        <td class="rate"><input type="radio" name="gk" value="6" id="voting-gk-6"></td>
+        <td class="rate"><input type="radio" name="gk" value="7" id="voting-gk-7"></td>
+        <td class="rate"><input type="radio" name="gk" value="8" id="voting-gk-8"></td>
+        <td class="rate"><input type="radio" name="gk" value="9" id="voting-gk-9"></td>
+        <td class="rate"><input type="radio" name="gk" value="10" id="voting-gk-10"></td>
+        <td class="text-muted text-left"><em>Winner</em></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <button class="btn btn-success fa-lg"><i class="fa-lg flaticon-sports24"></i> Vote and go to Next</button>
+  <button class="btn btn-default fa-lg"><i class="fa-lg flaticon-football72"></i> Skip</button>
+</form>

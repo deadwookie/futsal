@@ -5,13 +5,20 @@
       </div>
       <ul class="nav navbar-nav">
         {{#link-to "me" tagName="li" href=false}}
-          {{#link-to "me"}}<i class="flaticon-football118 fa-lg"></i> {{model.name}}{{/link-to}}
+          {{#link-to "me"}}
+            <i class="flaticon-football118 fa-lg"></i> {{model.name}}
+          {{/link-to}}
         {{/link-to}}
         {{#link-to "players" tagName="li" href=false}}
-          {{#link-to "players"}}<i class="flaticon-football120 fa-lg"></i> Players{{/link-to}}
+          {{#link-to "players"}}
+            <i class="flaticon-football120 fa-lg"></i> Players
+            <i class="fa fa-exclamation-circle text-danger" title="Somebody waits for your Vote!"></i>
+          {{/link-to}}
         {{/link-to}}
         {{#link-to "tourneys" tagName="li" href=false}}
-          {{#link-to "tourneys"}}<i class="flaticon-football117 fa-lg"></i> Tourneys{{/link-to}}
+          {{#link-to "tourneys"}}
+            <i class="flaticon-football117 fa-lg"></i> Tourneys
+          {{/link-to}}
         {{/link-to}}
       </ul>
       <div class="navbar-right">

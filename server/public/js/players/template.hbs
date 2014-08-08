@@ -12,8 +12,23 @@
             {{/link-to}}
           </h3>
           <ul class="list-unstyled">
-            <li><i class="fa fa-check-circle"></i> Voted (<a href="#">Re-Vote</a>)</li>
-            <li><b class="text-success">+1</b> on <a href="#">Upcoming Tourney</a></li>
+            <li>
+              {{#if isVoted}}
+                <i class="fa fa-check-circle"></i> Voted
+                {{#if isLocked}}{{else}}
+                  ({{#link-to 'voting.player' this}}Re-Vote{{/link-to}})
+                {{/if}}
+              {{else}}
+                {{#link-to 'voting.player' this class="text-danger"}}<i class="fa fa-exclamation-circle"></i> Vote Now!{{/link-to}}
+              {{/if}}
+            </li>
+            {{!--
+            {{#if isGoingTo}}
+              <li>
+                <b class="text-success">+1</b> on {{#link-to 'tourneys.new'}}Upcoming Tourney{{/link-to}}
+              </li>
+            {{/if}}
+             --}}
           </ul>
         </div>
       </div>

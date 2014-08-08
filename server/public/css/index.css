@@ -7,6 +7,10 @@ body {
 }
 
 /* overwrites */
+label {
+  font-weight: normal;
+}
+
 .navbar-brand h1 {
   margin: 0;
   line-height: 20px;
@@ -98,4 +102,12 @@ body {
 }
 .match-now .match-score {
   font-size: 36px;
+}
+
+.voting-table {
+
+}
+.voting-table .rate {
+  width: 5%;
+  text-align: center;
 }

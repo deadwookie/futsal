@@ -26,6 +26,10 @@ App.Router.map(function() {
     this.route('teams');
     this.route('matches');
   });
+
+  this.resource('voting', function() {
+    this.route('player', {path: ':id'});
+  });
 });
 
 // Application
@@ -39,9 +43,18 @@ App.templates['gameday/players'] = require('./gameday/players.hbs');
 App.templates['gameday/teams'] = require('./gameday/teams.hbs');
 App.templates['gameday/matches'] = require('./gameday/matches.hbs');
 
+// Voting
+App.VotingRoute = require('./voting/route');
+App.VotingController = require('./voting/controller');
+App.templates.voting = require('./voting/template.hbs');
+
+App.VotingPlayerController = require('./voting/player/controller');
+App.VotingPlayerRoute = require('./voting/player/route');
+App.templates['voting/player'] = require('./voting/player/template.hbs');
 
 // Player Model
 App.Player = require('./player/model');
+App.PlayerController = require('./player/controller');
 App.Player.FIXTURES = require('./player/fixtures.json');
 
 // Players
