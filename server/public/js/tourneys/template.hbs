@@ -4,14 +4,14 @@
   </div>
   <div class="col-lg-3 col-lg-pull-9">
     <div class="list-group">
+      {{#link-to 'tourneys.new' class="list-group-item"}}
+        Mockup
+      {{/link-to}}
       {{#each}}
         {{#link-to 'tourney' this class="list-group-item"}}
           #{{id}} &mdash; {{date}}
         {{/link-to}}
       {{/each}}
-      {{#link-to 'tourneys.new' class="list-group-item"}}
-        Mockup
-      {{/link-to}}
     </div>
   </div>
 </div>

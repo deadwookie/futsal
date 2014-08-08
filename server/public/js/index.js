@@ -83,6 +83,7 @@ App.templates.tourneyMatches = require('./tourney/matches.hbs');
 
 // Tourneys
 App.TourneysRoute = require('./tourneys/route');
+App.TourneysIndexRoute = require('./tourneys/index/route');
 App.templates.tourneys = require('./tourneys/template.hbs');
 
 // Team Model
