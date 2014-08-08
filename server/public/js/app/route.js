@@ -2,7 +2,7 @@ var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
   model: function(params) {
-    var userId = this.get('auth').get('currentUser.id');
-    return userId ? this.store.find('player', userId) : null;
+    var currentUser = this.get('auth').get('currentUser');
+    return currentUser ? this.store.find('player', currentUser.id) : null;
   }
 });

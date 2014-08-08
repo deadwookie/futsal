@@ -9,7 +9,6 @@ module.exports = Ember.ObjectController.extend({
     logout: function() {
       this.get('auth').logout()
         .then(function(error) {
-          console.dir('goto login');
           // @FIXME: can't transition to login page due to auto login with active session there...
           !error && this.transitionToRoute('login');
         }.bind(this));

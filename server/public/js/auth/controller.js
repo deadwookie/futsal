@@ -30,7 +30,9 @@ module.exports = Ember.ObjectController.extend({
   attemptedTransition: null,
 
   init: function() {
+    // @FIXME: remove debug
     window.auth = this;
+
     // tick. monitor a user's authentication status
     // var authRef = new Firebase(dbRoot + '/.info/authenticated');
     // authRef.on("value", function(snap) {
@@ -46,6 +48,7 @@ module.exports = Ember.ObjectController.extend({
   Logs a user in with an email in password.
   If no arguments are given attempts to login a currently active session.
   If user does not exist or no user is logged in promise will resolve with null.
+  https://gist.github.com/raytiley/8976037
 
   @method login
   @param {String} email The users email
@@ -73,6 +76,9 @@ module.exports = Ember.ObjectController.extend({
           if (error) {
             reject(error);
           }
+
+          authClient.logout();
+
           if (!user) {
             self.set('currentUser', null);
             self.set('isAuthenticated', false);
@@ -80,7 +86,6 @@ module.exports = Ember.ObjectController.extend({
           }
         });
       });
-      authClient.logout();
     });
   },
 
@@ -99,37 +104,44 @@ module.exports = Ember.ObjectController.extend({
     var promise = new Ember.RSVP.Promise(function(resolve, reject) {
         var authClient = new FirebaseSimpleLogin(dbRef, function(error, user) {
           Ember.run(function() {
-            if (error)
+            if (error) {
               reject(error);
-
-            if (user) {
-              var newUser = self.get('controllers.player').store.createRecord('player', {
-                id: user.id,
-                email: user.email,
-                name: options.name
-              });
-
-              var appUser = newUser.save().then(function(value) {
-                self.set('currentUser', value);
-                self.set('isAuthenticated', true);
-                return value;
-              });
-
-              resolve(appUser);
             }
+
+            authClient.createUser(email, password, function(error, user) {
+              if (error) {
+                reject(error);
+              }
+              if (user) {
+                var newUser = self.get('controllers.player').store.createRecord('player', {
+                  id: user.id,
+                  email: user.email,
+                  name: options.name
+                });
+
+                var appUser = newUser.save().then(function(value) {
+                  self.set('currentUser', value);
+                  self.set('isAuthenticated', true);
+                  return value;
+                });
+
+                authClient.login('password', {email: email, password: password});
+                resolve(appUser);
+              }
+            });
           });
         });
 
-        authClient.createUser(email, password, function(error, user) {
-          Ember.run(function() {
-            if (error)
-              reject(error);
+        // authClient.createUser(email, password, function(error, user) {
+        //   Ember.run(function() {
+        //     if (error)
+        //       reject(error);
 
-            if (user) {
-              authClient.login('password', {email: email, password: password});
-            }
-          });
-        });
+        //     if (user) {
+        //       authClient.login('password', {email: email, password: password});
+        //     }
+        //   });
+        // });
     });
 
     return promise;
@@ -143,7 +155,6 @@ module.exports = Ember.ObjectController.extend({
         //First Time this fires error and user should be null. If connection successful
         //Second Time will be due to login. In that case we should have user or error
         Ember.run(function() {
-
           // Handle posible errors.
           if (error && error.code === 'INVALID_USER') {
             resolve(null);
@@ -163,6 +174,7 @@ module.exports = Ember.ObjectController.extend({
           }
         });
       });
+
       authClient.login('password', {
         email: email,
         password: password
