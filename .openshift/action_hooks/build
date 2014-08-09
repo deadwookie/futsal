@@ -5,4 +5,5 @@ echo Installing Bower dependencies
 # bower install --silent
 cd $HOME/app-root/runtime/repo
 npm run boweri
+npm run browserify
 echo Bower ok
