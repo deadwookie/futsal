@@ -56,7 +56,7 @@
   "scripts": {
     "start": "node server",
     "boweri": "export HOME=$HOME/app-root/runtime; ./node_modules/.bin/bower install --silent",
-    "browserify": "./node_modules/.bin/gulp browserify --browserify:debug 0 --browserify:watch 0",
+    "browserify": "./node_modules/.bin/gulp browserify --browserify:debug 0 --browserify:watch 0"
   },
   "browser": {
     "ember": "./bower/ember/ember.js",
