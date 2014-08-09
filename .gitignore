@@ -31,3 +31,4 @@ nbproject
 # Dev overrides
 *.overrides.json
 server/public/app.js
+server/public/app.js.map

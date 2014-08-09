@@ -3,49 +3,63 @@ var gutil = require('gulp-util');
 var prettyHrtime = require('pretty-hrtime');
 var browserify = require('browserify');
 var watchify = require('watchify');
-var vinyl = require('vinyl-source-stream');
+var source = require('vinyl-source-stream');
+var buffer = require('vinyl-buffer');
+var exorcist = require('exorcist');
+var uglify = require('gulp-uglify');
 
 var taskname = require('path').basename(__filename, '.js');
 var config = gulp.config.get(taskname);
 
 gulp.task(taskname, function() {
   var to = config.dest.split('/'),
-    toFile = to.pop(),
-    toDir = to.join('/');
+    filename = to.pop(),
+    dirname = to.join('/');
 
   var bundleMethod = config.watch ? watchify : browserify;
+  var logLabel = config.watch ? 'Watchify' : 'Browserify';
 
   var bundler = bundleMethod({
-    // Specify the entry point of your app
-    entries: [config.src],
-    // Add file extentions to make optional in your requires
+    entries: config.src,
     extensions: config.extentions,
-    // Enable source maps!
     debug: config.debug
   });
 
-  var bundle = function(files) {
-    var startTime = process.hrtime();
-    gutil.log('Browserify build', files ? 'due to changes in ' + gutil.colors.magenta(files) : '...');
+  config.transform && [].concat(config.transform).forEach(function(tr) {
+    bundler.transform(tr);
+  });
 
-    return bundler
-      .bundle()
-      // Report compile errors
+  var bundle = function(files) {
+    var startTime = process.hrtime(),
+      stream;
+    gutil.log(logLabel + ' build', files ? 'due to changes in ' + gutil.colors.magenta(files) : '...');
+
+    // Note: if you use browserify>5, you don't have to pass debug to .bundle()
+    // Otherwise see https://github.com/substack/node-browserify/tree/4.2.3
+    stream = bundler.bundle({debug: config.debug})
       .on('error', function() {
-        gutil.log(gutil.colors.red('Browserify Error'), arguments);
-      })
-      // Use vinyl-source-stream to make the
-      // stream gulp compatible. Specifiy the
-      // desired output filename here.
-      .pipe(vinyl(toFile))
-      // Specify the output destination
-      .pipe(gulp.dest(toDir))
-      // Log when bundling completes!
-      // .on('end', bundleLogger.end);
+        gutil.log(gutil.colors.red(logLabel + ' Error'), arguments);
+      });
+
+    if (config.debug && config.sourceMap) {
+      stream = stream.pipe(exorcist(config.sourceMap));
+    }
+
+    stream = stream.pipe(source(filename));
+
+    if (!config.debug) {
+      stream = stream
+        .pipe(buffer())
+        .pipe(uglify());
+    }
+
+    stream = stream.pipe(gulp.dest(dirname))
       .on('end', function() {
         var taskTime = prettyHrtime(process.hrtime(startTime));
-        gutil.log('Browserify build is done in', gutil.colors.cyan(taskTime));
+        gutil.log(logLabel + ' build is done in', gutil.colors.cyan(taskTime));
       });
+
+    return stream;
   };
 
   if (config.watch) {

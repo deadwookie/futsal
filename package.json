@@ -47,18 +47,16 @@
     "gulp-nodemon": "^1.0.4",
     "gulp-util": "^3.0.0",
     "pretty-hrtime": "^0.2.1",
-    "ember-template-compiler": "^1.6.1"
+    "ember-template-compiler": "^1.6.1",
+    "exorcist": "~0.1.6",
+    "gulp-uglify": "~0.3.1",
+    "vinyl-buffer": "0.0.0"
   },
   "bundleDependencies": [],
   "scripts": {
     "start": "node server",
-    "boweri": "export HOME=$HOME/app-root/runtime; ./node_modules/bower/bin/bower install --silent"
-  },
-  "browserify": {
-    "transform": [
-      "browserify-shim",
-      "hbsfy"
-    ]
+    "boweri": "export HOME=$HOME/app-root/runtime; ./node_modules/.bin/bower install --silent",
+    "browserify": "./node_modules/.bin/gulp browserify --browserify:debug 0 --browserify:watch 0",
   },
   "browser": {
     "ember": "./bower/ember/ember.js",
@@ -80,7 +78,9 @@
     }
   },
   "hbsfy": {
-    "extentions": ["hbs"],
+    "extentions": [
+      "hbs"
+    ],
     "precompiler": "ember-template-compiler",
     "compiler": "require('ember').Handlebars"
   },
