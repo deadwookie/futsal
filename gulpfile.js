@@ -6,10 +6,10 @@ gulp.config = nconf.argv();
 
 gulp.config.defaults({
   'nodemon': {
-    script: './server',
-    watch: ['./server/**/*'],
+    script: './server/index.js',
+    watch: ['./server/'],
     ext: 'js json',
-    ignore: ['./server/public/**/*'],
+    ignore: ['./server/public/'],
     env: {
       NODE_ENV: 'development'
     }
@@ -18,8 +18,8 @@ gulp.config.defaults({
     src: './server/public/js/index.js',
     dest: './server/public/app.js',
     sourceMap: './server/public/app.js.map',
-    extentions: ['.hbs'],
 
+    extentions: ['.hbs'],
     transform: [
       'browserify-shim',
       'hbsfy'
