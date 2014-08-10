@@ -3,6 +3,7 @@ var DS = require('ember-data');
 var config = require('config')
   // Note: Cannot use config.file() or config.dir(),
   // Because browserify doesn't allow to require files by variable name :(
+  .extend(require('../../config/browser.overrides.json'))
   .extend(require('../../config/services.json'))
   .extend(require('../../config/browser.json'));
 
