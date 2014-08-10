@@ -1,10 +1,10 @@
 var gulp = require('gulp');
-var nconf = require('nconf');
+var config = require('./server/node_modules/config');
 
 // setup config
-gulp.config = nconf.argv();
+gulp.config = config.argv();
 
-gulp.config.defaults({
+gulp.config.extend({
   'nodemon': {
     script: './server/index.js',
     watch: ['./server/'],

@@ -1,5 +1,5 @@
 var session = require('express-session');
-var config = require('nconf');
+var config = require('config');
 var sessConfig = config.get('session');
 var storeName = sessConfig.store;
 var Provider;

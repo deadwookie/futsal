@@ -1,5 +1,11 @@
 var Ember = require('ember');
 var DS = require('ember-data');
+var config = require('config')
+  // Note: Cannot use config.file() or config.dir(),
+  // Because browserify doesn't allow to require files by variable name :(
+  .extend(require('../../config/services.json'))
+  .extend(require('../../config/browser.json'));
+
 
 // todo: rethink!
 Ember.Route.reopen({
@@ -11,6 +17,7 @@ var App = Ember.Application.create({
 });
 App.ApplicationAdapter = DS.FixtureAdapter.extend();
 App.templates = Ember.TEMPLATES;
+App.config = config;
 
 App.Router.map(function() {
   this.route('me', {path: '/'});
