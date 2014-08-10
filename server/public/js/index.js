@@ -33,8 +33,8 @@ App.Router.map(function() {
 });
 
 // Application
-App.ApplicationRoute = require('./app/route');
-App.templates.application = require('./app/template.hbs');
+App.ApplicationRoute = require('./application/route');
+App.templates.application = require('./application/template.hbs');
 
 // Gameday
 App.GamedayIndexRoute = require('./gameday/index/route');
@@ -114,3 +114,7 @@ App.templates.matches = require('./matches/template.hbs');
 
 // Me
 App.MeRoute = require('./me/route');
+
+
+// debug purpose
+global.zApp = module.exports = App;
