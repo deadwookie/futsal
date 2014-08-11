@@ -4,10 +4,10 @@ var path = require('path');
 var config = require('config')
   .argv()
   .dir(path.join(__dirname, './config'), [
-     'server.overrides.json',
-     'services.json',
-     'server.json'
-   ]);
+    'server.overrides.json',
+    'services.json',
+    'server.json'
+  ]);
 
 
 // process termination (ported from Openshift sample app)
@@ -30,7 +30,7 @@ process.on('exit', function() {
 
 
 // server dependencies
-var isDev = config.get('NODE_ENV') !== 'production';
+var isDev = process.env.NODE_ENV !== 'production';
 var express = require('express');
 var logger = require('morgan')(config.get('server.logFormat'));
 var favicon = require('serve-favicon');
