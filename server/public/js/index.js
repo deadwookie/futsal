@@ -20,7 +20,7 @@ var App = Ember.Application.create({
 });
 
 App.ApplicationAdapter = DS.FirebaseAdapter.extend({
-  firebase: new Firebase('https://' + config.firebase.host)
+  firebase: new Firebase(config.get('firebase.host'))
 });
 App.templates = Ember.TEMPLATES;
 App.config = config;

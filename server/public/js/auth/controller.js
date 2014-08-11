@@ -3,8 +3,14 @@ var Firebase = require('firebase-client');
 var FirebaseSimpleLogin = require('firebase-simple-login');
 
 // @FIXME: path?
-var config = require('../../../config/server.json');
-var dbRef = new Firebase('https://' + config.firebase.host);
+var config = require('config')
+  // Note: Cannot use config.file() or config.dir(),
+  // Because browserify doesn't allow to require files by variable name :(
+  .extend(require('../../../config/browser.overrides.json'))
+  .extend(require('../../../config/services.json'))
+  .extend(require('../../../config/browser.json'));
+
+var dbRef = new Firebase(config.get('firebase.host'));
 
 // @TODO: remember me. tick. attemptedTransition
 module.exports = Ember.ObjectController.extend({

@@ -26,12 +26,17 @@
           {{#link-to "gameday" tagName="li" href=false}}
             {{#link-to "gameday"}}<i class="flaticon-flaming fa-lg"></i> Upcoming GameDay{{/link-to}}
           {{/link-to}}
+          <li>
+            <button class="btn navbar-btn btn-success active" title="I'm coming">+1</button>
+          </li>
           {{!-- <li class="navbar-text">
             <em>3 days left</em>
           </li> --}}
-        </ul>
-        &nbsp;
-        <button class="btn navbar-btn btn-success active" title="I'm coming">+1</button>
+          <li>
+            {{#if isAuthenticated}}
+              <a href="#" class="btn1 navbar-btn1" {{action logout}}>Logout</button>
+            {{/if}}
+          </li>
       </div>
     </div><!--/.container-fluid -->
   </div>

@@ -59457,7 +59457,7 @@ requireModule("ember");
 }).call(global, undefined, undefined, undefined, undefined, function defineExport(ex) { module.exports = ex; });
 
 }).call(this,require("Zbi7gb"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"Zbi7gb":10,"handlebars":28,"jquery":29}],3:[function(require,module,exports){
+},{"Zbi7gb":11,"handlebars":30,"jquery":31}],3:[function(require,module,exports){
 (function (Buffer){
 (function(){
   var crypt = require('crypt'),
@@ -61136,6 +61136,234 @@ exports.write = function(buffer, value, offset, isLE, mLen, nBytes) {
 };
 
 },{}],10:[function(require,module,exports){
+(function (process){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+// resolves . and .. elements in a path array with directory names there
+// must be no slashes, empty elements, or device names (c:\) in the array
+// (so also no leading and trailing slashes - it does not distinguish
+// relative and absolute paths)
+function normalizeArray(parts, allowAboveRoot) {
+  // if the path tries to go above the root, `up` ends up > 0
+  var up = 0;
+  for (var i = parts.length - 1; i >= 0; i--) {
+    var last = parts[i];
+    if (last === '.') {
+      parts.splice(i, 1);
+    } else if (last === '..') {
+      parts.splice(i, 1);
+      up++;
+    } else if (up) {
+      parts.splice(i, 1);
+      up--;
+    }
+  }
+
+  // if the path is allowed to go above the root, restore leading ..s
+  if (allowAboveRoot) {
+    for (; up--; up) {
+      parts.unshift('..');
+    }
+  }
+
+  return parts;
+}
+
+// Split a filename into [root, dir, basename, ext], unix version
+// 'root' is just a slash, or nothing.
+var splitPathRe =
+    /^(\/?|)([\s\S]*?)((?:\.{1,2}|[^\/]+?|)(\.[^.\/]*|))(?:[\/]*)$/;
+var splitPath = function(filename) {
+  return splitPathRe.exec(filename).slice(1);
+};
+
+// path.resolve([from ...], to)
+// posix version
+exports.resolve = function() {
+  var resolvedPath = '',
+      resolvedAbsolute = false;
+
+  for (var i = arguments.length - 1; i >= -1 && !resolvedAbsolute; i--) {
+    var path = (i >= 0) ? arguments[i] : process.cwd();
+
+    // Skip empty and invalid entries
+    if (typeof path !== 'string') {
+      throw new TypeError('Arguments to path.resolve must be strings');
+    } else if (!path) {
+      continue;
+    }
+
+    resolvedPath = path + '/' + resolvedPath;
+    resolvedAbsolute = path.charAt(0) === '/';
+  }
+
+  // At this point the path should be resolved to a full absolute path, but
+  // handle relative paths to be safe (might happen when process.cwd() fails)
+
+  // Normalize the path
+  resolvedPath = normalizeArray(filter(resolvedPath.split('/'), function(p) {
+    return !!p;
+  }), !resolvedAbsolute).join('/');
+
+  return ((resolvedAbsolute ? '/' : '') + resolvedPath) || '.';
+};
+
+// path.normalize(path)
+// posix version
+exports.normalize = function(path) {
+  var isAbsolute = exports.isAbsolute(path),
+      trailingSlash = substr(path, -1) === '/';
+
+  // Normalize the path
+  path = normalizeArray(filter(path.split('/'), function(p) {
+    return !!p;
+  }), !isAbsolute).join('/');
+
+  if (!path && !isAbsolute) {
+    path = '.';
+  }
+  if (path && trailingSlash) {
+    path += '/';
+  }
+
+  return (isAbsolute ? '/' : '') + path;
+};
+
+// posix version
+exports.isAbsolute = function(path) {
+  return path.charAt(0) === '/';
+};
+
+// posix version
+exports.join = function() {
+  var paths = Array.prototype.slice.call(arguments, 0);
+  return exports.normalize(filter(paths, function(p, index) {
+    if (typeof p !== 'string') {
+      throw new TypeError('Arguments to path.join must be strings');
+    }
+    return p;
+  }).join('/'));
+};
+
+
+// path.relative(from, to)
+// posix version
+exports.relative = function(from, to) {
+  from = exports.resolve(from).substr(1);
+  to = exports.resolve(to).substr(1);
+
+  function trim(arr) {
+    var start = 0;
+    for (; start < arr.length; start++) {
+      if (arr[start] !== '') break;
+    }
+
+    var end = arr.length - 1;
+    for (; end >= 0; end--) {
+      if (arr[end] !== '') break;
+    }
+
+    if (start > end) return [];
+    return arr.slice(start, end - start + 1);
+  }
+
+  var fromParts = trim(from.split('/'));
+  var toParts = trim(to.split('/'));
+
+  var length = Math.min(fromParts.length, toParts.length);
+  var samePartsLength = length;
+  for (var i = 0; i < length; i++) {
+    if (fromParts[i] !== toParts[i]) {
+      samePartsLength = i;
+      break;
+    }
+  }
+
+  var outputParts = [];
+  for (var i = samePartsLength; i < fromParts.length; i++) {
+    outputParts.push('..');
+  }
+
+  outputParts = outputParts.concat(toParts.slice(samePartsLength));
+
+  return outputParts.join('/');
+};
+
+exports.sep = '/';
+exports.delimiter = ':';
+
+exports.dirname = function(path) {
+  var result = splitPath(path),
+      root = result[0],
+      dir = result[1];
+
+  if (!root && !dir) {
+    // No dirname whatsoever
+    return '.';
+  }
+
+  if (dir) {
+    // It has a dirname, strip trailing slash
+    dir = dir.substr(0, dir.length - 1);
+  }
+
+  return root + dir;
+};
+
+
+exports.basename = function(path, ext) {
+  var f = splitPath(path)[2];
+  // TODO: make this comparison case-insensitive on windows?
+  if (ext && f.substr(-1 * ext.length) === ext) {
+    f = f.substr(0, f.length - ext.length);
+  }
+  return f;
+};
+
+
+exports.extname = function(path) {
+  return splitPath(path)[3];
+};
+
+function filter (xs, f) {
+    if (xs.filter) return xs.filter(f);
+    var res = [];
+    for (var i = 0; i < xs.length; i++) {
+        if (f(xs[i], i, xs)) res.push(xs[i]);
+    }
+    return res;
+}
+
+// String.prototype.substr - negative index don't work in IE8
+var substr = 'ab'.substr(-1) === 'b'
+    ? function (str, start, len) { return str.substr(start, len) }
+    : function (str, start, len) {
+        if (start < 0) start = str.length + start;
+        return str.substr(start, len);
+    }
+;
+
+}).call(this,require("Zbi7gb"))
+},{"Zbi7gb":11}],11:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -61200,9 +61428,91 @@ process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
 
-},{}],11:[function(require,module,exports){
-!function(){"use strict";if(void 0!==window.DS){var a=Ember.Namespace.create({VERSION:"1.1.3"});Ember.libraries&&Ember.libraries.registerCoreLibrary("EmberFire",a.VERSION);var b=Ember.RSVP.Promise,c=Ember.EnumerableUtils.map,d=Ember.EnumerableUtils.forEach,e=Ember.String.fmt;DS.FirebaseSerializer=DS.JSONSerializer.extend(Ember.Evented,{normalize:function(a,b){return a.eachRelationship(function(c,d){if("hasMany"===d.kind)if("object"!=typeof b[c]||Ember.isArray(b[c])||d.options.embedded===!0){if(Ember.isArray(b[c]))throw new Error(e('%@ relationship %@(\'%@\') must be a key/value map in Firebase. Example: { "%@": { "%@_id": true } }',[a.toString(),d.kind,d.type.typeKey,d.key,d.type.typeKey]))}else b[c]=Ember.keys(b[c])}),this._super.apply(this,arguments)},extractSingle:function(a,b,c){var d=(a.adapterFor(b),this.normalize(b,c));return b.eachRelationship(function(f,g){if(!Ember.isNone(c)&&!Ember.isNone(c[f])&&g.options.embedded===!0){var h,i,j=d[f],k=[];if("belongsTo"===g.kind){if("string"!=typeof j.id)throw new Error(e('Embedded relationship "%@" of "%@" must contain an "id" property in the payload',[g.type.typeKey,b]));k.push(j),d[f]=j.id}else{for(h in j)i=j[h],null!==i&&"object"==typeof i&&(i.id=h),k.push(i);d[f]=Ember.keys(d[f])}a.pushMany(g.type,k)}}),d},extractArray:function(a,b,d){return c(d,function(c){return this.extractSingle(a,b,c)},this)},serializeHasMany:function(a,b,c){var d=c.key,e=this.keyForRelationship?this.keyForRelationship(d,"hasMany"):d,f=DS.RelationshipChange.determineRelationshipType(a.constructor,c),g=["manyToNone","manyToMany","manyToOne"];g.indexOf(f)>-1&&(b[e]=Ember.A(a.get(d)).mapBy("id"))}}),DS.FirebaseAdapter=DS.Adapter.extend(Ember.Evented,{defaultSerializer:"-firebase",init:function(){if(!this.firebase||"object"!=typeof this.firebase)throw new Error("Please set the `firebase` property on the adapter.");this._ref=this.firebase.ref(),this._findAllMapForType={},this._recordCacheForType={},this._queue=[]},generateIdForRecord:function(){return this._ref.push().name()},_assignIdToPayload:function(a){var b=a.val();return null!==b&&"object"==typeof b&&"undefined"==typeof b.id&&(b.id=a.name()),b},find:function(a,c,d){var f=this,g=!1,h=this._getRef(c,d),i=a.serializerFor(c);return new b(function(b,j){h.on("value",function(k){var l=f._assignIdToPayload(k),m=a.getById(c,k.name());if(f._updateRecordCacheForType(c,l),g)null===l&&m&&!m.get("isDeleted")?f._enqueue(function(){a.getById(c,k.name()).deleteRecord()}):null!==l&&f._enqueue(function(){a.push(c,i.extractSingle(a,c,l))});else if(g=!0,null===l){a.hasRecordForId(c,d)&&a.dematerializeRecord(m);var n=new Error(e("no record was found at %@",[h.toString()]));n.recordId=d,f._enqueue(j,[n])}else f._enqueue(b,[l])},function(a){g||f._enqueue(j,[a])})},e("DS: FirebaseAdapter#find %@ to %@",[c,h.toString()]))},findMany:function(a,b,e){var f=c(e,function(c){return this.find(a,b,c)},this);return Ember.RSVP.allSettled(f).then(function(c){return c=Ember.A(c),d(c.filterBy("state","rejected"),function(c){var d=c.reason.recordId;if(a.hasRecordForId(b,d)){var e=a.getById(b,d);a.dematerializeRecord(e)}}),Ember.A(c.filterBy("state","fulfilled")).mapBy("value")})},findAll:function(a,c){var d=this,f=this._getRef(c);return new b(function(b,e){var g;d._findAllHasEventsForType(c)||(g=d._findAllAddEventListeners(a,c,f)),f.once("value",function(a){var e=[];g&&Ember.run(null,g.resolve),null===a.val()?d._enqueue(b,[e]):(a.forEach(function(a){var b=d._assignIdToPayload(a);d._updateRecordCacheForType(c,b),e.push(b)}),d._enqueue(b,[e]))},function(a){d._enqueue(e,[a])})},e("DS: FirebaseAdapter#findAll %@ to %@",[c,f.toString()]))},_findAllMapForType:void 0,_findAllHasEventsForType:function(a){return!Ember.isNone(this._findAllMapForType[a])},_findAllAddEventListeners:function(a,b,c){this._findAllMapForType[b]=!0;var d=Ember.RSVP.defer(),e=this,f=a.serializerFor(b),g=!1;return d.promise.then(function(){g=!0}),c.on("child_added",function(c){g&&e._handleChildValue(a,b,f,c)}),c.on("child_changed",function(c){g&&e._handleChildValue(a,b,f,c)}),c.on("child_removed",function(c){if(g){var d=a.getById(b,c.name());d&&!d.get("isDeleted")&&e._enqueue(function(){a.deleteRecord(d)})}}),d},_handleChildValue:function(a,b,c,d){var e=this._assignIdToPayload(d);this._enqueue(function(){a.push(b,c.extractSingle(a,b,e))})},createRecord:function(a,b,c){return this.updateRecord(a,b,c)},updateRecord:function(a,c,d){var f=this,g=this._getRef(c,d.id),h=Ember.get(f._recordCacheForType,e("%@.%@",[c.typeKey,d.get("id")]))||{};return this._getSerializedRecord(d).then(function(i){return new b(function(b,j){var k=Ember.A();d.eachRelationship(function(b,d){var e;switch(d.kind){case"hasMany":Ember.isArray(i[b])&&(e=f._saveHasManyRelationship(a,c,d,i[b],g,h),k.push(e),delete i[b]);break;case"belongsTo":"undefined"==typeof i[b]||null===i[b]||""===i[b]?delete i[b]:d.options.embedded===!0&&(e=f._saveBelongsToRecord(a,c,d,i[b],g),k.push(e),delete i[b])}}),Ember.RSVP.allSettled(k).then(function(a){a=Ember.A(a);var h=Ember.A(a.filterBy("state","rejected"));if(0!==h.get("length")){var k=new Error(e("Some errors were encountered while saving %@ %@",[c,d.id]));k.errors=h.mapBy("reason"),f._enqueue(j,[k])}g.update(i,function(a){a?f._enqueue(j,[a]):f._enqueue(b)})})})},e("DS: FirebaseAdapter#updateRecord %@ to %@",[c,g.toString()]))},_getSerializedRecord:function(a){var c=a.serialize({includeId:!1}),d=[];return a.eachRelationship(function(e,f){switch(f.kind){case"hasMany":d.push(b.cast(a.get(e)).then(function(a){c[e]=Ember.A(a).mapBy("id")}))}}),Ember.RSVP.all(d).then(function(){return c})},_saveHasManyRelationship:function(a,b,c,d,f,g){if(!Ember.isArray(d))throw new Error("hasMany relationships must must be an array");var h=this,i=Ember.A(g[c.key]);d=Ember.A(d);var j=d.filter(function(a){return!i.contains(a)}),k=d.filter(function(b){var d=c.type;return a.hasRecordForId(d,b)&&a.getById(d,b).get("isDirty")===!0});k=Ember.A(k.concat(j)).uniq().map(function(b){return h._saveHasManyRecord(a,c,f,b)});var l=i.filter(function(a){return!d.contains(a)});l=Ember.A(l).map(function(b){return h._removeHasManyRecord(a,c,f,b)});var m=k.concat(l);return Ember.RSVP.allSettled(m).then(function(a){var b=Ember.A(Ember.A(a).filterBy("state","rejected"));if(0===b.get("length"))return g[c.key]=d,a;var f=new Error(e("Some errors were encountered while saving a hasMany relationship %@ -> %@",[c.parentType,c.type]));throw f.errors=Ember.A(b).mapBy("reason"),f})},_saveHasManyRecord:function(a,c,d,e){var f=this,g=this._getRelationshipRef(d,c.key,e),h=a.getById(c.type,e),i=c.options.embedded===!0,j=i?h.serialize({includeId:!1}):!0;return new b(function(a,b){var c=function(c){c?("object"==typeof c&&(c.location=g.toString()),f._enqueue(b,[c])):f._enqueue(a)};i?g.update(j,c):g.set(j,c)})},_removeHasManyRecord:function(a,c,d,e){var f=this,g=this._getRelationshipRef(d,c.key,e);return new b(function(a,b){var c=function(c){c?("object"==typeof c&&(c.location=g.toString()),f._enqueue(b,[c])):f._enqueue(a)};g.remove(c)})},_saveBelongsToRecord:function(a,c,d,e,f){var g=this,h=f.child(d.key),i=a.getById(d.type,e),j=d.options.embedded===!0,k=j?i.serialize({includeId:!0}):!0;return new b(function(a,b){var c=function(c){c?("object"==typeof c&&(c.location=h.toString()),g._enqueue(b,[c])):g._enqueue(a)};j?h.update(k,c):h.set(k,c)})},deleteRecord:function(a,c,d){var f=this,g=this._getRef(c,d.get("id"));return new b(function(a,b){g.remove(function(c){c?f._enqueue(b,[c]):f._enqueue(a)})},e("DS: FirebaseAdapter#deleteRecord %@ to %@",[c,g.toString()]))},pathForType:function(a){var b=Ember.String.camelize(a);return Ember.String.pluralize(b)},_getRef:function(a,b){var c=this._ref;return a&&(c=c.child(this.pathForType(a.typeKey))),b&&(c=c.child(b)),c},_getRelationshipRef:function(a,b,c){return a.child(b).child(c)},_queueFlushDelay:1e3/60,_queueScheduleFlush:function(){Ember.run.later(this,this._queueFlush,this._queueFlushDelay)},_queueFlush:function(){d(this._queue,function(a){var b=a[0],c=a[1];b.apply(null,c)}),this._queue.length=0},_enqueue:function(a,b){var c=this._queue.push([a,b]);1===c&&this._queueScheduleFlush()},_recordCacheForType:void 0,_updateRecordCacheForType:function(a,b){if(b){var c=this,d=b.id,e=c._recordCacheForType,f=a.typeKey;a.eachRelationship(function(a,c){if("hasMany"===c.kind){var g=b[a];e[f]=e[f]||{},e[f][d]=e[f][d]||{},e[f][d][a]=Ember.isNone(g)?Ember.A():Ember.A(Ember.keys(g))}})}}}),Ember.onLoad("Ember.Application",function(a){a.initializer({name:"firebase",initialize:function(a,b){b.register("adapter:-firebase",DS.FirebaseAdapter),b.register("serializer:-firebase",DS.FirebaseSerializer)}})})}}();
 },{}],12:[function(require,module,exports){
+!function(){"use strict";if(void 0!==window.DS){var a=Ember.Namespace.create({VERSION:"1.1.3"});Ember.libraries&&Ember.libraries.registerCoreLibrary("EmberFire",a.VERSION);var b=Ember.RSVP.Promise,c=Ember.EnumerableUtils.map,d=Ember.EnumerableUtils.forEach,e=Ember.String.fmt;DS.FirebaseSerializer=DS.JSONSerializer.extend(Ember.Evented,{normalize:function(a,b){return a.eachRelationship(function(c,d){if("hasMany"===d.kind)if("object"!=typeof b[c]||Ember.isArray(b[c])||d.options.embedded===!0){if(Ember.isArray(b[c]))throw new Error(e('%@ relationship %@(\'%@\') must be a key/value map in Firebase. Example: { "%@": { "%@_id": true } }',[a.toString(),d.kind,d.type.typeKey,d.key,d.type.typeKey]))}else b[c]=Ember.keys(b[c])}),this._super.apply(this,arguments)},extractSingle:function(a,b,c){var d=(a.adapterFor(b),this.normalize(b,c));return b.eachRelationship(function(f,g){if(!Ember.isNone(c)&&!Ember.isNone(c[f])&&g.options.embedded===!0){var h,i,j=d[f],k=[];if("belongsTo"===g.kind){if("string"!=typeof j.id)throw new Error(e('Embedded relationship "%@" of "%@" must contain an "id" property in the payload',[g.type.typeKey,b]));k.push(j),d[f]=j.id}else{for(h in j)i=j[h],null!==i&&"object"==typeof i&&(i.id=h),k.push(i);d[f]=Ember.keys(d[f])}a.pushMany(g.type,k)}}),d},extractArray:function(a,b,d){return c(d,function(c){return this.extractSingle(a,b,c)},this)},serializeHasMany:function(a,b,c){var d=c.key,e=this.keyForRelationship?this.keyForRelationship(d,"hasMany"):d,f=DS.RelationshipChange.determineRelationshipType(a.constructor,c),g=["manyToNone","manyToMany","manyToOne"];g.indexOf(f)>-1&&(b[e]=Ember.A(a.get(d)).mapBy("id"))}}),DS.FirebaseAdapter=DS.Adapter.extend(Ember.Evented,{defaultSerializer:"-firebase",init:function(){if(!this.firebase||"object"!=typeof this.firebase)throw new Error("Please set the `firebase` property on the adapter.");this._ref=this.firebase.ref(),this._findAllMapForType={},this._recordCacheForType={},this._queue=[]},generateIdForRecord:function(){return this._ref.push().name()},_assignIdToPayload:function(a){var b=a.val();return null!==b&&"object"==typeof b&&"undefined"==typeof b.id&&(b.id=a.name()),b},find:function(a,c,d){var f=this,g=!1,h=this._getRef(c,d),i=a.serializerFor(c);return new b(function(b,j){h.on("value",function(k){var l=f._assignIdToPayload(k),m=a.getById(c,k.name());if(f._updateRecordCacheForType(c,l),g)null===l&&m&&!m.get("isDeleted")?f._enqueue(function(){a.getById(c,k.name()).deleteRecord()}):null!==l&&f._enqueue(function(){a.push(c,i.extractSingle(a,c,l))});else if(g=!0,null===l){a.hasRecordForId(c,d)&&a.dematerializeRecord(m);var n=new Error(e("no record was found at %@",[h.toString()]));n.recordId=d,f._enqueue(j,[n])}else f._enqueue(b,[l])},function(a){g||f._enqueue(j,[a])})},e("DS: FirebaseAdapter#find %@ to %@",[c,h.toString()]))},findMany:function(a,b,e){var f=c(e,function(c){return this.find(a,b,c)},this);return Ember.RSVP.allSettled(f).then(function(c){return c=Ember.A(c),d(c.filterBy("state","rejected"),function(c){var d=c.reason.recordId;if(a.hasRecordForId(b,d)){var e=a.getById(b,d);a.dematerializeRecord(e)}}),Ember.A(c.filterBy("state","fulfilled")).mapBy("value")})},findAll:function(a,c){var d=this,f=this._getRef(c);return new b(function(b,e){var g;d._findAllHasEventsForType(c)||(g=d._findAllAddEventListeners(a,c,f)),f.once("value",function(a){var e=[];g&&Ember.run(null,g.resolve),null===a.val()?d._enqueue(b,[e]):(a.forEach(function(a){var b=d._assignIdToPayload(a);d._updateRecordCacheForType(c,b),e.push(b)}),d._enqueue(b,[e]))},function(a){d._enqueue(e,[a])})},e("DS: FirebaseAdapter#findAll %@ to %@",[c,f.toString()]))},_findAllMapForType:void 0,_findAllHasEventsForType:function(a){return!Ember.isNone(this._findAllMapForType[a])},_findAllAddEventListeners:function(a,b,c){this._findAllMapForType[b]=!0;var d=Ember.RSVP.defer(),e=this,f=a.serializerFor(b),g=!1;return d.promise.then(function(){g=!0}),c.on("child_added",function(c){g&&e._handleChildValue(a,b,f,c)}),c.on("child_changed",function(c){g&&e._handleChildValue(a,b,f,c)}),c.on("child_removed",function(c){if(g){var d=a.getById(b,c.name());d&&!d.get("isDeleted")&&e._enqueue(function(){a.deleteRecord(d)})}}),d},_handleChildValue:function(a,b,c,d){var e=this._assignIdToPayload(d);this._enqueue(function(){a.push(b,c.extractSingle(a,b,e))})},createRecord:function(a,b,c){return this.updateRecord(a,b,c)},updateRecord:function(a,c,d){var f=this,g=this._getRef(c,d.id),h=Ember.get(f._recordCacheForType,e("%@.%@",[c.typeKey,d.get("id")]))||{};return this._getSerializedRecord(d).then(function(i){return new b(function(b,j){var k=Ember.A();d.eachRelationship(function(b,d){var e;switch(d.kind){case"hasMany":Ember.isArray(i[b])&&(e=f._saveHasManyRelationship(a,c,d,i[b],g,h),k.push(e),delete i[b]);break;case"belongsTo":"undefined"==typeof i[b]||null===i[b]||""===i[b]?delete i[b]:d.options.embedded===!0&&(e=f._saveBelongsToRecord(a,c,d,i[b],g),k.push(e),delete i[b])}}),Ember.RSVP.allSettled(k).then(function(a){a=Ember.A(a);var h=Ember.A(a.filterBy("state","rejected"));if(0!==h.get("length")){var k=new Error(e("Some errors were encountered while saving %@ %@",[c,d.id]));k.errors=h.mapBy("reason"),f._enqueue(j,[k])}g.update(i,function(a){a?f._enqueue(j,[a]):f._enqueue(b)})})})},e("DS: FirebaseAdapter#updateRecord %@ to %@",[c,g.toString()]))},_getSerializedRecord:function(a){var c=a.serialize({includeId:!1}),d=[];return a.eachRelationship(function(e,f){switch(f.kind){case"hasMany":d.push(b.cast(a.get(e)).then(function(a){c[e]=Ember.A(a).mapBy("id")}))}}),Ember.RSVP.all(d).then(function(){return c})},_saveHasManyRelationship:function(a,b,c,d,f,g){if(!Ember.isArray(d))throw new Error("hasMany relationships must must be an array");var h=this,i=Ember.A(g[c.key]);d=Ember.A(d);var j=d.filter(function(a){return!i.contains(a)}),k=d.filter(function(b){var d=c.type;return a.hasRecordForId(d,b)&&a.getById(d,b).get("isDirty")===!0});k=Ember.A(k.concat(j)).uniq().map(function(b){return h._saveHasManyRecord(a,c,f,b)});var l=i.filter(function(a){return!d.contains(a)});l=Ember.A(l).map(function(b){return h._removeHasManyRecord(a,c,f,b)});var m=k.concat(l);return Ember.RSVP.allSettled(m).then(function(a){var b=Ember.A(Ember.A(a).filterBy("state","rejected"));if(0===b.get("length"))return g[c.key]=d,a;var f=new Error(e("Some errors were encountered while saving a hasMany relationship %@ -> %@",[c.parentType,c.type]));throw f.errors=Ember.A(b).mapBy("reason"),f})},_saveHasManyRecord:function(a,c,d,e){var f=this,g=this._getRelationshipRef(d,c.key,e),h=a.getById(c.type,e),i=c.options.embedded===!0,j=i?h.serialize({includeId:!1}):!0;return new b(function(a,b){var c=function(c){c?("object"==typeof c&&(c.location=g.toString()),f._enqueue(b,[c])):f._enqueue(a)};i?g.update(j,c):g.set(j,c)})},_removeHasManyRecord:function(a,c,d,e){var f=this,g=this._getRelationshipRef(d,c.key,e);return new b(function(a,b){var c=function(c){c?("object"==typeof c&&(c.location=g.toString()),f._enqueue(b,[c])):f._enqueue(a)};g.remove(c)})},_saveBelongsToRecord:function(a,c,d,e,f){var g=this,h=f.child(d.key),i=a.getById(d.type,e),j=d.options.embedded===!0,k=j?i.serialize({includeId:!0}):!0;return new b(function(a,b){var c=function(c){c?("object"==typeof c&&(c.location=h.toString()),g._enqueue(b,[c])):g._enqueue(a)};j?h.update(k,c):h.set(k,c)})},deleteRecord:function(a,c,d){var f=this,g=this._getRef(c,d.get("id"));return new b(function(a,b){g.remove(function(c){c?f._enqueue(b,[c]):f._enqueue(a)})},e("DS: FirebaseAdapter#deleteRecord %@ to %@",[c,g.toString()]))},pathForType:function(a){var b=Ember.String.camelize(a);return Ember.String.pluralize(b)},_getRef:function(a,b){var c=this._ref;return a&&(c=c.child(this.pathForType(a.typeKey))),b&&(c=c.child(b)),c},_getRelationshipRef:function(a,b,c){return a.child(b).child(c)},_queueFlushDelay:1e3/60,_queueScheduleFlush:function(){Ember.run.later(this,this._queueFlush,this._queueFlushDelay)},_queueFlush:function(){d(this._queue,function(a){var b=a[0],c=a[1];b.apply(null,c)}),this._queue.length=0},_enqueue:function(a,b){var c=this._queue.push([a,b]);1===c&&this._queueScheduleFlush()},_recordCacheForType:void 0,_updateRecordCacheForType:function(a,b){if(b){var c=this,d=b.id,e=c._recordCacheForType,f=a.typeKey;a.eachRelationship(function(a,c){if("hasMany"===c.kind){var g=b[a];e[f]=e[f]||{},e[f][d]=e[f][d]||{},e[f][d][a]=Ember.isNone(g)?Ember.A():Ember.A(Ember.keys(g))}})}}}),Ember.onLoad("Ember.Application",function(a){a.initializer({name:"firebase",initialize:function(a,b){b.register("adapter:-firebase",DS.FirebaseAdapter),b.register("serializer:-firebase",DS.FirebaseSerializer)}})})}}();
+},{}],13:[function(require,module,exports){
+var hasOwn = Object.prototype.hasOwnProperty;
+var toString = Object.prototype.toString;
+var undefined;
+
+var isPlainObject = function isPlainObject(obj) {
+	"use strict";
+	if (!obj || toString.call(obj) !== '[object Object]' || obj.nodeType || obj.setInterval) {
+		return false;
+	}
+
+	var has_own_constructor = hasOwn.call(obj, 'constructor');
+	var has_is_property_of_method = obj.constructor && obj.constructor.prototype && hasOwn.call(obj.constructor.prototype, 'isPrototypeOf');
+	// Not own constructor property must be Object
+	if (obj.constructor && !has_own_constructor && !has_is_property_of_method) {
+		return false;
+	}
+
+	// Own properties are enumerated firstly, so to speed up,
+	// if last one is own, then all properties are own.
+	var key;
+	for (key in obj) {}
+
+	return key === undefined || hasOwn.call(obj, key);
+};
+
+module.exports = function extend() {
+	"use strict";
+	var options, name, src, copy, copyIsArray, clone,
+		target = arguments[0],
+		i = 1,
+		length = arguments.length,
+		deep = false;
+
+	// Handle a deep copy situation
+	if (typeof target === "boolean") {
+		deep = target;
+		target = arguments[1] || {};
+		// skip the boolean and the target
+		i = 2;
+	} else if (typeof target !== "object" && typeof target !== "function" || target == undefined) {
+			target = {};
+	}
+
+	for (; i < length; ++i) {
+		// Only deal with non-null/undefined values
+		if ((options = arguments[i]) != null) {
+			// Extend the base object
+			for (name in options) {
+				src = target[name];
+				copy = options[name];
+
+				// Prevent never-ending loop
+				if (target === copy) {
+					continue;
+				}
+
+				// Recurse if we're merging plain objects or arrays
+				if (deep && copy && (isPlainObject(copy) || (copyIsArray = Array.isArray(copy)))) {
+					if (copyIsArray) {
+						copyIsArray = false;
+						clone = src && Array.isArray(src) ? src : [];
+					} else {
+						clone = src && isPlainObject(src) ? src : {};
+					}
+
+					// Never move original objects, clone them
+					target[name] = extend(deep, clone, copy);
+
+				// Don't bring in undefined values
+				} else if (copy !== undefined) {
+					target[name] = copy;
+				}
+			}
+		}
+	}
+
+	// Return the modified object
+	return target;
+};
+
+
+},{}],14:[function(require,module,exports){
 (function() {function g(a){throw a;}var j=void 0,k=!0,l=null,o=!1;function aa(a){return function(){return this[a]}}function r(a){return function(){return a}}var s,ba=this;function ca(){}function da(a){a.mb=function(){return a.bd?a.bd:a.bd=new a}}
 function ea(a){var b=typeof a;if("object"==b)if(a){if(a instanceof Array)return"array";if(a instanceof Object)return b;var c=Object.prototype.toString.call(a);if("[object Window]"==c)return"object";if("[object Array]"==c||"number"==typeof a.length&&"undefined"!=typeof a.splice&&"undefined"!=typeof a.propertyIsEnumerable&&!a.propertyIsEnumerable("splice"))return"array";if("[object Function]"==c||"undefined"!=typeof a.call&&"undefined"!=typeof a.propertyIsEnumerable&&!a.propertyIsEnumerable("call"))return"function"}else return"null";
 else if("function"==b&&"undefined"==typeof a.call)return"object";return b}function u(a){return a!==j}function fa(a){var b=ea(a);return"array"==b||"object"==b&&"number"==typeof a.length}function v(a){return"string"==typeof a}function ga(a){return"number"==typeof a}function ha(a){var b=typeof a;return"object"==b&&a!=l||"function"==b}Math.floor(2147483648*Math.random()).toString(36);function ia(a,b,c){return a.call.apply(a.bind,arguments)}
@@ -61350,7 +61660,7 @@ J.goOffline=function(){A("Firebase.goOffline",0,0,arguments.length);Y.mb().Ha()}
 J.enableLogging=Nb;J.ServerValue={TIMESTAMP:{".sv":"timestamp"}};J.INTERNAL=Z;J.Context=Y;})();
 module.exports = Firebase;
 
-},{}],13:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 (function() {var COMPILED=!0,goog=goog||{};goog.global=this;goog.DEBUG=!0;goog.LOCALE="en";goog.provide=function(a){if(!COMPILED){if(goog.isProvided_(a))throw Error('Namespace "'+a+'" already declared.');delete goog.implicitNamespaces_[a];for(var b=a;(b=b.substring(0,b.lastIndexOf(".")))&&!goog.getObjectByName(b);)goog.implicitNamespaces_[b]=!0}goog.exportPath_(a)};goog.setTestOnly=function(a){if(COMPILED&&!goog.DEBUG)throw a=a||"",Error("Importing test-only code into non-debug environment"+a?": "+a:".");};
 COMPILED||(goog.isProvided_=function(a){return!goog.implicitNamespaces_[a]&&!!goog.getObjectByName(a)},goog.implicitNamespaces_={});goog.exportPath_=function(a,b,c){a=a.split(".");c=c||goog.global;!(a[0]in c)&&c.execScript&&c.execScript("var "+a[0]);for(var d;a.length&&(d=a.shift());)!a.length&&goog.isDef(b)?c[d]=b:c=c[d]?c[d]:c[d]={}};goog.getObjectByName=function(a,b){for(var c=a.split("."),d=b||goog.global,e;e=c.shift();)if(goog.isDefAndNotNull(d[e]))d=d[e];else return null;return d};
 goog.globalize=function(a,b){var c=b||goog.global,d;for(d in a)c[d]=a[d]};goog.addDependency=function(a,b,c){if(!COMPILED){for(var d,a=a.replace(/\\/g,"/"),e=goog.dependencies_,f=0;d=b[f];f++){e.nameToPath[d]=a;a in e.pathToNames||(e.pathToNames[a]={});e.pathToNames[a][d]=true}for(d=0;b=c[d];d++){a in e.requires||(e.requires[a]={});e.requires[a][b]=true}}};goog.ENABLE_DEBUG_LOADER=!0;
@@ -61459,7 +61769,7 @@ FirebaseSimpleLogin.prototype.removeUser=function(a,b,c){fb.util.validation.vali
 FirebaseSimpleLogin.prototype.sendPasswordResetEmail=function(a,b){fb.util.validation.validateArgCount("FirebaseSimpleLogin.sendPasswordResetEmail",2,2,arguments.length);fb.util.validation.validateCallback("FirebaseSimpleLogin.sendPasswordResetEmail",2,b,!1);this.manageFirebaseUsers("sendPasswordResetEmail",{email:a},function(a,d){return b&&b(a,!!d)})};goog.exportProperty(FirebaseSimpleLogin.prototype,"sendPasswordResetEmail",FirebaseSimpleLogin.prototype.sendPasswordResetEmail);})();
 module.exports = FirebaseSimpleLogin;
 
-},{}],14:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 "use strict";
 /*globals Handlebars: true */
 var Handlebars = require("./handlebars.runtime")["default"];
@@ -61497,7 +61807,7 @@ Handlebars = create();
 Handlebars.create = create;
 
 exports["default"] = Handlebars;
-},{"./handlebars.runtime":15,"./handlebars/compiler/ast":17,"./handlebars/compiler/base":18,"./handlebars/compiler/compiler":19,"./handlebars/compiler/javascript-compiler":20}],15:[function(require,module,exports){
+},{"./handlebars.runtime":17,"./handlebars/compiler/ast":19,"./handlebars/compiler/base":20,"./handlebars/compiler/compiler":21,"./handlebars/compiler/javascript-compiler":22}],17:[function(require,module,exports){
 "use strict";
 /*globals Handlebars: true */
 var base = require("./handlebars/base");
@@ -61530,7 +61840,7 @@ var Handlebars = create();
 Handlebars.create = create;
 
 exports["default"] = Handlebars;
-},{"./handlebars/base":16,"./handlebars/exception":24,"./handlebars/runtime":25,"./handlebars/safe-string":26,"./handlebars/utils":27}],16:[function(require,module,exports){
+},{"./handlebars/base":18,"./handlebars/exception":26,"./handlebars/runtime":27,"./handlebars/safe-string":28,"./handlebars/utils":29}],18:[function(require,module,exports){
 "use strict";
 var Utils = require("./utils");
 var Exception = require("./exception")["default"];
@@ -61711,7 +62021,7 @@ exports.log = log;var createFrame = function(object) {
   return obj;
 };
 exports.createFrame = createFrame;
-},{"./exception":24,"./utils":27}],17:[function(require,module,exports){
+},{"./exception":26,"./utils":29}],19:[function(require,module,exports){
 "use strict";
 var Exception = require("../exception")["default"];
 
@@ -61939,7 +62249,7 @@ var AST = {
 // Must be exported as an object rather than the root of the module as the jison lexer
 // most modify the object to operate properly.
 exports["default"] = AST;
-},{"../exception":24}],18:[function(require,module,exports){
+},{"../exception":26}],20:[function(require,module,exports){
 "use strict";
 var parser = require("./parser")["default"];
 var AST = require("./ast")["default"];
@@ -61955,7 +62265,7 @@ function parse(input) {
 }
 
 exports.parse = parse;
-},{"./ast":17,"./parser":21}],19:[function(require,module,exports){
+},{"./ast":19,"./parser":23}],21:[function(require,module,exports){
 "use strict";
 var Exception = require("../exception")["default"];
 
@@ -62425,7 +62735,7 @@ exports.precompile = precompile;function compile(input, options, env) {
 }
 
 exports.compile = compile;
-},{"../exception":24}],20:[function(require,module,exports){
+},{"../exception":26}],22:[function(require,module,exports){
 "use strict";
 var COMPILER_REVISION = require("../base").COMPILER_REVISION;
 var REVISION_CHANGES = require("../base").REVISION_CHANGES;
@@ -63368,7 +63678,7 @@ JavaScriptCompiler.isValidJavaScriptVariableName = function(name) {
 };
 
 exports["default"] = JavaScriptCompiler;
-},{"../base":16,"../exception":24}],21:[function(require,module,exports){
+},{"../base":18,"../exception":26}],23:[function(require,module,exports){
 "use strict";
 /* jshint ignore:start */
 /* Jison generated parser */
@@ -63859,7 +64169,7 @@ function Parser () { this.yy = {}; }Parser.prototype = parser;parser.Parser = Pa
 return new Parser;
 })();exports["default"] = handlebars;
 /* jshint ignore:end */
-},{}],22:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 "use strict";
 var Visitor = require("./visitor")["default"];
 
@@ -63998,7 +64308,7 @@ PrintVisitor.prototype.content = function(content) {
 PrintVisitor.prototype.comment = function(comment) {
   return this.pad("{{! '" + comment.comment + "' }}");
 };
-},{"./visitor":23}],23:[function(require,module,exports){
+},{"./visitor":25}],25:[function(require,module,exports){
 "use strict";
 function Visitor() {}
 
@@ -64011,7 +64321,7 @@ Visitor.prototype = {
 };
 
 exports["default"] = Visitor;
-},{}],24:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 "use strict";
 
 var errorProps = ['description', 'fileName', 'lineNumber', 'message', 'name', 'number', 'stack'];
@@ -64040,7 +64350,7 @@ function Exception(message, node) {
 Exception.prototype = new Error();
 
 exports["default"] = Exception;
-},{}],25:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 "use strict";
 var Utils = require("./utils");
 var Exception = require("./exception")["default"];
@@ -64178,7 +64488,7 @@ exports.program = program;function invokePartial(partial, name, context, helpers
 exports.invokePartial = invokePartial;function noop() { return ""; }
 
 exports.noop = noop;
-},{"./base":16,"./exception":24,"./utils":27}],26:[function(require,module,exports){
+},{"./base":18,"./exception":26,"./utils":29}],28:[function(require,module,exports){
 "use strict";
 // Build out our basic SafeString type
 function SafeString(string) {
@@ -64190,7 +64500,7 @@ SafeString.prototype.toString = function() {
 };
 
 exports["default"] = SafeString;
-},{}],27:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 "use strict";
 /*jshint -W004 */
 var SafeString = require("./safe-string")["default"];
@@ -64267,7 +64577,7 @@ exports.escapeExpression = escapeExpression;function isEmpty(value) {
 }
 
 exports.isEmpty = isEmpty;
-},{"./safe-string":26}],28:[function(require,module,exports){
+},{"./safe-string":28}],30:[function(require,module,exports){
 // USAGE:
 // var handlebars = require('handlebars');
 
@@ -64294,7 +64604,7 @@ if (typeof require !== 'undefined' && require.extensions) {
   require.extensions[".hbs"] = extension;
 }
 
-},{"../dist/cjs/handlebars":14,"../dist/cjs/handlebars/compiler/printer":22,"../dist/cjs/handlebars/compiler/visitor":23,"fs":6}],29:[function(require,module,exports){
+},{"../dist/cjs/handlebars":16,"../dist/cjs/handlebars/compiler/printer":24,"../dist/cjs/handlebars/compiler/visitor":25,"fs":6}],31:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.1.1
  * http://jquery.com/
@@ -73486,31 +73796,463 @@ return jQuery;
 
 }));
 
-},{}],30:[function(require,module,exports){
-module.exports={
-  "server": {
-    "ipaddress": "127.0.0.1",
-    "port": 11000,
+},{}],32:[function(require,module,exports){
+module.exports = function (args, opts) {
+    if (!opts) opts = {};
+    
+    var flags = { bools : {}, strings : {} };
 
-    "logFormat": "short",
-    "compressFromKb": 20
-  },
-  "terminator": {
-    "exit": true,
-    "signals": [
-      "SIGHUP", "SIGINT", "SIGQUIT", "SIGILL", "SIGTRAP", "SIGABRT",
-      "SIGBUS", "SIGFPE", "SIGUSR1", "SIGSEGV", "SIGUSR2", "SIGTERM"
-    ]
-  },
-  "session": {
-    "store": "firebase",
-    "name": "futsal.sid",
-    "secret": "who's better: maradona or messi?",
-    "resave": true,
-    "saveUninitialized": false
-  },
+    if (typeof opts['boolean'] === 'boolean' && opts['boolean']) {
+      flags.allBools = true;
+    } else {
+      [].concat(opts['boolean']).filter(Boolean).forEach(function (key) {
+          flags.bools[key] = true;
+      });
+    }
+    
+    var aliases = {};
+    Object.keys(opts.alias || {}).forEach(function (key) {
+        aliases[key] = [].concat(opts.alias[key]);
+        aliases[key].forEach(function (x) {
+            aliases[x] = [key].concat(aliases[key].filter(function (y) {
+                return x !== y;
+            }));
+        });
+    });
+
+    [].concat(opts.string).filter(Boolean).forEach(function (key) {
+        flags.strings[key] = true;
+        if (aliases[key]) {
+            flags.strings[aliases[key]] = true;
+        }
+     });
+
+    var defaults = opts['default'] || {};
+    
+    var argv = { _ : [] };
+    Object.keys(flags.bools).forEach(function (key) {
+        setArg(key, defaults[key] === undefined ? false : defaults[key]);
+    });
+    
+    var notFlags = [];
+
+    if (args.indexOf('--') !== -1) {
+        notFlags = args.slice(args.indexOf('--')+1);
+        args = args.slice(0, args.indexOf('--'));
+    }
+
+    function setArg (key, val) {
+        var value = !flags.strings[key] && isNumber(val)
+            ? Number(val) : val
+        ;
+        setKey(argv, key.split('.'), value);
+        
+        (aliases[key] || []).forEach(function (x) {
+            setKey(argv, x.split('.'), value);
+        });
+    }
+    
+    for (var i = 0; i < args.length; i++) {
+        var arg = args[i];
+        
+        if (/^--.+=/.test(arg)) {
+            // Using [\s\S] instead of . because js doesn't support the
+            // 'dotall' regex modifier. See:
+            // http://stackoverflow.com/a/1068308/13216
+            var m = arg.match(/^--([^=]+)=([\s\S]*)$/);
+            setArg(m[1], m[2]);
+        }
+        else if (/^--no-.+/.test(arg)) {
+            var key = arg.match(/^--no-(.+)/)[1];
+            setArg(key, false);
+        }
+        else if (/^--.+/.test(arg)) {
+            var key = arg.match(/^--(.+)/)[1];
+            var next = args[i + 1];
+            if (next !== undefined && !/^-/.test(next)
+            && !flags.bools[key]
+            && !flags.allBools
+            && (aliases[key] ? !flags.bools[aliases[key]] : true)) {
+                setArg(key, next);
+                i++;
+            }
+            else if (/^(true|false)$/.test(next)) {
+                setArg(key, next === 'true');
+                i++;
+            }
+            else {
+                setArg(key, flags.strings[key] ? '' : true);
+            }
+        }
+        else if (/^-[^-]+/.test(arg)) {
+            var letters = arg.slice(1,-1).split('');
+            
+            var broken = false;
+            for (var j = 0; j < letters.length; j++) {
+                var next = arg.slice(j+2);
+                
+                if (next === '-') {
+                    setArg(letters[j], next)
+                    continue;
+                }
+                
+                if (/[A-Za-z]/.test(letters[j])
+                && /-?\d+(\.\d*)?(e-?\d+)?$/.test(next)) {
+                    setArg(letters[j], next);
+                    broken = true;
+                    break;
+                }
+                
+                if (letters[j+1] && letters[j+1].match(/\W/)) {
+                    setArg(letters[j], arg.slice(j+2));
+                    broken = true;
+                    break;
+                }
+                else {
+                    setArg(letters[j], flags.strings[letters[j]] ? '' : true);
+                }
+            }
+            
+            var key = arg.slice(-1)[0];
+            if (!broken && key !== '-') {
+                if (args[i+1] && !/^(-|--)[^-]/.test(args[i+1])
+                && !flags.bools[key]
+                && (aliases[key] ? !flags.bools[aliases[key]] : true)) {
+                    setArg(key, args[i+1]);
+                    i++;
+                }
+                else if (args[i+1] && /true|false/.test(args[i+1])) {
+                    setArg(key, args[i+1] === 'true');
+                    i++;
+                }
+                else {
+                    setArg(key, flags.strings[key] ? '' : true);
+                }
+            }
+        }
+        else {
+            argv._.push(
+                flags.strings['_'] || !isNumber(arg) ? arg : Number(arg)
+            );
+        }
+    }
+    
+    Object.keys(defaults).forEach(function (key) {
+        if (!hasKey(argv, key.split('.'))) {
+            setKey(argv, key.split('.'), defaults[key]);
+            
+            (aliases[key] || []).forEach(function (x) {
+                setKey(argv, x.split('.'), defaults[key]);
+            });
+        }
+    });
+    
+    if (opts['--']) {
+        argv['--'] = new Array();
+        notFlags.forEach(function(key) {
+            argv['--'].push(key);
+        });
+    }
+    else {
+        notFlags.forEach(function(key) {
+            argv._.push(key);
+        });
+    }
+
+    return argv;
+};
+
+function hasKey (obj, keys) {
+    var o = obj;
+    keys.slice(0,-1).forEach(function (key) {
+        o = (o[key] || {});
+    });
+
+    var key = keys[keys.length - 1];
+    return key in o;
+}
+
+function setKey (obj, keys, value) {
+    var o = obj;
+    keys.slice(0,-1).forEach(function (key) {
+        if (o[key] === undefined) o[key] = {};
+        o = o[key];
+    });
+    
+    var key = keys[keys.length - 1];
+    if (o[key] === undefined || typeof o[key] === 'boolean') {
+        o[key] = value;
+    }
+    else if (Array.isArray(o[key])) {
+        o[key].push(value);
+    }
+    else {
+        o[key] = [ o[key], value ];
+    }
+}
+
+function isNumber (x) {
+    if (typeof x === 'number') return true;
+    if (/^0x[0-9a-f]+$/i.test(x)) return true;
+    return /^[-+]?(?:\d+(?:\.\d*)?|\.\d+)(e[-+]?\d+)?$/.test(x);
+}
+
+
+},{}],33:[function(require,module,exports){
+(function (root, factory){
+  'use strict';
+
+  /*istanbul ignore next:cant test*/
+  if (typeof module === 'object' && typeof module.exports === 'object') {
+    module.exports = factory();
+  } else if (typeof define === 'function' && define.amd) {
+    // AMD. Register as an anonymous module.
+    define([], factory);
+  } else {
+    // Browser globals
+    root.objectPath = factory();
+  }
+})(this, function(){
+  'use strict';
+
+  var
+    toStr = Object.prototype.toString,
+    _hasOwnProperty = Object.prototype.hasOwnProperty;
+
+  function isEmpty(value){
+    if (!value) {
+      return true;
+    }
+    if (isArray(value) && value.length === 0) {
+      return true;
+    } else {
+      for (var i in value) {
+        if (_hasOwnProperty.call(value, i)) {
+          return false;
+        }
+      }
+      return true;
+    }
+  }
+
+  function toString(type){
+    return toStr.call(type);
+  }
+
+  function isNumber(value){
+    return typeof value === 'number' || toString(value) === "[object Number]";
+  }
+
+  function isString(obj){
+    return typeof obj === 'string' || toString(obj) === "[object String]";
+  }
+
+  function isObject(obj){
+    return typeof obj === 'object' && toString(obj) === "[object Object]";
+  }
+
+  function isArray(obj){
+    return typeof obj === 'object' && typeof obj.length === 'number' && toString(obj) === '[object Array]';
+  }
+
+  function isBoolean(obj){
+    return typeof obj === 'boolean' || toString(obj) === '[object Boolean]';
+  }
+
+  function getKey(key){
+    var intKey = parseInt(key);
+    if (intKey.toString() === key) {
+      return intKey;
+    }
+    return key;
+  }
+
+  function set(obj, path, value, doNotReplace){
+    if (isNumber(path)) {
+      path = [path];
+    }
+    if (isEmpty(path)) {
+      return obj;
+    }
+    if (isString(path)) {
+      return set(obj, path.split('.'), value, doNotReplace);
+    }
+    var currentPath = getKey(path[0]);
+
+    if (path.length === 1) {
+      var oldVal = obj[currentPath];
+      if (oldVal === void 0 || !doNotReplace) {
+        obj[currentPath] = value;
+      }
+      return oldVal;
+    }
+
+    if (obj[currentPath] === void 0) {
+      if (isNumber(currentPath)) {
+        obj[currentPath] = [];
+      } else {
+        obj[currentPath] = {};
+      }
+    }
+
+    return set(obj[currentPath], path.slice(1), value, doNotReplace);
+  }
+
+  function del(obj, path) {
+    if (isNumber(path)) {
+      path = [path];
+    }
+
+    if (isEmpty(obj)) {
+      return void 0;
+    }
+
+    if (isEmpty(path)) {
+      return obj;
+    }
+    if(isString(path)) {
+      return del(obj, path.split('.'));
+    }
+
+    var currentPath = getKey(path[0]);
+    var oldVal = obj[currentPath];
+
+    if(path.length === 1) {
+      if (oldVal !== void 0) {
+        if (isArray(obj)) {
+          obj.splice(currentPath, 1);
+        } else {
+          delete obj[currentPath];
+        }
+      }
+    } else {
+      if (obj[currentPath] !== void 0) {
+        return del(obj[currentPath], path.slice(1));
+      }
+    }
+
+    return obj;
+  }
+
+  var objectPath = {};
+
+  objectPath.ensureExists = function (obj, path, value){
+    return set(obj, path, value, true);
+  };
+
+  objectPath.set = function (obj, path, value, doNotReplace){
+    return set(obj, path, value, doNotReplace);
+  };
+
+  objectPath.insert = function (obj, path, value, at){
+    var arr = objectPath.get(obj, path);
+    at = ~~at;
+    if (!isArray(arr)) {
+      arr = [];
+      objectPath.set(obj, path, arr);
+    }
+    arr.splice(at, 0, value);
+  };
+
+  objectPath.empty = function(obj, path) {
+    if (isEmpty(path)) {
+      return obj;
+    }
+    if (isEmpty(obj)) {
+      return void 0;
+    }
+
+    var value, i;
+    if (!(value = objectPath.get(obj, path))) {
+      return obj;
+    }
+
+    if (isString(value)) {
+      return objectPath.set(obj, path, '');
+    } else if (isBoolean(value)) {
+      return objectPath.set(obj, path, false);
+    } else if (isNumber(value)) {
+      return objectPath.set(obj, path, 0);
+    } else if (isArray(value)) {
+      value.length = 0;
+    } else if (isObject(value)) {
+      for (i in value) {
+        if (_hasOwnProperty.call(value, i)) {
+          delete value[i];
+        }
+      }
+    } else {
+      return objectPath.set(obj, path, null);
+    }
+  };
+
+  objectPath.push = function (obj, path /*, values */){
+    var arr = objectPath.get(obj, path);
+    if (!isArray(arr)) {
+      arr = [];
+      objectPath.set(obj, path, arr);
+    }
+
+    arr.push.apply(arr, Array.prototype.slice.call(arguments, 2));
+  };
+
+  objectPath.coalesce = function (obj, paths, defaultValue) {
+    var value;
+
+    for (var i = 0, len = paths.length; i < len; i++) {
+      if ((value = objectPath.get(obj, paths[i])) !== void 0) {
+        return value;
+      }
+    }
+
+    return defaultValue;
+  };
+
+  objectPath.get = function (obj, path, defaultValue){
+    if (isNumber(path)) {
+      path = [path];
+    }
+    if (isEmpty(path)) {
+      return obj;
+    }
+    if (isEmpty(obj)) {
+      return defaultValue;
+    }
+    if (isString(path)) {
+      return objectPath.get(obj, path.split('.'), defaultValue);
+    }
+
+    var currentPath = getKey(path[0]);
+
+    if (path.length === 1) {
+      if (obj[currentPath] === void 0) {
+        return defaultValue;
+      }
+      return obj[currentPath];
+    }
+
+    return objectPath.get(obj[currentPath], path.slice(1), defaultValue);
+  };
+
+  objectPath.del = function(obj, path) {
+    return del(obj, path);
+  };
+
+  return objectPath;
+});
+},{}],34:[function(require,module,exports){
+module.exports={
+  "foo bar": 123
+}
+
+},{}],35:[function(require,module,exports){
+module.exports={}
+
+},{}],36:[function(require,module,exports){
+module.exports={
   "firebase": {
-    "host": "popping-fire-6658.firebaseio.com"
+    "host": "popping-fire-6658.firebaseio.com",
+    "hostZet": "fiery-fire-3995.firebaseio.com"
   },
   "redis": {
     "host": "pub-redis-15390.us-east-1-4.3.ec2.garantiadata.com",
@@ -73519,10 +74261,103 @@ module.exports={
   }
 }
 
-},{}],31:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
+(function (process){
+var fs = require('fs');
+var path = require('path');
+var mixin = require('object-path');
+var extend = require('extend');
+var parseArgs = require('minimist');
+
+var data = {};
+
+var config = {
+  argv: function(options) {
+    var argv = parseArgs(process.argv.slice(2), options),
+      obj = {};
+
+    (argv._ || []).forEach(function(arg) {
+      obj[arg] = true;
+    });
+
+    (argv['--'] || []).forEach(function(arg) {
+      obj[arg] = false;
+    });
+
+    Object.keys(argv).forEach(function(arg) {
+      if (arg === '_' || arg === '--') return;
+      obj[arg] = argv[arg];
+    });
+
+    return config.extend(obj, options);
+  },
+
+  file: function(filename, options) {
+    var obj;
+    try {
+      obj = require(filename);
+    } catch (err) {
+      // Silence an error if there is no such module
+      // Or should we send some debug message?
+    }
+
+    return config.extend(obj, options);
+  },
+
+  dir: function(dirname, files, options) {
+    var dir;
+    if (!Array.isArray(files)) {
+      options = files;
+      files = false;
+      dir = fs.readdirSync(dirname);
+    } else {
+      dir = files;
+      files = fs.readdirSync(dirname);
+    }
+
+    dir.forEach(function(file) {
+      if (files && !~files.indexOf(file)) return;
+      config.file(path.join(dirname, file), options);
+    });
+
+    return config;
+  },
+
+  extend: function(obj, options) {
+    options || (options = {});
+    if (!obj) return config;
+
+    // already stored data takes precedense by default
+    data = !options.override ? extend(true, {}, obj, data) : extend(true, data, obj);
+
+    return config;
+  }
+};
+
+// Extend API with all methods from `object-path` module
+Object.keys(mixin).forEach(function(name) {
+  var method = mixin[name];
+
+  if (typeof method === 'function') {
+    config[name] = function() {
+      var args = Array.prototype.slice.call(arguments),
+        res;
+      args.unshift(data);
+      res = method.apply(mixin, args);
+
+      return res !== data || name === 'get' ? res : config;
+    };
+  }
+});
+
+module.exports = config;
+
+}).call(this,require("Zbi7gb"))
+},{"Zbi7gb":11,"extend":13,"fs":6,"minimist":32,"object-path":33,"path":10}],38:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.ObjectController.extend({
+
   isAuthenticated: function() {
     return this.get('auth').get('isAuthenticated');
   }.property('auth.isAuthenticated'),
@@ -73538,17 +74373,17 @@ module.exports = Ember.ObjectController.extend({
   }
 });
 
-},{"ember":2}],32:[function(require,module,exports){
+},{"ember":2}],39:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
-  model: function(params) {
+  model: function() {
     var currentUser = this.get('auth').get('currentUser');
-    return currentUser ? this.store.find('player', currentUser.id) : null;
+    return currentUser ? this.store.find('player', currentUser.id) : Ember.Object.create();
   }
 });
 
-},{"ember":2}],33:[function(require,module,exports){
+},{"ember":2}],40:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -73559,131 +74394,125 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = '', stack1, helper, options;
-  data.buffer.push("\r\n        ");
+  data.buffer.push("\n          ");
   stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(2, program2, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "me", options) : helperMissing.call(depth0, "link-to", "me", options));
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\r\n      ");
+  data.buffer.push("\n        ");
   return buffer;
   }
 function program2(depth0,data) {
   
   var buffer = '', stack1;
-  data.buffer.push("<i class=\"flaticon-football118 fa-lg\"></i> ");
-  stack1 = helpers['if'].call(depth0, "model", {hash:{},hashTypes:{},hashContexts:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),contexts:[depth0],types:["ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  return buffer;
-  }
-function program3(depth0,data) {
-  
-  var stack1;
+  data.buffer.push("\n            <i class=\"flaticon-football118 fa-lg\"></i> ");
   stack1 = helpers._triageMustache.call(depth0, "model.name", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  else { data.buffer.push(''); }
+  data.buffer.push("\n          ");
+  return buffer;
   }
 
+function program4(depth0,data) {
+  
+  var buffer = '', stack1, helper, options;
+  data.buffer.push("\n          ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(5, program5, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "players", options) : helperMissing.call(depth0, "link-to", "players", options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n        ");
+  return buffer;
+  }
 function program5(depth0,data) {
   
   
-  data.buffer.push("Profile");
+  data.buffer.push("\n            <i class=\"flaticon-football120 fa-lg\"></i> Players\n            <i class=\"fa fa-exclamation-circle text-danger\" title=\"Somebody waits for your Vote!\"></i>\n          ");
   }
 
 function program7(depth0,data) {
   
   var buffer = '', stack1, helper, options;
-  data.buffer.push("\r\n        ");
-  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(8, program8, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "players", options) : helperMissing.call(depth0, "link-to", "players", options));
+  data.buffer.push("\n          ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(8, program8, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "tourneys", options) : helperMissing.call(depth0, "link-to", "tourneys", options));
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\r\n      ");
+  data.buffer.push("\n        ");
   return buffer;
   }
 function program8(depth0,data) {
   
   
-  data.buffer.push("<i class=\"flaticon-football120 fa-lg\"></i> Players");
+  data.buffer.push("\n            <i class=\"flaticon-football117 fa-lg\"></i> Tourneys\n          ");
   }
 
 function program10(depth0,data) {
   
   var buffer = '', stack1, helper, options;
-  data.buffer.push("\r\n        ");
-  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(11, program11, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "tourneys", options) : helperMissing.call(depth0, "link-to", "tourneys", options));
+  data.buffer.push("\n            ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(11, program11, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "gameday", options) : helperMissing.call(depth0, "link-to", "gameday", options));
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\r\n      ");
+  data.buffer.push("\n          ");
   return buffer;
   }
 function program11(depth0,data) {
   
   
-  data.buffer.push("<i class=\"flaticon-football117 fa-lg\"></i> Tourneys");
+  data.buffer.push("<i class=\"flaticon-flaming fa-lg\"></i> Upcoming GameDay");
   }
 
 function program13(depth0,data) {
   
-  var buffer = '', stack1, helper, options;
-  data.buffer.push("\r\n          ");
-  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(14, program14, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "gameday", options) : helperMissing.call(depth0, "link-to", "gameday", options));
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\r\n        ");
-  return buffer;
-  }
-function program14(depth0,data) {
-  
-  
-  data.buffer.push("<i class=\"flaticon-flaming fa-lg\"></i> Upcoming GameDay");
-  }
-
-function program16(depth0,data) {
-  
   var buffer = '';
-  data.buffer.push("\r\n            <a href=\"#\" class=\"btn1 navbar-btn1\" ");
+  data.buffer.push("\n              <a href=\"#\" class=\"btn1 navbar-btn1\" ");
   data.buffer.push(escapeExpression(helpers.action.call(depth0, "logout", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data})));
-  data.buffer.push(">Logout</button>\r\n          ");
+  data.buffer.push(">Logout</button>\n            ");
   return buffer;
   }
 
-  data.buffer.push("<div class=\"navbar navbar-default navbar-static-top\" role=\"navigation\">\r\n  <div class=\"container\">\r\n    <div class=\"navbar-header\">\r\n      <div class=\"navbar-brand\"><h1 class=\"text-success\">Futsal</h1></div>\r\n    </div>\r\n    <ul class=\"nav navbar-nav\">\r\n      ");
+  data.buffer.push("  <div class=\"navbar navbar-default navbar-static-top\" role=\"navigation\">\n    <div class=\"container\">\n      <div class=\"navbar-header\">\n        <div class=\"navbar-brand\"><h1 class=\"text-success\">Futsal</h1></div>\n      </div>\n      <ul class=\"nav navbar-nav\">\n        ");
   stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
     'tagName': ("li"),
     'href': (false)
   },hashTypes:{'tagName': "STRING",'href': "BOOLEAN"},hashContexts:{'tagName': depth0,'href': depth0},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "me", options) : helperMissing.call(depth0, "link-to", "me", options));
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\r\n      ");
+  data.buffer.push("\n        ");
   stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
     'tagName': ("li"),
     'href': (false)
-  },hashTypes:{'tagName': "STRING",'href': "BOOLEAN"},hashContexts:{'tagName': depth0,'href': depth0},inverse:self.noop,fn:self.program(7, program7, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "players", options) : helperMissing.call(depth0, "link-to", "players", options));
+  },hashTypes:{'tagName': "STRING",'href': "BOOLEAN"},hashContexts:{'tagName': depth0,'href': depth0},inverse:self.noop,fn:self.program(4, program4, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "players", options) : helperMissing.call(depth0, "link-to", "players", options));
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\r\n      ");
+  data.buffer.push("\n        ");
   stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
     'tagName': ("li"),
     'href': (false)
-  },hashTypes:{'tagName': "STRING",'href': "BOOLEAN"},hashContexts:{'tagName': depth0,'href': depth0},inverse:self.noop,fn:self.program(10, program10, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "tourneys", options) : helperMissing.call(depth0, "link-to", "tourneys", options));
+  },hashTypes:{'tagName': "STRING",'href': "BOOLEAN"},hashContexts:{'tagName': depth0,'href': depth0},inverse:self.noop,fn:self.program(7, program7, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "tourneys", options) : helperMissing.call(depth0, "link-to", "tourneys", options));
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\r\n    </ul>\r\n    <div class=\"navbar-right\">\r\n      <ul class=\"nav navbar-nav\">\r\n        ");
+  data.buffer.push("\n      </ul>\n      <div class=\"navbar-right\">\n        <ul class=\"nav navbar-nav\">\n          ");
   stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
     'tagName': ("li"),
     'href': (false)
-  },hashTypes:{'tagName': "STRING",'href': "BOOLEAN"},hashContexts:{'tagName': depth0,'href': depth0},inverse:self.noop,fn:self.program(13, program13, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "gameday", options) : helperMissing.call(depth0, "link-to", "gameday", options));
+  },hashTypes:{'tagName': "STRING",'href': "BOOLEAN"},hashContexts:{'tagName': depth0,'href': depth0},inverse:self.noop,fn:self.program(10, program10, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "gameday", options) : helperMissing.call(depth0, "link-to", "gameday", options));
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\r\n        <li>\r\n          <button class=\"btn navbar-btn btn-success active\" title=\"I'm coming\">+1</button>\r\n        </li>\r\n        \r\n        <li>\r\n          ");
-  stack1 = helpers['if'].call(depth0, "isAuthenticated", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(16, program16, data),contexts:[depth0],types:["ID"],data:data});
+  data.buffer.push("\n          <li>\n            <button class=\"btn navbar-btn btn-success active\" title=\"I'm coming\">+1</button>\n          </li>\n          \n          <li>\n            ");
+  stack1 = helpers['if'].call(depth0, "isAuthenticated", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(13, program13, data),contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\r\n        </li>\r\n      </ul>\r\n    </div>\r\n  </div><!--/.container-fluid -->\r\n</div>\r\n\r\n<div class=\"container\">\r\n  ");
+  data.buffer.push("\n          </li>\n      </div>\n    </div><!--/.container-fluid -->\n  </div>\n\n<div class=\"container\">\n  ");
   stack1 = helpers._triageMustache.call(depth0, "outlet", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\r\n</div>\r\n");
+  data.buffer.push("\n</div>\n");
   return buffer;
   
 });
 
-},{"ember":2}],34:[function(require,module,exports){
+},{"ember":2}],41:[function(require,module,exports){
 var Ember = require('ember');
 var Firebase = require('firebase-client');
 var FirebaseSimpleLogin = require('firebase-simple-login');
 
 // @FIXME: path?
-var config = require('../../../config/server.json');
-var dbRef = new Firebase('https://' + config.firebase.host);
+var config = require('config')
+  // Note: Cannot use config.file() or config.dir(),
+  // Because browserify doesn't allow to require files by variable name :(
+  .extend(require('../../../config/browser.overrides.json'))
+  .extend(require('../../../config/services.json'))
+  .extend(require('../../../config/browser.json'));
+
+var dbRef = new Firebase(config.get('firebase.host'));
 
 // @TODO: remember me. tick. attemptedTransition
 module.exports = Ember.ObjectController.extend({
@@ -73893,14 +74722,112 @@ module.exports = Ember.ObjectController.extend({
   }
 });
 
-},{"../../../config/server.json":30,"ember":2,"firebase-client":12,"firebase-simple-login":13}],35:[function(require,module,exports){
+},{"../../../config/browser.json":34,"../../../config/browser.overrides.json":35,"../../../config/services.json":36,"config":37,"ember":2,"firebase-client":14,"firebase-simple-login":15}],42:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
 
 });
 
-},{"ember":2}],36:[function(require,module,exports){
+},{"ember":2}],43:[function(require,module,exports){
+var Ember = require('ember');
+
+module.exports = Ember.Route.extend({
+  redirect: function() {
+    this.transitionTo('gameday.matches');
+  }
+});
+
+},{"ember":2}],44:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var compiler = require('ember').Handlebars;
+module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
+  var buffer = '';
+
+
+  data.buffer.push("<div class=\"well match-now\">\r\n  <div class=\"row\">\r\n    <div class=\"col-sm-5 text-right\">\r\n      \r\n      <button class=\"btn fa-lg btn-default\"><i class=\"fa fa-pause fa-lg\"></i> Pause</button>\r\n    </div>\r\n    <div class=\"col-sm-2 text-center\">\r\n      <span class=\"match-time lift-lg text-danger\">3:42</span>\r\n    </div>\r\n    <div class=\"col-sm-5\">\r\n      <div class=\"btn-group\">\r\n        <button class=\"btn fa-lg btn-default\" title=\"Plus 30s\"><i class=\"fa fa-plus fa-lg\"></i></button>\r\n        <button class=\"btn fa-lg btn-default\" title=\"Minus 30s\"><i class=\"fa fa-minus fa-lg\"></i></button>\r\n      </div>\r\n    </div>\r\n  </div>\r\n\r\n  <div class=\"row\">\r\n    <div class=\"col-sm-5\">\r\n      <h3 class=\"match-team text-right\">Alpha</h3>\r\n      <ul class=\"list-group\">\r\n        <li class=\"list-group-item\">\r\n          <div class=\"pull-right\">\r\n            <div class=\"btn-group\">\r\n              <button class=\"btn btn-sm btn-default\"><i class=\"fa fa-plus-circle fa-lg\"></i></button>\r\n            </div>\r\n          </div>\r\n          <a href=\"#\">Кирилл</a>\r\n          <span class=\"label label-warning\">9</span>\r\n        </li>\r\n        <li class=\"list-group-item\">\r\n          <div class=\"pull-right\">\r\n            <div class=\"btn-group\">\r\n              <button class=\"btn btn-sm btn-default\"><i class=\"fa fa-plus-circle fa-lg\"></i></button>\r\n            </div>\r\n          </div>\r\n          <a href=\"#\">Серёга (GK)</a>\r\n          <span class=\"label label-primary\">8</span>\r\n        </li>\r\n        <li class=\"list-group-item\">\r\n          <div class=\"pull-right\">\r\n            <div class=\"btn-group\">\r\n              <button class=\"btn btn-sm btn-default\"><i class=\"fa fa-plus-circle fa-lg\"></i></button>\r\n            </div>\r\n          </div>\r\n          <a href=\"#\">Витя</a>\r\n          <span class=\"label label-info\">7</span>\r\n        </li>\r\n        <li class=\"list-group-item\">\r\n          <div class=\"pull-right\">\r\n            <i class=\"flaticon-football28\"></i>\r\n            <div class=\"btn-group\">\r\n              <button class=\"btn btn-sm btn-default\"><i class=\"fa fa-plus-circle fa-lg\"></i></button>\r\n            </div>\r\n          </div>\r\n          <a href=\"#\">Тимур</a>\r\n          <span class=\"label label-info\">6</span>\r\n        </li>\r\n        <li class=\"list-group-item\">\r\n          <div class=\"pull-right\">\r\n            <div class=\"btn-group\">\r\n              <button class=\"btn btn-sm btn-default\"><i class=\"fa fa-plus-circle fa-lg\"></i></button>\r\n            </div>\r\n          </div>\r\n          <a href=\"#\">Саша Дозер</a>\r\n          <span class=\"label label-default\">2</span>\r\n        </li>\r\n      </ul>\r\n    </div>\r\n    <div class=\"col-sm-2 text-center\">\r\n      <span class=\"match-score text-muted\">1:2</span>\r\n    </div>\r\n    <div class=\"col-sm-5\">\r\n      <h3 class=\"match-team\">Bravo</h3>\r\n      <ul class=\"list-group\">\r\n        <li class=\"list-group-item\">\r\n          <div class=\"pull-right\">\r\n            <i class=\"flaticon-football28\"></i>\r\n            <i class=\"flaticon-football28\"></i>\r\n            <div class=\"btn-group\">\r\n              <button class=\"btn btn-sm btn-default\"><i class=\"fa fa-plus-circle fa-lg\"></i></button>\r\n            </div>\r\n          </div>\r\n          <a href=\"#\">Кирилл</a>\r\n          <span class=\"label label-warning\">9</span>\r\n        </li>\r\n        <li class=\"list-group-item\">\r\n          <div class=\"pull-right\">\r\n            <div class=\"btn-group\">\r\n              <button class=\"btn btn-sm btn-default\"><i class=\"fa fa-plus-circle fa-lg\"></i></button>\r\n            </div>\r\n          </div>\r\n          <a href=\"#\">Серёга (GK)</a>\r\n          <span class=\"label label-primary\">8</span>\r\n        </li>\r\n        <li class=\"list-group-item\">\r\n          <div class=\"pull-right\">\r\n            <div class=\"btn-group\">\r\n              <button class=\"btn btn-sm btn-default\"><i class=\"fa fa-plus-circle fa-lg\"></i></button>\r\n            </div>\r\n          </div>\r\n          <a href=\"#\">Витя</a>\r\n          <span class=\"label label-info\">7</span>\r\n        </li>\r\n        <li class=\"list-group-item\">\r\n          <div class=\"pull-right\">\r\n            <div class=\"btn-group\">\r\n              <button class=\"btn btn-sm btn-default\"><i class=\"fa fa-plus-circle fa-lg\"></i></button>\r\n            </div>\r\n          </div>\r\n          <a href=\"#\">Тимур</a>\r\n          <span class=\"label label-info\">6</span>\r\n        </li>\r\n        <li class=\"list-group-item\">\r\n          <div class=\"pull-right\">\r\n            <div class=\"btn-group\">\r\n              <button class=\"btn btn-sm btn-default\"><i class=\"fa fa-plus-circle fa-lg\"></i></button>\r\n            </div>\r\n          </div>\r\n          <a href=\"#\">Саша Дозер</a>\r\n          <span class=\"label label-default\">2</span>\r\n        </li>\r\n      </ul>\r\n    </div>\r\n  </div>\r\n</div>\r\n\r\n\r\n<div class=\"row\">\r\n  <div class=\"col-sm-4\">\r\n    <table class=\"table table-striped matches-table\">\r\n      <tbody>\r\n        <tr>\r\n          <td>Alpha</td> <td>0 : 1</td> <td><b>Charlie</b></td>\r\n        </tr>\r\n        <tr>\r\n          <td><b>Delta</b></td> <td>3 : 0</td> <td>Bravo</td>\r\n        </tr>\r\n        <tr>\r\n          <td>Charlie</td> <td>0 : 1</td> <td><b>Bravo</b></td>\r\n        </tr>\r\n        <tr>\r\n          <td>Delta</td> <td>0 : 0</td> <td>Alpha</td>\r\n        </tr>\r\n        <tr>\r\n          <td>Bravo</td> <td>0 : 0</td> <td>Alpha</td>\r\n        </tr>\r\n        <tr>\r\n          <td><b>Charlie</b></td> <td>1 : 0</td> <td>Delta</td>\r\n        </tr>\r\n        <tr class=\"success\">\r\n          <td>Alpha</td> <td>1 : 2</td> <td>Bravo</td>\r\n        </tr>\r\n        <tr>\r\n          <td>Delta</td> <td></td> <td>Charlie</td>\r\n        </tr>\r\n        <tr>\r\n          <td>Bravo</td> <td></td> <td>Charlie</td>\r\n        </tr>\r\n        <tr>\r\n          <td>Alpha</td> <td></td> <td>Delta</td>\r\n        </tr>\r\n        <tr>\r\n          <td>Bravo</td> <td></td> <td>Delta</td>\r\n        </tr>\r\n        <tr>\r\n          <td>Charlie</td> <td></td> <td>Alpha</td>\r\n        </tr>\r\n      </tbody>\r\n    </table>\r\n  </div>\r\n  <div class=\"col-sm-8\">\r\n    <table class=\"table tourney-table\">\r\n      <thead>\r\n        <tr>\r\n          <th>Team</th>\r\n          <th title=\"Average Rating\">AVR</th>\r\n          <th title=\"Matches Played\">MP</th>\r\n          <th title=\"Won\">W</th>\r\n          <th title=\"Drawn\">D</th>\r\n          <th title=\"Lost\">L</th>\r\n          <th title=\"Goals For\">GF</th>\r\n          <th title=\"Goals Against\">GA</th>\r\n          <th title=\"Goal Difference\">±</th>\r\n          <th title=\"Points\">Pts</th>\r\n        </tr>\r\n      </thead>\r\n      <tbody>\r\n        <tr>\r\n          <th>Charlie</th>\r\n          <td><span class=\"label label-info\">7.1</span></td>\r\n          <td>6</td>\r\n          <td>4</td>\r\n          <td>0</td>\r\n          <td>1</td>\r\n          <td>7</td>\r\n          <td>4</td>\r\n          <td>3</td>\r\n          <td>12</td>\r\n        </tr>\r\n        <tr>\r\n          <th>Bravo</th>\r\n          <td><span class=\"label label-info\">7.2</span></td>\r\n          <td>6</td>\r\n          <td>2</td>\r\n          <td>2</td>\r\n          <td>2</td>\r\n          <td>6</td>\r\n          <td>8</td>\r\n          <td>-2</td>\r\n          <td>8</td>\r\n        </tr>\r\n        <tr>\r\n          <th>Delta</th>\r\n          <td><span class=\"label label-info\">7.3</span></td>\r\n          <td>6</td>\r\n          <td>1</td>\r\n          <td>2</td>\r\n          <td>3</td>\r\n          <td>5</td>\r\n          <td>5</td>\r\n          <td>0</td>\r\n          <td>5</td>\r\n        </tr>\r\n        <tr>\r\n          <th>Alpha</th>\r\n          <td><span class=\"label label-info\">7.4</span></td>\r\n          <td>6</td>\r\n          <td>0</td>\r\n          <td>4</td>\r\n          <td>1</td>\r\n          <td>1</td>\r\n          <td>2</td>\r\n          <td>-1</td>\r\n          <td>4</td>\r\n        </tr>\r\n      </tbody>\r\n    </table>\r\n\r\n    <h3 class=\"text-muted\">Next Match <small>Delta vs. Charlie</small></h3>\r\n    <div class=\"row\">\r\n      <div class=\"col-sm-6\">\r\n        <div class=\"panel panel-default\">\r\n          <div class=\"panel-heading\">\r\n            <b class=\"pull-right\" title=\"Average Rating\">7.1</b>\r\n            <h3 class=\"panel-title\">Delta</h3>\r\n          </div>\r\n          <ul class=\"list-group\">\r\n            <li class=\"list-group-item\">\r\n              <span class=\"label label-warning pull-right\">9</span>\r\n              <a href=\"#\">Кирилл</a>\r\n            </li>\r\n            <li class=\"list-group-item\">\r\n              <span class=\"label label-primary pull-right\">8</span>\r\n              <a href=\"#\">Серёга (GK)</a>\r\n            </li>\r\n            <li class=\"list-group-item\">\r\n              <span class=\"label label-info pull-right\">7</span>\r\n              <a href=\"#\">Витя</a>\r\n            </li>\r\n            <li class=\"list-group-item\">\r\n              <span class=\"label label-info pull-right\">6</span>\r\n              <a href=\"#\">Тимур</a>\r\n            </li>\r\n            <li class=\"list-group-item\">\r\n              <span class=\"label label-default pull-right\">2</span>\r\n              <a href=\"#\">Саша Дозер</a>\r\n            </li>\r\n          </ul>\r\n        </div>\r\n      </div>\r\n\r\n      <div class=\"col-sm-6\">\r\n        <div class=\"panel panel-default\">\r\n          <div class=\"panel-heading\">\r\n            <b class=\"pull-right\" title=\"Average Rating\">7.1</b>\r\n            <h3 class=\"panel-title\">Charlie</h3>\r\n          </div>\r\n          <ul class=\"list-group\">\r\n            <li class=\"list-group-item\">\r\n              <span class=\"label label-warning pull-right\">9</span>\r\n              <a href=\"#\">Кирилл</a>\r\n            </li>\r\n            <li class=\"list-group-item\">\r\n              <span class=\"label label-primary pull-right\">8</span>\r\n              <a href=\"#\">Серёга (GK)</a>\r\n            </li>\r\n            <li class=\"list-group-item\">\r\n              <span class=\"label label-info pull-right\">7</span>\r\n              <a href=\"#\">Витя</a>\r\n            </li>\r\n            <li class=\"list-group-item\">\r\n              <span class=\"label label-info pull-right\">6</span>\r\n              <a href=\"#\">Тимур</a>\r\n            </li>\r\n            <li class=\"list-group-item\">\r\n              <span class=\"label label-default pull-right\">2</span>\r\n              <a href=\"#\">Саша Дозер</a>\r\n            </li>\r\n          </ul>\r\n        </div>\r\n      </div>\r\n    </div>\r\n\r\n  </div>\r\n</div>\r\n\r\n");
+  return buffer;
+  
+});
+
+},{"ember":2}],45:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var compiler = require('ember').Handlebars;
+module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
+  var buffer = '', stack1, helper, options, self=this, helperMissing=helpers.helperMissing;
+
+function program1(depth0,data) {
+  
+  
+  data.buffer.push("\r\n        <img src=\"https://secure.gravatar.com/avatar/c9ccf1c73cf2eb5a21bfa900493dbd4c?size=60px\" alt=\"photo\" class=\"media-object img-thumbnail\">\r\n      ");
+  }
+
+function program3(depth0,data) {
+  
+  
+  data.buffer.push("\r\n            Zidan <span class=\"label label-danger\">10</span>\r\n          ");
+  }
+
+function program5(depth0,data) {
+  
+  
+  data.buffer.push("\r\n            Messi <span class=\"label label-danger\">10</span>\r\n          ");
+  }
+
+function program7(depth0,data) {
+  
+  
+  data.buffer.push("\r\n            Pirlo <span class=\"label label-danger\">10</span>\r\n          ");
+  }
+
+function program9(depth0,data) {
+  
+  
+  data.buffer.push("\r\n            Ronaldo <span class=\"label label-danger\">10</span>\r\n          ");
+  }
+
+  data.buffer.push("<div class=\"row players-list\">\r\n  <div class=\"col-sm-4 players-item\">\r\n    <div class=\"media\">\r\n      ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
+    'class': ("pull-left")
+  },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0,depth0],types:["STRING","INTEGER"],data:data},helper ? helper.call(depth0, "player", 1, options) : helperMissing.call(depth0, "link-to", "player", 1, options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\r\n      <div class=\"media-body\">\r\n        <h3 class=\"media-heading\">\r\n          ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(3, program3, data),contexts:[depth0,depth0],types:["STRING","INTEGER"],data:data},helper ? helper.call(depth0, "player", 1, options) : helperMissing.call(depth0, "link-to", "player", 1, options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\r\n        </h3>\r\n        <p class=\"text-muted\"><b class=\"text-success\">+1</b> on Aug 13 at 12:23</p>\r\n      </div>\r\n    </div>\r\n  </div>\r\n  <div class=\"col-sm-4 players-item\">\r\n    <div class=\"media\">\r\n      ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
+    'class': ("pull-left")
+  },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0,depth0],types:["STRING","INTEGER"],data:data},helper ? helper.call(depth0, "player", 2, options) : helperMissing.call(depth0, "link-to", "player", 2, options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\r\n      <div class=\"media-body\">\r\n        <h3 class=\"media-heading\">\r\n          ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(5, program5, data),contexts:[depth0,depth0],types:["STRING","INTEGER"],data:data},helper ? helper.call(depth0, "player", 2, options) : helperMissing.call(depth0, "link-to", "player", 2, options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\r\n        </h3>\r\n        <p class=\"text-muted\"><b class=\"text-success\">+1</b> on Aug 14 at 15:12</p>\r\n      </div>\r\n    </div>\r\n  </div>\r\n  <div class=\"col-sm-4 players-item\">\r\n    <div class=\"media\">\r\n      ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
+    'class': ("pull-left")
+  },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0,depth0],types:["STRING","INTEGER"],data:data},helper ? helper.call(depth0, "player", 3, options) : helperMissing.call(depth0, "link-to", "player", 3, options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\r\n      <div class=\"media-body\">\r\n        <h3 class=\"media-heading\">\r\n          ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(7, program7, data),contexts:[depth0,depth0],types:["STRING","INTEGER"],data:data},helper ? helper.call(depth0, "player", 3, options) : helperMissing.call(depth0, "link-to", "player", 3, options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\r\n        </h3>\r\n        <p class=\"text-muted\"><b class=\"text-success\">+1</b> on Aug 15 at 00:01</p>\r\n      </div>\r\n    </div>\r\n  </div>\r\n  <div class=\"col-sm-4 players-item\">\r\n    <div class=\"media\">\r\n      ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
+    'class': ("pull-left")
+  },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0,depth0],types:["STRING","INTEGER"],data:data},helper ? helper.call(depth0, "player", 4, options) : helperMissing.call(depth0, "link-to", "player", 4, options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\r\n      <div class=\"media-body\">\r\n        <h3 class=\"media-heading\">\r\n          ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(9, program9, data),contexts:[depth0,depth0],types:["STRING","INTEGER"],data:data},helper ? helper.call(depth0, "player", 4, options) : helperMissing.call(depth0, "link-to", "player", 4, options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\r\n        </h3>\r\n        <p class=\"text-muted\"><b class=\"text-success\">+1</b> on Aug 15 at 12:23</p>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n");
+  return buffer;
+  
+});
+
+},{"ember":2}],46:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -73909,17 +74836,102 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   
 
 
-  data.buffer.push("<h2>\r\n  GameDay #23\r\n  <span class=\"label label-success active\" title=\"Been there\">+1</span>\r\n  <small>July 04, 2014</small>\r\n</h2>\r\n\r\n<ul class=\"nav nav-pills\">\r\n  <li class=\"active\"><a href=\"#\">Overview</a></li>\r\n  <li><a href=\"#\">Alpha</a></li>\r\n  <li><a href=\"#\">Bravo</a></li>\r\n  <li><a href=\"#\">Charlie <i class=\"flaticon-football117\"></i></a></li>\r\n  <li><a href=\"#\">Delta</a></li>\r\n</ul>\r\n\r\n<hr class=\"hr-sm\">\r\n\r\n<div class=\"row\">\r\n  <div class=\"col-lg-3\">\r\n    <div class=\"panel panel-default\">\r\n      <div class=\"panel-heading\">\r\n        <b class=\"pull-right\" title=\"Rating Sum\">32.4</b>\r\n        <h3 class=\"panel-title\">Alpha</h3>\r\n      </div>\r\n      <ul class=\"panel-body list-unstyled\">\r\n        <li>\r\n          <span class=\"label label-warning pull-right\">9</span>\r\n          <a href=\"#\">Кирилл</a>\r\n        </li>\r\n        <li>\r\n          <span class=\"label label-primary pull-right\">8</span>\r\n          <a href=\"#\">Серёга (GK)</a>\r\n        </li>\r\n        <li>\r\n          <span class=\"label label-info pull-right\">7</span>\r\n          <a href=\"#\">Витя</a>\r\n        </li>\r\n        <li>\r\n          <span class=\"label label-info pull-right\">6</span>\r\n          <a href=\"#\">Тимур</a>\r\n        </li>\r\n        <li>\r\n          <span class=\"label label-default pull-right\">2</span>\r\n          <a href=\"#\">Саша Дозер</a>\r\n        </li>\r\n      </ul>\r\n    </div>\r\n    <div class=\"panel panel-success\">\r\n      <div class=\"panel-heading\">\r\n        <b class=\"pull-right\" title=\"Rating Sum\">32.1</b>\r\n        <h3 class=\"panel-title\">Bravo</h3>\r\n      </div>\r\n      <ul class=\"panel-body list-unstyled\">\r\n        <li>\r\n          <span class=\"label label-warning pull-right\">9</span>\r\n          <a href=\"#\">Кирилл</a>\r\n        </li>\r\n        <li>\r\n          <span class=\"label label-primary pull-right\">8</span>\r\n          <a href=\"#\">Серёга (GK)</a>\r\n        </li>\r\n        <li>\r\n          <span class=\"label label-info pull-right\">7</span>\r\n          <a href=\"#\">Витя</a>\r\n        </li>\r\n        <li>\r\n          <span class=\"label label-info pull-right\">6</span>\r\n          <a href=\"#\">Тимур</a>\r\n        </li>\r\n        <li>\r\n          <span class=\"label label-default pull-right\">2</span>\r\n          <a href=\"#\">Саша Дозер</a>\r\n        </li>\r\n      </ul>\r\n    </div>\r\n    <div class=\"panel panel-default\">\r\n      <div class=\"panel-heading\">\r\n        <b class=\"pull-right\" title=\"Rating Sum\">32.2</b>\r\n        <h3 class=\"panel-title\">Charlie <i class=\"flaticon-football117\"></i></h3>\r\n      </div>\r\n      <ul class=\"panel-body list-unstyled\">\r\n        <li>\r\n          <span class=\"label label-warning pull-right\">9</span>\r\n          <a href=\"#\">Кирилл</a>\r\n        </li>\r\n        <li>\r\n          <span class=\"label label-primary pull-right\">8</span>\r\n          <a href=\"#\">Серёга (GK)</a>\r\n        </li>\r\n        <li>\r\n          <span class=\"label label-info pull-right\">7</span>\r\n          <a href=\"#\">Витя</a>\r\n        </li>\r\n        <li>\r\n          <span class=\"label label-info pull-right\">6</span>\r\n          <a href=\"#\">Тимур</a>\r\n        </li>\r\n        <li>\r\n          <span class=\"label label-default pull-right\">2</span>\r\n          <a href=\"#\">Саша Дозер</a>\r\n        </li>\r\n      </ul>\r\n    </div>\r\n    <div class=\"panel panel-default\">\r\n      <div class=\"panel-heading\">\r\n        <b class=\"pull-right\" title=\"Rating Sum\">32.3</b>\r\n        <h3 class=\"panel-title\">Delta</h3>\r\n      </div>\r\n      <ul class=\"panel-body list-unstyled\">\r\n        <li>\r\n          <span class=\"label label-warning pull-right\">9</span>\r\n          <a href=\"#\">Кирилл</a>\r\n        </li>\r\n        <li>\r\n          <span class=\"label label-primary pull-right\">8</span>\r\n          <a href=\"#\">Серёга (GK)</a>\r\n        </li>\r\n        <li>\r\n          <span class=\"label label-info pull-right\">7</span>\r\n          <a href=\"#\">Витя</a>\r\n        </li>\r\n        <li>\r\n          <span class=\"label label-info pull-right\">6</span>\r\n          <a href=\"#\">Тимур</a>\r\n        </li>\r\n        <li>\r\n          <span class=\"label label-default pull-right\">2</span>\r\n          <a href=\"#\">Саша Дозер</a>\r\n        </li>\r\n      </ul>\r\n    </div>\r\n  </div>\r\n  <div class=\"col-lg-9\">\r\n    <table class=\"table tourney-table\">\r\n      <thead>\r\n        <tr>\r\n          <th>Team</th>\r\n          <th title=\"Average Rating\">AVR</th>\r\n          <th title=\"Matches Played\">MP</th>\r\n          <th title=\"Won\">W</th>\r\n          <th title=\"Drawn\">D</th>\r\n          <th title=\"Lost\">L</th>\r\n          <th title=\"Goals For\">GF</th>\r\n          <th title=\"Goals Against\">GA</th>\r\n          <th title=\"Goal Difference\">±</th>\r\n          <th title=\"Points\">Pts</th>\r\n        </tr>\r\n      </thead>\r\n      <tbody>\r\n        <tr>\r\n          <th>Charlie <i class=\"flaticon-football117\"></i></th>\r\n          <td><span class=\"label label-info\">7.1</span></td>\r\n          <td>6</td>\r\n          <td>4</td>\r\n          <td>0</td>\r\n          <td>1</td>\r\n          <td>7</td>\r\n          <td>4</td>\r\n          <td>3</td>\r\n          <td>12</td>\r\n        </tr>\r\n        <tr class=\"success\">\r\n          <th>Bravo</th>\r\n          <td><span class=\"label label-info\">7.2</span></td>\r\n          <td>6</td>\r\n          <td>2</td>\r\n          <td>2</td>\r\n          <td>2</td>\r\n          <td>6</td>\r\n          <td>8</td>\r\n          <td>-2</td>\r\n          <td>8</td>\r\n        </tr>\r\n        <tr>\r\n          <th>Delta</th>\r\n          <td><span class=\"label label-info\">7.3</span></td>\r\n          <td>6</td>\r\n          <td>1</td>\r\n          <td>2</td>\r\n          <td>3</td>\r\n          <td>5</td>\r\n          <td>5</td>\r\n          <td>0</td>\r\n          <td>5</td>\r\n        </tr>\r\n        <tr>\r\n          <th>Alpha</th>\r\n          <td><span class=\"label label-info\">7.4</span></td>\r\n          <td>6</td>\r\n          <td>0</td>\r\n          <td>4</td>\r\n          <td>1</td>\r\n          <td>1</td>\r\n          <td>2</td>\r\n          <td>-1</td>\r\n          <td>4</td>\r\n        </tr>\r\n      </tbody>\r\n    </table>\r\n\r\n    <div class=\"row\">\r\n      <div class=\"col-lg-6\">\r\n        <h3>Matches</h3>\r\n        <table class=\"table table-striped matches-table\">\r\n          <tbody>\r\n            <tr>\r\n              <td>Alpha</td> <td>0 : 1</td> <td><b>Charlie</b></td>\r\n            </tr>\r\n            <tr class=\"text-success\">\r\n              <td><b>Delta</b></td> <td>3 : 0</td> <td>Bravo</td>\r\n            </tr>\r\n            <tr class=\"text-success\">\r\n              <td>Charlie</td> <td>0 : 1</td> <td><b>Bravo</b></td>\r\n            </tr>\r\n            <tr>\r\n              <td>Delta</td> <td>0 : 0</td> <td>Alpha</td>\r\n            </tr>\r\n            <tr class=\"text-success\">\r\n              <td>Bravo</td> <td>0 : 0</td> <td>Alpha</td>\r\n            </tr>\r\n            <tr>\r\n              <td><b>Charlie</b></td> <td>1 : 0</td> <td>Delta</td>\r\n            </tr>\r\n            <tr class=\"text-success\">\r\n              <td>Alpha</td> <td>1 : 1</td> <td>Bravo</td>\r\n            </tr>\r\n            <tr>\r\n              <td>Delta</td> <td>1 : 2</td> <td><b>Charlie</b></td>\r\n            </tr>\r\n            <tr class=\"text-success\">\r\n              <td>Bravo</td> <td>2 : 3</td> <td><b>Charlie</b></td>\r\n            </tr>\r\n            <tr>\r\n              <td>Alpha</td> <td>0 : 0</td> <td>Delta</td>\r\n            </tr>\r\n            <tr class=\"text-success\">\r\n              <td><b>Bravo</b></td> <td>2 : 1</td> <td>Delta</td>\r\n            </tr>\r\n            <tr>\r\n              <td>Charlie</td> <td>0 : 0</td> <td>Alpha</td>\r\n            </tr>\r\n          </tbody>\r\n        </table>\r\n      </div>\r\n      <div class=\"col-lg-6\">\r\n        <h3>Shooters</h3>\r\n        <table class=\"table table-striped shooters-table\">\r\n          <tbody>\r\n            <tr>\r\n              <td>1</td>\r\n              <td><a href=\"#\">Витя</a></td>\r\n              <td><span class=\"label label-info\">7</span></td>\r\n              <td>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n              </td>\r\n            </tr>\r\n            <tr>\r\n              <td>2</td>\r\n              <td><a href=\"#\">Серёга (GK)</a></td>\r\n              <td><span class=\"label label-primary\">8</span></td>\r\n              <td>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n              </td>\r\n            </tr>\r\n            <tr>\r\n              <td>3</td>\r\n              <td><a href=\"#\">Кирилл</a></td>\r\n              <td><span class=\"label label-warning\">9</span></td>\r\n              <td>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n              </td>\r\n            </tr>\r\n            <tr>\r\n              <td>4</td>\r\n              <td><a href=\"#\">Тимур</a></td>\r\n              <td><span class=\"label label-info\">6</span></td>\r\n              <td>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n              </td>\r\n            </tr>\r\n            <tr>\r\n              <td>5</td>\r\n              <td><a href=\"#\">Саша Дозер</a></td>\r\n              <td><span class=\"label label-default\">2</span></td>\r\n              <td>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n              </td>\r\n            </tr>\r\n            <tr class=\"success\">\r\n              <td>6</td>\r\n              <td><a href=\"#\">Витя</a></td>\r\n              <td><span class=\"label label-info\">7</span></td>\r\n              <td>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n              </td>\r\n            </tr>\r\n            <tr>\r\n              <td>7</td>\r\n              <td><a href=\"#\">Серёга (GK)</a></td>\r\n              <td><span class=\"label label-primary\">8</span></td>\r\n              <td>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n              </td>\r\n            </tr>\r\n            <tr>\r\n              <td>8</td>\r\n              <td><a href=\"#\">Кирилл</a></td>\r\n              <td><span class=\"label label-warning\">9</span></td>\r\n              <td>\r\n                <i class=\"flaticon-football28\"></i>\r\n              </td>\r\n            </tr>\r\n            <tr>\r\n              <td>9</td>\r\n              <td><a href=\"#\">Тимур</a></td>\r\n              <td><span class=\"label label-info\">6</span></td>\r\n              <td>\r\n                <i class=\"flaticon-football28\"></i>\r\n              </td>\r\n            </tr>\r\n            <tr>\r\n              <td>10</td>\r\n              <td><a href=\"#\">Саша Дозер</a></td>\r\n              <td><span class=\"label label-default\">2</span></td>\r\n              <td>\r\n                <i class=\"flaticon-football28\"></i>\r\n              </td>\r\n            </tr>\r\n          </tbody>\r\n        </table>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n");
+  data.buffer.push("<div class=\"row\">\r\n  <div class=\"col-md-9 col-md-push-3\">\r\n    <div class=\"row gap-md\">\r\n      <div class=\"col-md-8\">\r\n        <button class=\"btn fa-lg btn-success\"><i class=\"flaticon-football90 fa-lg\"></i> Randomize Teams</button>\r\n        <button class=\"btn fa-lg btn-default\"><i class=\"flaticon-soccer18 fa-lg\"></i> Add Player</button>\r\n      </div>\r\n      <div class=\"col-md-4 text-right\">\r\n        <button class=\"btn fa-lg btn-default\"><i class=\"flaticon-checkered3 fa-lg\"></i> Setup</button>\r\n      </div>\r\n    </div>\r\n\r\n    <div class=\"row\">\r\n      <div class=\"col-sm-6\">\r\n        <div class=\"panel panel-default\">\r\n          <div class=\"panel-heading\">\r\n            <b class=\"pull-right\" title=\"Average Rating\">7.1</b>\r\n            <h3 class=\"panel-title\">Alpha</h3>\r\n          </div>\r\n          <ul class=\"list-group\">\r\n            <li class=\"list-group-item\">\r\n              <span class=\"label label-warning pull-right\">9</span>\r\n              <a href=\"#\">Кирилл</a>\r\n            </li>\r\n            <li class=\"list-group-item\">\r\n              <span class=\"label label-primary pull-right\">8</span>\r\n              <a href=\"#\">Серёга (GK)</a>\r\n            </li>\r\n            <li class=\"list-group-item\">\r\n              <span class=\"label label-info pull-right\">7</span>\r\n              <a href=\"#\">Витя</a>\r\n            </li>\r\n            <li class=\"list-group-item\">\r\n              <span class=\"label label-info pull-right\">6</span>\r\n              <a href=\"#\">Тимур</a>\r\n            </li>\r\n            <li class=\"list-group-item\">\r\n              <span class=\"label label-default pull-right\">2</span>\r\n              <a href=\"#\">Саша Дозер</a>\r\n            </li>\r\n          </ul>\r\n        </div>\r\n      </div>\r\n\r\n      <div class=\"col-sm-6\">\r\n        <div class=\"panel panel-default\">\r\n          <div class=\"panel-heading\">\r\n            <b class=\"pull-right\" title=\"Average Rating\">7.1</b>\r\n            <h3 class=\"panel-title\">Bravo</h3>\r\n          </div>\r\n          <ul class=\"list-group\">\r\n            <li class=\"list-group-item\">\r\n              <span class=\"label label-warning pull-right\">9</span>\r\n              <a href=\"#\">Кирилл</a>\r\n            </li>\r\n            <li class=\"list-group-item\">\r\n              <span class=\"label label-primary pull-right\">8</span>\r\n              <a href=\"#\">Серёга (GK)</a>\r\n            </li>\r\n            <li class=\"list-group-item\">\r\n              <span class=\"label label-info pull-right\">7</span>\r\n              <a href=\"#\">Витя</a>\r\n            </li>\r\n            <li class=\"list-group-item\">\r\n              <span class=\"label label-info pull-right\">6</span>\r\n              <a href=\"#\">Тимур</a>\r\n            </li>\r\n            <li class=\"list-group-item\">\r\n              <span class=\"label label-default pull-right\">2</span>\r\n              <a href=\"#\">Саша Дозер</a>\r\n            </li>\r\n          </ul>\r\n        </div>\r\n      </div>\r\n\r\n      <div class=\"col-sm-6\">\r\n        <div class=\"panel panel-default\">\r\n          <div class=\"panel-heading\">\r\n            <b class=\"pull-right\" title=\"Average Rating\">7.1</b>\r\n            <h3 class=\"panel-title\">Charlie</h3>\r\n          </div>\r\n          <ul class=\"list-group\">\r\n            <li class=\"list-group-item\">\r\n              <span class=\"label label-warning pull-right\">9</span>\r\n              <a href=\"#\">Кирилл</a>\r\n            </li>\r\n            <li class=\"list-group-item\">\r\n              <span class=\"label label-primary pull-right\">8</span>\r\n              <a href=\"#\">Серёга (GK)</a>\r\n            </li>\r\n            <li class=\"list-group-item\">\r\n              <span class=\"label label-info pull-right\">7</span>\r\n              <a href=\"#\">Витя</a>\r\n            </li>\r\n            <li class=\"list-group-item\">\r\n              <span class=\"label label-info pull-right\">6</span>\r\n              <a href=\"#\">Тимур</a>\r\n            </li>\r\n            <li class=\"list-group-item\">\r\n              <span class=\"label label-default pull-right\">2</span>\r\n              <a href=\"#\">Саша Дозер</a>\r\n            </li>\r\n          </ul>\r\n        </div>\r\n      </div>\r\n\r\n      <div class=\"col-sm-6\">\r\n        <div class=\"panel panel-default\">\r\n          <div class=\"panel-heading\">\r\n            <b class=\"pull-right\" title=\"Average Rating\">7.1</b>\r\n            <h3 class=\"panel-title\">Delta</h3>\r\n          </div>\r\n          <ul class=\"list-group\">\r\n            <li class=\"list-group-item\">\r\n              <span class=\"label label-warning pull-right\">9</span>\r\n              <a href=\"#\">Кирилл</a>\r\n            </li>\r\n            <li class=\"list-group-item\">\r\n              <span class=\"label label-primary pull-right\">8</span>\r\n              <a href=\"#\">Серёга (GK)</a>\r\n            </li>\r\n            <li class=\"list-group-item\">\r\n              <span class=\"label label-info pull-right\">7</span>\r\n              <a href=\"#\">Витя</a>\r\n            </li>\r\n            <li class=\"list-group-item\">\r\n              <span class=\"label label-info pull-right\">6</span>\r\n              <a href=\"#\">Тимур</a>\r\n            </li>\r\n            <li class=\"list-group-item\">\r\n              <span class=\"label label-default pull-right\">2</span>\r\n              <a href=\"#\">Саша Дозер</a>\r\n            </li>\r\n          </ul>\r\n        </div>\r\n      </div>\r\n    </div>\r\n\r\n    <div class=\"row gap-lg\">\r\n      <div class=\"col-md-8\">\r\n        <button class=\"btn fa-lg btn-success\"><i class=\"flaticon-goal fa-lg\"></i> Save</button>\r\n        <button class=\"btn fa-lg btn-default\"><i class=\"flaticon-football79 fa-lg\"></i> Discard</button>\r\n      </div>\r\n      <div class=\"col-md-4 text-right\">\r\n      </div>\r\n    </div>\r\n  </div>\r\n\r\n  <div class=\"col-md-3 col-md-pull-9\">\r\n    <div class=\"panel panel-default\">\r\n      <div class=\"panel-heading\">\r\n        <b class=\"pull-right\" title=\"AVR\">7.3</b>\r\n        <h3 class=\"panel-title\">Average Rating</h3>\r\n      </div>\r\n      <ul class=\"list-group\">\r\n        <li class=\"list-group-item\">\r\n          <select>\r\n            <option>&mdash;</option>\r\n            <option>A</option>\r\n            <option>B</option>\r\n            <option>C</option>\r\n            <option>D</option>\r\n          </select>\r\n          <span class=\"label label-warning pull-right\">9</span>\r\n          <a href=\"#\">Кирилл</a>\r\n        </li>\r\n        <li class=\"list-group-item\">\r\n          <select>\r\n            <option>&mdash;</option>\r\n            <option>A</option>\r\n            <option>B</option>\r\n            <option>C</option>\r\n            <option>D</option>\r\n          </select>\r\n          <span class=\"label label-primary pull-right\">8</span>\r\n          <a href=\"#\">Серёга (GK)</a>\r\n        </li>\r\n        <li class=\"list-group-item\">\r\n          <select>\r\n            <option>&mdash;</option>\r\n            <option>A</option>\r\n            <option>B</option>\r\n            <option>C</option>\r\n            <option>D</option>\r\n          </select>\r\n          <span class=\"label label-info pull-right\">7</span>\r\n          <a href=\"#\">Витя</a>\r\n        </li>\r\n        <li class=\"list-group-item\">\r\n          <select>\r\n            <option>&mdash;</option>\r\n            <option>A</option>\r\n            <option>B</option>\r\n            <option>C</option>\r\n            <option>D</option>\r\n          </select>\r\n          <span class=\"label label-info pull-right\">6</span>\r\n          <a href=\"#\">Тимур</a>\r\n        </li>\r\n        <li class=\"list-group-item\">\r\n          <select>\r\n            <option>&mdash;</option>\r\n            <option>A</option>\r\n            <option>B</option>\r\n            <option>C</option>\r\n            <option>D</option>\r\n          </select>\r\n          <span class=\"label label-default pull-right\">2</span>\r\n          <a href=\"#\">Саша Дозер</a>\r\n        </li>\r\n        <li class=\"list-group-item\">\r\n          <select>\r\n            <option>&mdash;</option>\r\n            <option>A</option>\r\n            <option>B</option>\r\n            <option>C</option>\r\n            <option>D</option>\r\n          </select>\r\n          <span class=\"label label-warning pull-right\">9</span>\r\n          <a href=\"#\">Кирилл</a>\r\n        </li>\r\n        <li class=\"list-group-item\">\r\n          <select>\r\n            <option>&mdash;</option>\r\n            <option>A</option>\r\n            <option>B</option>\r\n            <option>C</option>\r\n            <option>D</option>\r\n          </select>\r\n          <span class=\"label label-primary pull-right\">8</span>\r\n          <a href=\"#\">Серёга (GK)</a>\r\n        </li>\r\n        <li class=\"list-group-item\">\r\n          <select>\r\n            <option>&mdash;</option>\r\n            <option>A</option>\r\n            <option>B</option>\r\n            <option>C</option>\r\n            <option>D</option>\r\n          </select>\r\n          <span class=\"label label-info pull-right\">7</span>\r\n          <a href=\"#\">Витя</a>\r\n        </li>\r\n        <li class=\"list-group-item\">\r\n          <select>\r\n            <option>&mdash;</option>\r\n            <option>A</option>\r\n            <option>B</option>\r\n            <option>C</option>\r\n            <option>D</option>\r\n          </select>\r\n          <span class=\"label label-info pull-right\">6</span>\r\n          <a href=\"#\">Тимур</a>\r\n        </li>\r\n        <li class=\"list-group-item\">\r\n          <select>\r\n            <option>&mdash;</option>\r\n            <option>A</option>\r\n            <option>B</option>\r\n            <option>C</option>\r\n            <option>D</option>\r\n          </select>\r\n          <span class=\"label label-default pull-right\">2</span>\r\n          <a href=\"#\">Саша Дозер</a>\r\n        </li>\r\n        <li class=\"list-group-item\">\r\n          <select>\r\n            <option>&mdash;</option>\r\n            <option>A</option>\r\n            <option>B</option>\r\n            <option>C</option>\r\n            <option>D</option>\r\n          </select>\r\n          <span class=\"label label-warning pull-right\">9</span>\r\n          <a href=\"#\">Кирилл</a>\r\n        </li>\r\n        <li class=\"list-group-item\">\r\n          <select>\r\n            <option>&mdash;</option>\r\n            <option>A</option>\r\n            <option>B</option>\r\n            <option>C</option>\r\n            <option>D</option>\r\n          </select>\r\n          <span class=\"label label-primary pull-right\">8</span>\r\n          <a href=\"#\">Серёга (GK)</a>\r\n        </li>\r\n        <li class=\"list-group-item\">\r\n          <select>\r\n            <option>&mdash;</option>\r\n            <option>A</option>\r\n            <option>B</option>\r\n            <option>C</option>\r\n            <option>D</option>\r\n          </select>\r\n          <span class=\"label label-info pull-right\">7</span>\r\n          <a href=\"#\">Витя</a>\r\n        </li>\r\n        <li class=\"list-group-item\">\r\n          <select>\r\n            <option>&mdash;</option>\r\n            <option>A</option>\r\n            <option>B</option>\r\n            <option>C</option>\r\n            <option>D</option>\r\n          </select>\r\n          <span class=\"label label-info pull-right\">6</span>\r\n          <a href=\"#\">Тимур</a>\r\n        </li>\r\n        <li class=\"list-group-item\">\r\n          <select>\r\n            <option>&mdash;</option>\r\n            <option>A</option>\r\n            <option>B</option>\r\n            <option>C</option>\r\n            <option>D</option>\r\n          </select>\r\n          <span class=\"label label-default pull-right\">2</span>\r\n          <a href=\"#\">Саша Дозер</a>\r\n        </li>\r\n      </ul>\r\n    </div>\r\n    <p class=\"text-muted\"><em>* Chosen letters predefine teams for custom players</em></p>\r\n  </div>\r\n\r\n</div>\r\n");
   
 });
 
-},{"ember":2}],37:[function(require,module,exports){
+},{"ember":2}],47:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var compiler = require('ember').Handlebars;
+module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
+  var buffer = '', stack1, helper, options, self=this, helperMissing=helpers.helperMissing;
+
+function program1(depth0,data) {
+  
+  var buffer = '', stack1, helper, options;
+  data.buffer.push("\r\n    ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(2, program2, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "gameday.players", options) : helperMissing.call(depth0, "link-to", "gameday.players", options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\r\n  ");
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  
+  data.buffer.push("Players");
+  }
+
+function program4(depth0,data) {
+  
+  var buffer = '', stack1, helper, options;
+  data.buffer.push("\r\n    ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(5, program5, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "gameday.teams", options) : helperMissing.call(depth0, "link-to", "gameday.teams", options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\r\n  ");
+  return buffer;
+  }
+function program5(depth0,data) {
+  
+  
+  data.buffer.push("Teams");
+  }
+
+function program7(depth0,data) {
+  
+  var buffer = '', stack1, helper, options;
+  data.buffer.push("\r\n    ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(8, program8, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "gameday.matches", options) : helperMissing.call(depth0, "link-to", "gameday.matches", options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\r\n  ");
+  return buffer;
+  }
+function program8(depth0,data) {
+  
+  
+  data.buffer.push("Matches");
+  }
+
+  data.buffer.push("<h2 class=\"tourney-title\">\r\n  Upcoming GameDay #23\r\n  <span class=\"label label-success active\" title=\"I'm goin'\">+1</span>\r\n\r\n  <small class=\"tourney-meta pull-right\">\r\n    <b>19</b> Players / <b>4</b> Teams\r\n  </small>\r\n  <small class=\"nowrap\">September 04, 2014</small>\r\n</h2>\r\n\r\n<ul class=\"nav nav-pills gap-lg\">\r\n  ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
+    'tagName': ("li"),
+    'href': (false)
+  },hashTypes:{'tagName': "STRING",'href': "BOOLEAN"},hashContexts:{'tagName': depth0,'href': depth0},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "gameday.players", options) : helperMissing.call(depth0, "link-to", "gameday.players", options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\r\n  ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
+    'tagName': ("li"),
+    'href': (false)
+  },hashTypes:{'tagName': "STRING",'href': "BOOLEAN"},hashContexts:{'tagName': depth0,'href': depth0},inverse:self.noop,fn:self.program(4, program4, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "gameday.teams", options) : helperMissing.call(depth0, "link-to", "gameday.teams", options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\r\n  ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
+    'tagName': ("li"),
+    'href': (false)
+  },hashTypes:{'tagName': "STRING",'href': "BOOLEAN"},hashContexts:{'tagName': depth0,'href': depth0},inverse:self.noop,fn:self.program(7, program7, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "gameday.matches", options) : helperMissing.call(depth0, "link-to", "gameday.matches", options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\r\n</ul>\r\n\r\n");
+  stack1 = helpers._triageMustache.call(depth0, "outlet", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\r\n");
+  return buffer;
+  
+});
+
+},{"ember":2}],48:[function(require,module,exports){
 (function (global){
 var Ember = require('ember');
 var DS = require('ember-data');
 var EmberFire = require('emberfire');
 var Firebase = require("firebase-client");
-var config = require('../../config/server.json');
+var config = require('config')
+  // Note: Cannot use config.file() or config.dir(),
+  // Because browserify doesn't allow to require files by variable name :(
+  .extend(require('../../config/browser.overrides.json'))
+  .extend(require('../../config/services.json'))
+  .extend(require('../../config/browser.json'));
+
 
 var App = Ember.Application.create({
   LOG_TRANSITIONS: true,
@@ -73931,9 +74943,10 @@ var App = Ember.Application.create({
 });
 
 App.ApplicationAdapter = DS.FirebaseAdapter.extend({
-  firebase: new Firebase('https://' + config.firebase.host)
+  firebase: new Firebase(config.get('firebase.host'))
 });
 App.templates = Ember.TEMPLATES;
+App.config = config;
 
 App.Router.map(function() {
   this.route('me', {path: '/'});
@@ -73942,10 +74955,20 @@ App.Router.map(function() {
 
   this.resource('players');
   this.resource('player', {path: 'players/:id'});
-  this.resource('tourneys');
+  this.resource('tourneys', function() {
+    this.route('new');
+  });
   this.resource('tourney', {path: 'tourneys/:id'});
 
-  this.resource('gameday');
+  this.resource('gameday', function() {
+    this.route('players');
+    this.route('teams');
+    this.route('matches');
+  });
+
+  this.resource('voting', function() {
+    this.route('player', {path: ':id'});
+  });
 });
 
 // Application
@@ -73968,8 +74991,20 @@ App.SignupController = require('./signup/controller');
 App.templates.signup = require('./signup/template');
 
 // Gameday
+App.GamedayIndexRoute = require('./gameday/index/route');
 App.templates.gameday = require('./gameday/template.hbs');
+App.templates['gameday/players'] = require('./gameday/players.hbs');
+App.templates['gameday/teams'] = require('./gameday/teams.hbs');
+App.templates['gameday/matches'] = require('./gameday/matches.hbs');
 
+// Voting
+App.VotingRoute = require('./voting/route');
+App.VotingController = require('./voting/controller');
+App.templates.voting = require('./voting/template.hbs');
+
+App.VotingPlayerController = require('./voting/player/controller');
+App.VotingPlayerRoute = require('./voting/player/route');
+App.templates['voting/player'] = require('./voting/player/template.hbs');
 // Player Model
 App.Player = require('./player/model');
 App.PlayerAdapter = App.ApplicationAdapter.extend({
@@ -74000,6 +75035,7 @@ App.TourneyAdapter = App.ApplicationAdapter.extend({
 App.TourneyRoute = require('./tourney/route');
 App.TourneyController = require('./tourney/controller');
 App.templates.tourney = require('./tourney/template.hbs');
+App.templates['tourneys/new'] = require('./tourney/mockup.hbs');
 App.templates.tourneyPlayers = require('./tourney/players.hbs');
 App.templates.tourneyTeams = require('./tourney/teams.hbs');
 App.templates.tourneyTable = require('./tourney/table.hbs');
@@ -74007,6 +75043,7 @@ App.templates.tourneyMatches = require('./tourney/matches.hbs');
 
 // Tourneys
 App.TourneysRoute = require('./tourneys/route');
+App.TourneysIndexRoute = require('./tourneys/index/route');
 App.templates.tourneys = require('./tourneys/template.hbs');
 
 // Team Model
@@ -74050,7 +75087,7 @@ App.MeRoute = require('./me/route');
 global.zApp = module.exports = App;
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../../config/server.json":30,"./application/controller":31,"./application/route":32,"./application/template.hbs":33,"./auth/controller":34,"./auth/route":35,"./gameday/template.hbs":36,"./login/controller":38,"./login/route":39,"./login/template":40,"./match/controller":41,"./match/model":42,"./match/route":43,"./matches/controller":44,"./matches/route":45,"./matches/template.hbs":46,"./me/route":47,"./player/controller":48,"./player/model":49,"./player/template.hbs":51,"./players/controller":52,"./players/route":53,"./players/template.hbs":54,"./signup/controller":55,"./signup/route":56,"./signup/template":57,"./team/controller":58,"./team/model":59,"./team/route":60,"./teams/controller":61,"./teams/route":62,"./teams/template.hbs":63,"./tourney/controller":64,"./tourney/matches.hbs":65,"./tourney/model":66,"./tourney/players.hbs":67,"./tourney/route":68,"./tourney/table.hbs":69,"./tourney/teams.hbs":70,"./tourney/template.hbs":71,"./tourneys/route":72,"./tourneys/template.hbs":73,"ember":2,"ember-data":1,"emberfire":11,"firebase-client":12}],38:[function(require,module,exports){
+},{"../../config/browser.json":34,"../../config/browser.overrides.json":35,"../../config/services.json":36,"./application/controller":38,"./application/route":39,"./application/template.hbs":40,"./auth/controller":41,"./auth/route":42,"./gameday/index/route":43,"./gameday/matches.hbs":44,"./gameday/players.hbs":45,"./gameday/teams.hbs":46,"./gameday/template.hbs":47,"./login/controller":49,"./login/route":50,"./login/template":51,"./match/controller":52,"./match/model":53,"./match/route":54,"./matches/controller":55,"./matches/route":56,"./matches/template.hbs":57,"./me/route":58,"./player/controller":59,"./player/model":60,"./player/template.hbs":62,"./players/controller":63,"./players/route":64,"./players/template.hbs":65,"./signup/controller":66,"./signup/route":67,"./signup/template":68,"./team/controller":69,"./team/model":70,"./team/route":71,"./teams/controller":72,"./teams/route":73,"./teams/template.hbs":74,"./tourney/controller":75,"./tourney/matches.hbs":76,"./tourney/mockup.hbs":77,"./tourney/model":78,"./tourney/players.hbs":79,"./tourney/route":80,"./tourney/table.hbs":81,"./tourney/teams.hbs":82,"./tourney/template.hbs":83,"./tourneys/index/route":84,"./tourneys/route":85,"./tourneys/template.hbs":86,"./voting/controller":87,"./voting/player/controller":88,"./voting/player/route":89,"./voting/player/template.hbs":90,"./voting/route":91,"./voting/template.hbs":92,"config":37,"ember":2,"ember-data":1,"emberfire":12,"firebase-client":14}],49:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.ObjectController.extend({
@@ -74083,7 +75120,7 @@ module.exports = Ember.ObjectController.extend({
   }
 });
 
-},{"ember":2}],39:[function(require,module,exports){
+},{"ember":2}],50:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -74101,7 +75138,7 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],40:[function(require,module,exports){
+},{"ember":2}],51:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -74119,35 +75156,35 @@ function program1(depth0,data) {
   data.buffer.push(escapeExpression(helpers.action.call(depth0, "login", {hash:{
     'on': ("submit")
   },hashTypes:{'on': "STRING"},hashContexts:{'on': depth0},contexts:[depth0],types:["STRING"],data:data})));
-  data.buffer.push(">\n  <div class=\"form-group\">\n    <label for=\"\" class=\"col-sm-2 control-label\">Email</label>\n    <div class=\"col-xs-4\">\n      ");
+  data.buffer.push(">\r\n  <div class=\"form-group\">\r\n    <label for=\"\" class=\"col-sm-2 control-label\">Email</label>\r\n    <div class=\"col-xs-4\">\r\n      ");
   data.buffer.push(escapeExpression((helper = helpers.input || (depth0 && depth0.input),options={hash:{
     'value': ("email"),
     'type': ("email"),
     'class': ("form-control"),
     'required': ("required")
   },hashTypes:{'value': "ID",'type': "STRING",'class': "STRING",'required': "STRING"},hashContexts:{'value': depth0,'type': depth0,'class': depth0,'required': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "input", options))));
-  data.buffer.push("\n    </div>\n  </div>\n\n  <div class=\"form-group\">\n    <label for=\"\" class=\"col-sm-2 control-label\">Password</label>\n    <div class=\"col-xs-4\">\n      ");
+  data.buffer.push("\r\n    </div>\r\n  </div>\r\n\r\n  <div class=\"form-group\">\r\n    <label for=\"\" class=\"col-sm-2 control-label\">Password</label>\r\n    <div class=\"col-xs-4\">\r\n      ");
   data.buffer.push(escapeExpression((helper = helpers.input || (depth0 && depth0.input),options={hash:{
     'value': ("password"),
     'type': ("password"),
     'class': ("form-control"),
     'required': ("required")
   },hashTypes:{'value': "ID",'type': "STRING",'class': "STRING",'required': "STRING"},hashContexts:{'value': depth0,'type': depth0,'class': depth0,'required': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "input", options))));
-  data.buffer.push("\n    </div>\n  </div>\n\n  <div class=\"form-group\">\n    <div class=\"col-sm-offset-2 col-sm-10\">\n      <button type=\"submit\" class=\"btn btn-primary\" ");
+  data.buffer.push("\r\n    </div>\r\n  </div>\r\n\r\n  <div class=\"form-group\">\r\n    <div class=\"col-sm-offset-2 col-sm-10\">\r\n      <button type=\"submit\" class=\"btn btn-primary\" ");
   data.buffer.push(escapeExpression(helpers['bind-attr'].call(depth0, {hash:{
     'disabled': ("isProcessing")
   },hashTypes:{'disabled': "STRING"},hashContexts:{'disabled': depth0},contexts:[],types:[],data:data})));
-  data.buffer.push(">Login</button>\n      OR\n      ");
+  data.buffer.push(">Login</button>\r\n      OR\r\n      ");
   stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
     'class': ("")
   },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "signup", options) : helperMissing.call(depth0, "link-to", "signup", options));
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n    </div>\n  </div>\n</form>\n");
+  data.buffer.push("\r\n    </div>\r\n  </div>\r\n</form>\r\n");
   return buffer;
   
 });
 
-},{"ember":2}],41:[function(require,module,exports){
+},{"ember":2}],52:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.ObjectController.extend({
@@ -74165,7 +75202,7 @@ module.exports = Ember.ObjectController.extend({
   }.property('isPlayed'),
 });
 
-},{"ember":2}],42:[function(require,module,exports){
+},{"ember":2}],53:[function(require,module,exports){
 var DS = require('ember-data');
 
 module.exports = DS.Model.extend({
@@ -74179,7 +75216,7 @@ module.exports = DS.Model.extend({
   }),
 });
 
-},{"ember-data":1}],43:[function(require,module,exports){
+},{"ember-data":1}],54:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -74188,14 +75225,14 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],44:[function(require,module,exports){
+},{"ember":2}],55:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.ObjectController.extend({
 
 });
 
-},{"ember":2}],45:[function(require,module,exports){
+},{"ember":2}],56:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -74204,7 +75241,7 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],46:[function(require,module,exports){
+},{"ember":2}],57:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -74217,7 +75254,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   
 });
 
-},{"ember":2}],47:[function(require,module,exports){
+},{"ember":2}],58:[function(require,module,exports){
 var PlayerRoute = require('../player/route');
 
 // An alias to existed player
@@ -74243,17 +75280,29 @@ module.exports = PlayerRoute.extend({
   }
 });
 
-},{"../player/route":50}],48:[function(require,module,exports){
+},{"../player/route":61}],59:[function(require,module,exports){
 var Ember = require('ember');
 var md5 = require('MD5');
 
 module.exports = Ember.ObjectController.extend({
   gravatar: function() {
     return 'http://www.gravatar.com/avatar/' + md5(this.get('model.email')) + '.jpg';
-  }.property('email')
+  }.property('email'),
+  
+  isVoted: function() {
+    return this.get('rating') % 2;
+  }.property('rating'),
+
+  isGoingTo: function() {
+    return this.get('name').length % 2;
+  }.property('name'),
+
+  isLocked: function() {
+    return this.get('isVoted') && this.get('id') % 2;
+  }.property('isVoted')
 });
 
-},{"MD5":3,"ember":2}],49:[function(require,module,exports){
+},{"MD5":3,"ember":2}],60:[function(require,module,exports){
 var DS = require('ember-data');
 
 module.exports = DS.Model.extend({
@@ -74264,7 +75313,7 @@ module.exports = DS.Model.extend({
   isAdmin: DS.attr('boolean', { defaultValue: false })
 });
 
-},{"ember-data":1}],50:[function(require,module,exports){
+},{"ember-data":1}],61:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -74273,7 +75322,7 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],51:[function(require,module,exports){
+},{"ember":2}],62:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -74282,23 +75331,25 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', stack1, escapeExpression=this.escapeExpression;
 
 
-  data.buffer.push("<div class=\"well\">\r\n  <div class=\"row player-profile\">\r\n    <div class=\"col-lg-4 text-right\">\r\n      <h1>\r\n        ");
+  data.buffer.push("<div class=\"well\">\r\n  <div class=\"row player-profile\">\r\n    <div class=\"col-sm-4 text-right\">\r\n      <h1>\r\n        ");
   stack1 = helpers._triageMustache.call(depth0, "name", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
   data.buffer.push("\r\n        <!--\r\n          1..4 default\r\n          4..6 info\r\n          6..8 primary\r\n          8..9 success\r\n          9..10 warning\r\n          10.. danger\r\n         -->\r\n        <span class=\"label label-primary\">");
   stack1 = helpers._triageMustache.call(depth0, "rating", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("</span>\r\n      </h1>\r\n      <dl class=\"dl-horizontal lead pull-right\">\r\n        <dt>Shoot</dt>\r\n        <dd><span class=\"label label-info\">5.0</span></dd>\r\n        <dt>Pass</dt>\r\n        <dd><span class=\"label label-warning\">9.1</span></dd>\r\n        <dt>Dribble</dt>\r\n        <dd><span class=\"label label-default\">3.1</span></dd>\r\n        <dt>Pace</dt>\r\n        <dd><span class=\"label label-primary\">6.3</span></dd>\r\n        <dt>Defence</dt>\r\n        <dd><span class=\"label label-success\">8.5</span></dd>\r\n        <dt>Goal Keeper</dt>\r\n        <dd><span class=\"label label-info\">5.4</span></dd>\r\n      </dl>\r\n    </div>\r\n    <div class=\"col-lg-4\">\r\n      <img src=\"");
+  data.buffer.push("</span>\r\n      </h1>\r\n      <dl class=\"dl-horizontal lead pull-right\">\r\n        <dt>Shoot</dt>\r\n        <dd><span class=\"label label-info\">5.0</span></dd>\r\n        <dt>Pass</dt>\r\n        <dd><span class=\"label label-warning\">9.1</span></dd>\r\n        <dt>Dribble</dt>\r\n        <dd><span class=\"label label-default\">3.1</span></dd>\r\n        <dt>Pace</dt>\r\n        <dd><span class=\"label label-primary\">6.3</span></dd>\r\n        <dt>Defence</dt>\r\n        <dd><span class=\"label label-success\">8.5</span></dd>\r\n        <dt>Goal Keeper</dt>\r\n        <dd><span class=\"label label-info\">5.4</span></dd>\r\n      </dl>\r\n      <p class=\"text-muted pull-right\"><em>* Based on 12 Votes</em></p>\r\n    </div>\r\n    <div class=\"col-sm-4\">\r\n      <img src=\"");
   data.buffer.push(escapeExpression(helpers.unbound.call(depth0, "gravatar", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data})));
-  data.buffer.push("?size=400px\" alt=\"photo\" class=\"img-thumbnail img-responsive\">\r\n    </div>\r\n    <div class=\"col-lg-4\">\r\n      <br>\r\n      <dl>\r\n        <dt>Last played Tourney:</dt>\r\n        <dd><a href=\"#\"><i class=\"flaticon-football117\"></i> July 04</a></dd>\r\n        <dt>Tourneys won:</dt>\r\n        <dd>3 of 7</dd>\r\n        <dt>Matches won:</dt>\r\n        <dd>21 of 42</dd>\r\n        <dt>Goals scored:</dt>\r\n        <dd>13</dd>\r\n        <dt>Favorite teammate:</dt>\r\n        <dd><a href=\"#\">Dmitry B. <span class=\"label label-success\">8.2</span></a></dd>\r\n      </dl>\r\n    </div>\r\n  </div>\r\n</div>\r\n");
+  data.buffer.push("?size=400px\" alt=\"photo\" class=\"img-thumbnail img-responsive\">\r\n    </div>\r\n    <div class=\"col-sm-4\">\r\n      <br>\r\n      <dl>\r\n        <dt>Last played Tourney:</dt>\r\n        <dd><a href=\"#\"><i class=\"flaticon-football117\"></i> July 04</a></dd>\r\n        <dt>Tourneys won:</dt>\r\n        <dd>3 of 7</dd>\r\n        <dt>Matches won:</dt>\r\n        <dd>21 of 42</dd>\r\n        <dt>Goals scored:</dt>\r\n        <dd>13</dd>\r\n        <dt>Favorite teammate:</dt>\r\n        <dd><a href=\"#\">Dmitry B. <span class=\"label label-success\">8.2</span></a></dd>\r\n      </dl>\r\n    </div>\r\n  </div>\r\n</div>\r\n");
   return buffer;
   
 });
 
-},{"ember":2}],52:[function(require,module,exports){
+},{"ember":2}],63:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.ArrayController.extend({
+  itemController: 'player',
+
   sortProperties: ['rating'],
   sortAscending: false,
 
@@ -74306,7 +75357,7 @@ module.exports = Ember.ArrayController.extend({
   playersSorderByRank: Ember.computed.sort('model', 'playersSortedByRankDesc'),
 });
 
-},{"ember":2}],53:[function(require,module,exports){
+},{"ember":2}],64:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -74315,7 +75366,7 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],54:[function(require,module,exports){
+},{"ember":2}],65:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -74326,7 +75377,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = '', stack1, helper, options;
-  data.buffer.push("\r\n    <div class=\"col-lg-4 players-item\">\r\n      <div class=\"media\">\r\n        ");
+  data.buffer.push("\r\n    <div class=\"col-sm-4 players-item\">\r\n      <div class=\"media\">\r\n        ");
   stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
     'class': ("pull-left")
   },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(2, program2, data),contexts:[depth0,depth0],types:["STRING","ID"],data:data},helper ? helper.call(depth0, "player", "", options) : helperMissing.call(depth0, "link-to", "player", "", options));
@@ -74334,7 +75385,10 @@ function program1(depth0,data) {
   data.buffer.push("\r\n        <div class=\"media-body\">\r\n          <h3 class=\"media-heading\">\r\n            ");
   stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(4, program4, data),contexts:[depth0,depth0],types:["STRING","ID"],data:data},helper ? helper.call(depth0, "player", "", options) : helperMissing.call(depth0, "link-to", "player", "", options));
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\r\n          </h3>\r\n          <ul class=\"list-inline\">\r\n            <li><i class=\"fa fa-check-square-o\"></i> Voted</li>\r\n            <li><a href=\"#\">Re-Vote</a></li>\r\n          </ul>\r\n          <p class=\"bg-success\"><b>+1</b> on <a href=\"#\">Upcoming Tourney</a></p>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  ");
+  data.buffer.push("\r\n          </h3>\r\n          <ul class=\"list-unstyled\">\r\n            <li>\r\n              ");
+  stack1 = helpers['if'].call(depth0, "isVoted", {hash:{},hashTypes:{},hashContexts:{},inverse:self.program(12, program12, data),fn:self.program(6, program6, data),contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\r\n            </li>\r\n            \r\n          </ul>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  ");
   return buffer;
   }
 function program2(depth0,data) {
@@ -74359,6 +75413,53 @@ function program4(depth0,data) {
   return buffer;
   }
 
+function program6(depth0,data) {
+  
+  var buffer = '', stack1;
+  data.buffer.push("\r\n                <i class=\"fa fa-check-circle\"></i> Voted\r\n                ");
+  stack1 = helpers['if'].call(depth0, "isLocked", {hash:{},hashTypes:{},hashContexts:{},inverse:self.program(9, program9, data),fn:self.program(7, program7, data),contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\r\n              ");
+  return buffer;
+  }
+function program7(depth0,data) {
+  
+  var buffer = '';
+  return buffer;
+  }
+
+function program9(depth0,data) {
+  
+  var buffer = '', stack1, helper, options;
+  data.buffer.push("\r\n                  (");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(10, program10, data),contexts:[depth0,depth0],types:["STRING","ID"],data:data},helper ? helper.call(depth0, "voting.player", "", options) : helperMissing.call(depth0, "link-to", "voting.player", "", options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push(")\r\n                ");
+  return buffer;
+  }
+function program10(depth0,data) {
+  
+  
+  data.buffer.push("Re-Vote");
+  }
+
+function program12(depth0,data) {
+  
+  var buffer = '', stack1, helper, options;
+  data.buffer.push("\r\n                ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
+    'class': ("text-danger")
+  },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(13, program13, data),contexts:[depth0,depth0],types:["STRING","ID"],data:data},helper ? helper.call(depth0, "voting.player", "", options) : helperMissing.call(depth0, "link-to", "voting.player", "", options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\r\n              ");
+  return buffer;
+  }
+function program13(depth0,data) {
+  
+  
+  data.buffer.push("<i class=\"fa fa-exclamation-circle\"></i> Vote Now!");
+  }
+
   data.buffer.push("<div class=\"row players-list\">\r\n  ");
   stack1 = helpers.each.call(depth0, {hash:{
     'itemController': ("player")
@@ -74369,7 +75470,7 @@ function program4(depth0,data) {
   
 });
 
-},{"ember":2}],55:[function(require,module,exports){
+},{"ember":2}],66:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.ObjectController.extend({
@@ -74404,7 +75505,7 @@ module.exports = Ember.ObjectController.extend({
   }
 });
 
-},{"ember":2}],56:[function(require,module,exports){
+},{"ember":2}],67:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -74416,7 +75517,7 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],57:[function(require,module,exports){
+},{"ember":2}],68:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -74434,42 +75535,42 @@ function program1(depth0,data) {
   data.buffer.push(escapeExpression(helpers.action.call(depth0, "signup", {hash:{
     'on': ("submit")
   },hashTypes:{'on': "STRING"},hashContexts:{'on': depth0},contexts:[depth0],types:["STRING"],data:data})));
-  data.buffer.push(">\n  <div class=\"form-group\">\n    <label for=\"\" class=\"col-sm-2 control-label\">Email</label>\n    <div class=\"col-xs-4\">\n      ");
+  data.buffer.push(">\r\n  <div class=\"form-group\">\r\n    <label for=\"\" class=\"col-sm-2 control-label\">Email</label>\r\n    <div class=\"col-xs-4\">\r\n      ");
   data.buffer.push(escapeExpression((helper = helpers.input || (depth0 && depth0.input),options={hash:{
     'value': ("email"),
     'type': ("email"),
     'class': ("form-control"),
     'required': ("required")
   },hashTypes:{'value': "ID",'type': "STRING",'class': "STRING",'required': "STRING"},hashContexts:{'value': depth0,'type': depth0,'class': depth0,'required': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "input", options))));
-  data.buffer.push("\n    </div>\n  </div>\n\n  <div class=\"form-group\">\n    <label for=\"\" class=\"col-sm-2 control-label\">Username</label>\n    <div class=\"col-xs-4\">\n      ");
+  data.buffer.push("\r\n    </div>\r\n  </div>\r\n\r\n  <div class=\"form-group\">\r\n    <label for=\"\" class=\"col-sm-2 control-label\">Username</label>\r\n    <div class=\"col-xs-4\">\r\n      ");
   data.buffer.push(escapeExpression((helper = helpers.input || (depth0 && depth0.input),options={hash:{
     'value': ("name"),
     'type': ("text"),
     'class': ("form-control"),
     'required': ("required")
   },hashTypes:{'value': "ID",'type': "STRING",'class': "STRING",'required': "STRING"},hashContexts:{'value': depth0,'type': depth0,'class': depth0,'required': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "input", options))));
-  data.buffer.push("\n    </div>\n  </div>\n\n  <div class=\"form-group\">\n    <label for=\"\" class=\"col-sm-2 control-label\">Password</label>\n    <div class=\"col-xs-4\">\n      ");
+  data.buffer.push("\r\n    </div>\r\n  </div>\r\n\r\n  <div class=\"form-group\">\r\n    <label for=\"\" class=\"col-sm-2 control-label\">Password</label>\r\n    <div class=\"col-xs-4\">\r\n      ");
   data.buffer.push(escapeExpression((helper = helpers.input || (depth0 && depth0.input),options={hash:{
     'value': ("password"),
     'type': ("password"),
     'class': ("form-control"),
     'required': ("required")
   },hashTypes:{'value': "ID",'type': "STRING",'class': "STRING",'required': "STRING"},hashContexts:{'value': depth0,'type': depth0,'class': depth0,'required': depth0},contexts:[],types:[],data:data},helper ? helper.call(depth0, options) : helperMissing.call(depth0, "input", options))));
-  data.buffer.push("\n    </div>\n  </div>\n\n  <div class=\"form-group\">\n    <div class=\"col-sm-offset-2 col-sm-10\">\n      <button type=\"submit\" class=\"btn btn-primary\" ");
+  data.buffer.push("\r\n    </div>\r\n  </div>\r\n\r\n  <div class=\"form-group\">\r\n    <div class=\"col-sm-offset-2 col-sm-10\">\r\n      <button type=\"submit\" class=\"btn btn-primary\" ");
   data.buffer.push(escapeExpression(helpers['bind-attr'].call(depth0, {hash:{
     'disabled': ("isProcessing")
   },hashTypes:{'disabled': "STRING"},hashContexts:{'disabled': depth0},contexts:[],types:[],data:data})));
-  data.buffer.push(">Sign Up</button>\n      OR\n      ");
+  data.buffer.push(">Sign Up</button>\r\n      OR\r\n      ");
   stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
     'class': ("")
   },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "login", options) : helperMissing.call(depth0, "link-to", "login", options));
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\n    </div>\n  </div>\n</form>\n");
+  data.buffer.push("\r\n    </div>\r\n  </div>\r\n</form>\r\n");
   return buffer;
   
 });
 
-},{"ember":2}],58:[function(require,module,exports){
+},{"ember":2}],69:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.ObjectController.extend({
@@ -74485,7 +75586,7 @@ module.exports = Ember.ObjectController.extend({
   }.property('players.@each.rank'),
 });
 
-},{"ember":2}],59:[function(require,module,exports){
+},{"ember":2}],70:[function(require,module,exports){
 var DS = require('ember-data');
 
 module.exports = DS.Model.extend({
@@ -74494,7 +75595,7 @@ module.exports = DS.Model.extend({
   players: DS.hasMany('player')
 });
 
-},{"ember-data":1}],60:[function(require,module,exports){
+},{"ember-data":1}],71:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -74503,9 +75604,9 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],61:[function(require,module,exports){
-module.exports=require(44)
-},{"ember":2}],62:[function(require,module,exports){
+},{"ember":2}],72:[function(require,module,exports){
+module.exports=require(55)
+},{"ember":2}],73:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -74514,7 +75615,7 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],63:[function(require,module,exports){
+},{"ember":2}],74:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -74527,7 +75628,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   
 });
 
-},{"ember":2}],64:[function(require,module,exports){
+},{"ember":2}],75:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.ObjectController.extend({
@@ -74604,7 +75705,7 @@ module.exports = Ember.ObjectController.extend({
   }.property('matches'),
 });
 
-},{"ember":2}],65:[function(require,module,exports){
+},{"ember":2}],76:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -74663,7 +75764,20 @@ function program4(depth0,data) {
   
 });
 
-},{"ember":2}],66:[function(require,module,exports){
+},{"ember":2}],77:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var compiler = require('ember').Handlebars;
+module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
+  
+
+
+  data.buffer.push("<h2 class=\"tourney-title\">\r\n  Tourney #23\r\n  <span class=\"label label-success active\" title=\"Been there\">+1</span>\r\n\r\n  <small class=\"tourney-meta pull-right\">\r\n    <b>20</b> Players / <b>4</b> Teams\r\n  </small>\r\n  <small class=\"nowrap\">July 04, 2014</small>\r\n</h2>\r\n\r\n<ul class=\"nav nav-pills gap-lg\">\r\n  <li class=\"active\"><a href=\"#\">Overview</a></li>\r\n  <li><a href=\"#\">Alpha</a></li>\r\n  <li><a href=\"#\">Bravo</a></li>\r\n  <li><a href=\"#\">Charlie <i class=\"flaticon-football117\"></i></a></li>\r\n  <li><a href=\"#\">Delta</a></li>\r\n</ul>\r\n\r\n<div class=\"row\">\r\n  <div class=\"col-md-9 col-md-push-3\">\r\n    <table class=\"table tourney-table\">\r\n      <thead>\r\n        <tr>\r\n          <th>Team</th>\r\n          <th title=\"Average Rating\">AVR</th>\r\n          <th title=\"Matches Played\">MP</th>\r\n          <th title=\"Won\">W</th>\r\n          <th title=\"Drawn\">D</th>\r\n          <th title=\"Lost\">L</th>\r\n          <th title=\"Goals For\">GF</th>\r\n          <th title=\"Goals Against\">GA</th>\r\n          <th title=\"Goal Difference\">±</th>\r\n          <th title=\"Points\">Pts</th>\r\n        </tr>\r\n      </thead>\r\n      <tbody>\r\n        <tr>\r\n          <th>Charlie <i class=\"flaticon-football117\"></i></th>\r\n          <td><span class=\"label label-info\">7.1</span></td>\r\n          <td>6</td>\r\n          <td>4</td>\r\n          <td>0</td>\r\n          <td>1</td>\r\n          <td>7</td>\r\n          <td>4</td>\r\n          <td>3</td>\r\n          <td>12</td>\r\n        </tr>\r\n        <tr class=\"success\">\r\n          <th>Bravo</th>\r\n          <td><span class=\"label label-info\">7.2</span></td>\r\n          <td>6</td>\r\n          <td>2</td>\r\n          <td>2</td>\r\n          <td>2</td>\r\n          <td>6</td>\r\n          <td>8</td>\r\n          <td>-2</td>\r\n          <td>8</td>\r\n        </tr>\r\n        <tr>\r\n          <th>Delta</th>\r\n          <td><span class=\"label label-info\">7.3</span></td>\r\n          <td>6</td>\r\n          <td>1</td>\r\n          <td>2</td>\r\n          <td>3</td>\r\n          <td>5</td>\r\n          <td>5</td>\r\n          <td>0</td>\r\n          <td>5</td>\r\n        </tr>\r\n        <tr>\r\n          <th>Alpha</th>\r\n          <td><span class=\"label label-info\">7.4</span></td>\r\n          <td>6</td>\r\n          <td>0</td>\r\n          <td>4</td>\r\n          <td>1</td>\r\n          <td>1</td>\r\n          <td>2</td>\r\n          <td>-1</td>\r\n          <td>4</td>\r\n        </tr>\r\n      </tbody>\r\n    </table>\r\n\r\n    <div class=\"row\">\r\n      <div class=\"col-md-6\">\r\n        <h3>Matches</h3>\r\n        <table class=\"table table-striped matches-table\">\r\n          <tbody>\r\n            <tr>\r\n              <td>Alpha</td> <td>0 : 1</td> <td><b>Charlie</b></td>\r\n            </tr>\r\n            <tr class=\"text-success\">\r\n              <td><b>Delta</b></td> <td>3 : 0</td> <td>Bravo</td>\r\n            </tr>\r\n            <tr class=\"text-success\">\r\n              <td>Charlie</td> <td>0 : 1</td> <td><b>Bravo</b></td>\r\n            </tr>\r\n            <tr>\r\n              <td>Delta</td> <td>0 : 0</td> <td>Alpha</td>\r\n            </tr>\r\n            <tr class=\"text-success\">\r\n              <td>Bravo</td> <td>0 : 0</td> <td>Alpha</td>\r\n            </tr>\r\n            <tr>\r\n              <td><b>Charlie</b></td> <td>1 : 0</td> <td>Delta</td>\r\n            </tr>\r\n            <tr class=\"text-success\">\r\n              <td>Alpha</td> <td>1 : 1</td> <td>Bravo</td>\r\n            </tr>\r\n            <tr>\r\n              <td>Delta</td> <td>1 : 2</td> <td><b>Charlie</b></td>\r\n            </tr>\r\n            <tr class=\"text-success\">\r\n              <td>Bravo</td> <td>2 : 3</td> <td><b>Charlie</b></td>\r\n            </tr>\r\n            <tr>\r\n              <td>Alpha</td> <td>0 : 0</td> <td>Delta</td>\r\n            </tr>\r\n            <tr class=\"text-success\">\r\n              <td><b>Bravo</b></td> <td>2 : 1</td> <td>Delta</td>\r\n            </tr>\r\n            <tr>\r\n              <td>Charlie</td> <td>0 : 0</td> <td>Alpha</td>\r\n            </tr>\r\n          </tbody>\r\n        </table>\r\n      </div>\r\n      <div class=\"col-md-6\">\r\n        <h3>Shooters</h3>\r\n        <table class=\"table table-striped shooters-table\">\r\n          <tbody>\r\n            <tr>\r\n              <td>1</td>\r\n              <td><a href=\"#\">Витя</a></td>\r\n              <td><span class=\"label label-info\">7</span></td>\r\n              <td>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n              </td>\r\n            </tr>\r\n            <tr>\r\n              <td>2</td>\r\n              <td><a href=\"#\">Серёга (GK)</a></td>\r\n              <td><span class=\"label label-primary\">8</span></td>\r\n              <td>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n              </td>\r\n            </tr>\r\n            <tr>\r\n              <td>3</td>\r\n              <td><a href=\"#\">Кирилл</a></td>\r\n              <td><span class=\"label label-warning\">9</span></td>\r\n              <td>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n              </td>\r\n            </tr>\r\n            <tr>\r\n              <td>4</td>\r\n              <td><a href=\"#\">Тимур</a></td>\r\n              <td><span class=\"label label-info\">6</span></td>\r\n              <td>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n              </td>\r\n            </tr>\r\n            <tr>\r\n              <td>5</td>\r\n              <td><a href=\"#\">Саша Дозер</a></td>\r\n              <td><span class=\"label label-default\">2</span></td>\r\n              <td>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n              </td>\r\n            </tr>\r\n            <tr class=\"success\">\r\n              <td>6</td>\r\n              <td><a href=\"#\">Витя</a></td>\r\n              <td><span class=\"label label-info\">7</span></td>\r\n              <td>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n              </td>\r\n            </tr>\r\n            <tr>\r\n              <td>7</td>\r\n              <td><a href=\"#\">Серёга (GK)</a></td>\r\n              <td><span class=\"label label-primary\">8</span></td>\r\n              <td>\r\n                <i class=\"flaticon-football28\"></i>\r\n                <i class=\"flaticon-football28\"></i>\r\n              </td>\r\n            </tr>\r\n            <tr>\r\n              <td>8</td>\r\n              <td><a href=\"#\">Кирилл</a></td>\r\n              <td><span class=\"label label-warning\">9</span></td>\r\n              <td>\r\n                <i class=\"flaticon-football28\"></i>\r\n              </td>\r\n            </tr>\r\n            <tr>\r\n              <td>9</td>\r\n              <td><a href=\"#\">Тимур</a></td>\r\n              <td><span class=\"label label-info\">6</span></td>\r\n              <td>\r\n                <i class=\"flaticon-football28\"></i>\r\n              </td>\r\n            </tr>\r\n            <tr>\r\n              <td>10</td>\r\n              <td><a href=\"#\">Саша Дозер</a></td>\r\n              <td><span class=\"label label-default\">2</span></td>\r\n              <td>\r\n                <i class=\"flaticon-football28\"></i>\r\n              </td>\r\n            </tr>\r\n          </tbody>\r\n        </table>\r\n      </div>\r\n    </div>\r\n  </div>\r\n  <div class=\"col-md-3 col-md-pull-9\">\r\n    <div class=\"panel panel-default\">\r\n      <div class=\"panel-heading\">\r\n        <h3 class=\"panel-title\">Alpha</h3>\r\n      </div>\r\n      <ul class=\"panel-body list-unstyled\">\r\n        <li>\r\n          <span class=\"label label-warning pull-right\">9</span>\r\n          <a href=\"#\">Кирилл</a>\r\n        </li>\r\n        <li>\r\n          <span class=\"label label-primary pull-right\">8</span>\r\n          <a href=\"#\">Серёга (GK)</a>\r\n        </li>\r\n        <li>\r\n          <span class=\"label label-info pull-right\">7</span>\r\n          <a href=\"#\">Витя</a>\r\n        </li>\r\n        <li>\r\n          <span class=\"label label-info pull-right\">6</span>\r\n          <a href=\"#\">Тимур</a>\r\n        </li>\r\n        <li>\r\n          <span class=\"label label-default pull-right\">2</span>\r\n          <a href=\"#\">Саша Дозер</a>\r\n        </li>\r\n      </ul>\r\n    </div>\r\n    <div class=\"panel panel-success\">\r\n      <div class=\"panel-heading\">\r\n        <h3 class=\"panel-title\">Bravo</h3>\r\n      </div>\r\n      <ul class=\"panel-body list-unstyled\">\r\n        <li>\r\n          <span class=\"label label-warning pull-right\">9</span>\r\n          <a href=\"#\">Кирилл</a>\r\n        </li>\r\n        <li>\r\n          <span class=\"label label-primary pull-right\">8</span>\r\n          <a href=\"#\">Серёга (GK)</a>\r\n        </li>\r\n        <li>\r\n          <span class=\"label label-info pull-right\">7</span>\r\n          <a href=\"#\">Витя</a>\r\n        </li>\r\n        <li>\r\n          <span class=\"label label-info pull-right\">6</span>\r\n          <a href=\"#\">Тимур</a>\r\n        </li>\r\n        <li>\r\n          <span class=\"label label-default pull-right\">2</span>\r\n          <a href=\"#\">Саша Дозер</a>\r\n        </li>\r\n      </ul>\r\n    </div>\r\n    <div class=\"panel panel-default\">\r\n      <div class=\"panel-heading\">\r\n        <i class=\"flaticon-football117 pull-right\"></i>\r\n        <h3 class=\"panel-title\">Charlie</h3>\r\n      </div>\r\n      <ul class=\"panel-body list-unstyled\">\r\n        <li>\r\n          <span class=\"label label-warning pull-right\">9</span>\r\n          <a href=\"#\">Кирилл</a>\r\n        </li>\r\n        <li>\r\n          <span class=\"label label-primary pull-right\">8</span>\r\n          <a href=\"#\">Серёга (GK)</a>\r\n        </li>\r\n        <li>\r\n          <span class=\"label label-info pull-right\">7</span>\r\n          <a href=\"#\">Витя</a>\r\n        </li>\r\n        <li>\r\n          <span class=\"label label-info pull-right\">6</span>\r\n          <a href=\"#\">Тимур</a>\r\n        </li>\r\n        <li>\r\n          <span class=\"label label-default pull-right\">2</span>\r\n          <a href=\"#\">Саша Дозер</a>\r\n        </li>\r\n      </ul>\r\n    </div>\r\n    <div class=\"panel panel-default\">\r\n      <div class=\"panel-heading\">\r\n        <h3 class=\"panel-title\">Delta</h3>\r\n      </div>\r\n      <ul class=\"panel-body list-unstyled\">\r\n        <li>\r\n          <span class=\"label label-warning pull-right\">9</span>\r\n          <a href=\"#\">Кирилл</a>\r\n        </li>\r\n        <li>\r\n          <span class=\"label label-primary pull-right\">8</span>\r\n          <a href=\"#\">Серёга (GK)</a>\r\n        </li>\r\n        <li>\r\n          <span class=\"label label-info pull-right\">7</span>\r\n          <a href=\"#\">Витя</a>\r\n        </li>\r\n        <li>\r\n          <span class=\"label label-info pull-right\">6</span>\r\n          <a href=\"#\">Тимур</a>\r\n        </li>\r\n        <li>\r\n          <span class=\"label label-default pull-right\">2</span>\r\n          <a href=\"#\">Саша Дозер</a>\r\n        </li>\r\n      </ul>\r\n    </div>\r\n  </div>\r\n</div>\r\n");
+  
+});
+
+},{"ember":2}],78:[function(require,module,exports){
 var DS = require('ember-data');
 
 module.exports = DS.Model.extend({
@@ -74677,7 +75791,7 @@ module.exports = DS.Model.extend({
   }),
 });
 
-},{"ember-data":1}],67:[function(require,module,exports){
+},{"ember-data":1}],79:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -74715,7 +75829,7 @@ function program2(depth0,data) {
   
 });
 
-},{"ember":2}],68:[function(require,module,exports){
+},{"ember":2}],80:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -74764,7 +75878,7 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],69:[function(require,module,exports){
+},{"ember":2}],81:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -74816,7 +75930,7 @@ function program1(depth0,data) {
   
 });
 
-},{"ember":2}],70:[function(require,module,exports){
+},{"ember":2}],82:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -74870,7 +75984,7 @@ function program3(depth0,data) {
   
 });
 
-},{"ember":2}],71:[function(require,module,exports){
+},{"ember":2}],83:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -74892,7 +76006,16 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   
 });
 
-},{"ember":2}],72:[function(require,module,exports){
+},{"ember":2}],84:[function(require,module,exports){
+var Ember = require('ember');
+
+module.exports = Ember.Route.extend({
+  redirect: function() {
+    this.transitionTo('tourneys.new');
+  }
+});
+
+},{"ember":2}],85:[function(require,module,exports){
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
@@ -74901,7 +76024,174 @@ module.exports = Ember.Route.extend({
   }
 });
 
-},{"ember":2}],73:[function(require,module,exports){
+},{"ember":2}],86:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var compiler = require('ember').Handlebars;
+module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
+  var buffer = '', stack1, helper, options, self=this, helperMissing=helpers.helperMissing;
+
+function program1(depth0,data) {
+  
+  
+  data.buffer.push("\r\n        Mockup\r\n      ");
+  }
+
+function program3(depth0,data) {
+  
+  var buffer = '', stack1, helper, options;
+  data.buffer.push("\r\n        ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
+    'class': ("list-group-item")
+  },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(4, program4, data),contexts:[depth0,depth0],types:["STRING","ID"],data:data},helper ? helper.call(depth0, "tourney", "", options) : helperMissing.call(depth0, "link-to", "tourney", "", options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\r\n      ");
+  return buffer;
+  }
+function program4(depth0,data) {
+  
+  var buffer = '', stack1;
+  data.buffer.push("\r\n          #");
+  stack1 = helpers._triageMustache.call(depth0, "id", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push(" &mdash; ");
+  stack1 = helpers._triageMustache.call(depth0, "date", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\r\n        ");
+  return buffer;
+  }
+
+  data.buffer.push("<div class=\"row\">\r\n  <div class=\"col-lg-9 col-lg-push-3\">\r\n    ");
+  stack1 = helpers._triageMustache.call(depth0, "outlet", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\r\n  </div>\r\n  <div class=\"col-lg-3 col-lg-pull-9\">\r\n    <div class=\"list-group\">\r\n      ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
+    'class': ("list-group-item")
+  },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "tourneys.new", options) : helperMissing.call(depth0, "link-to", "tourneys.new", options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\r\n      ");
+  stack1 = helpers.each.call(depth0, {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(3, program3, data),contexts:[],types:[],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\r\n    </div>\r\n  </div>\r\n</div>\r\n");
+  return buffer;
+  
+});
+
+},{"ember":2}],87:[function(require,module,exports){
+var Ember = require('ember');
+
+module.exports = Ember.ArrayController.extend({
+  itemController: 'player',
+  sortProperties: ['isVoted', 'rating'],
+  sortAscending: false
+});
+
+},{"ember":2}],88:[function(require,module,exports){
+var Ember = require('ember');
+
+module.exports = Ember.ObjectController.extend({
+  // todo: need: ['player']
+  isVoted: function() {
+    return this.get('rating') % 2;
+  }.property('rating'),
+
+  isLocked: function() {
+    return this.get('isVoted') && this.get('id') % 2;
+  }.property('isVoted')
+});
+
+},{"ember":2}],89:[function(require,module,exports){
+var Ember = require('ember');
+
+module.exports = Ember.Route.extend({
+  model: function(params) {
+    return this.store.find('player', params.id);
+  }
+});
+
+},{"ember":2}],90:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var compiler = require('ember').Handlebars;
+module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
+  var buffer = '', stack1, helper, options, escapeExpression=this.escapeExpression, self=this, helperMissing=helpers.helperMissing;
+
+function program1(depth0,data) {
+  
+  var buffer = '';
+  data.buffer.push("\r\n      <img src=\"");
+  data.buffer.push(escapeExpression(helpers.unbound.call(depth0, "photo", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data})));
+  data.buffer.push("?size=180px\" alt=\"photo\" class=\"media-object img-thumbnail\">\r\n    ");
+  return buffer;
+  }
+
+function program3(depth0,data) {
+  
+  var buffer = '', stack1;
+  data.buffer.push("\r\n          ");
+  stack1 = helpers._triageMustache.call(depth0, "name", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push(" <span class=\"label label-primary\">");
+  stack1 = helpers._triageMustache.call(depth0, "rating", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("</span>\r\n        ");
+  return buffer;
+  }
+
+function program5(depth0,data) {
+  
+  
+  data.buffer.push("Aug 28");
+  }
+
+function program7(depth0,data) {
+  
+  
+  data.buffer.push("\r\n        <p class=\"text-danger\">\r\n          <i class=\"fa fa-exclamation-circle\"></i>\r\n          You already voted for this player on Aug 26.<br>\r\n          You can Re-Vote <strong>only once per week</strong>.\r\n        </p>\r\n      ");
+  }
+
+function program9(depth0,data) {
+  
+  var buffer = '', stack1;
+  data.buffer.push("\r\n        ");
+  stack1 = helpers['if'].call(depth0, "isVoted", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(10, program10, data),contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\r\n      ");
+  return buffer;
+  }
+function program10(depth0,data) {
+  
+  
+  data.buffer.push("\r\n          <p class=\"text-success\">\r\n            <i class=\"fa fa-check-circle\"></i>\r\n            You already voted for this player on Aug 13.\r\n          </p>\r\n        ");
+  }
+
+  data.buffer.push("<div class=\"well\">\r\n  <div class=\"media\">\r\n    ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
+    'class': ("pull-left")
+  },hashTypes:{'class': "STRING"},hashContexts:{'class': depth0},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0,depth0],types:["STRING","ID"],data:data},helper ? helper.call(depth0, "player", "", options) : helperMissing.call(depth0, "link-to", "player", "", options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\r\n    <div class=\"media-body\">\r\n      <h3 class=\"media-heading\">\r\n        ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(3, program3, data),contexts:[depth0,depth0],types:["STRING","ID"],data:data},helper ? helper.call(depth0, "player", "", options) : helperMissing.call(depth0, "link-to", "player", "", options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\r\n      </h3>\r\n      <ul class=\"list-unstyled\">\r\n        <li>\r\n          Won 3 tourneys of 8 total played <em class=\"text-muted\">&mdash; 3 goals scored</em>\r\n        </li>\r\n        <li>\r\n          Last time played together on ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(5, program5, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "tourneys.new", options) : helperMissing.call(depth0, "link-to", "tourneys.new", options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\r\n          <em class=\"text-muted\">&mdash; 8 times in total</em>\r\n        </li>\r\n        <li>\r\n          Last time played in one team on ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(5, program5, data),contexts:[depth0],types:["STRING"],data:data},helper ? helper.call(depth0, "tourneys.new", options) : helperMissing.call(depth0, "link-to", "tourneys.new", options));
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\r\n          <em class=\"text-muted\">&mdash; 3 times in total</em>\r\n        </li>\r\n      </ul>\r\n      ");
+  stack1 = helpers['if'].call(depth0, "isLocked", {hash:{},hashTypes:{},hashContexts:{},inverse:self.program(9, program9, data),fn:self.program(7, program7, data),contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\r\n    </div>\r\n  </div>\r\n</div>\r\n\r\n<form role=\"form\" class=\"voting-form gap-lg\">\r\n  <h3>Shoot<b class=\"text-danger\">*</b> <small>Everything to Goal</small></h3>\r\n  <table class=\"table table-striped gap-xl lift-md voting-table\">\r\n    <thead>\r\n      <tr>\r\n        <th></th>\r\n        <th class=\"rate\"><label for=\"voting-shoot-1\">1</label></th>\r\n        <th class=\"rate\"><label for=\"voting-shoot-2\">2</label></th>\r\n        <th class=\"rate\"><label for=\"voting-shoot-3\">3</label></th>\r\n        <th class=\"rate\"><label for=\"voting-shoot-4\">4</label></th>\r\n        <th class=\"rate\"><label for=\"voting-shoot-5\">5</label></th>\r\n        <th class=\"rate\"><label for=\"voting-shoot-6\">6</label></th>\r\n        <th class=\"rate\"><label for=\"voting-shoot-7\">7</label></th>\r\n        <th class=\"rate\"><label for=\"voting-shoot-8\">8</label></th>\r\n        <th class=\"rate\"><label for=\"voting-shoot-9\">9</label></th>\r\n        <th class=\"rate\"><label for=\"voting-shoot-10\">10</label></th>\r\n        <th></th>\r\n      <tr>\r\n    </thead>\r\n    <tbody>\r\n      <tr>\r\n        <td class=\"text-muted text-right\"><em>Looser</em></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"shoot\" value=\"1\" id=\"voting-shoot-1\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"shoot\" value=\"2\" id=\"voting-shoot-2\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"shoot\" value=\"3\" id=\"voting-shoot-3\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"shoot\" value=\"4\" id=\"voting-shoot-4\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"shoot\" value=\"5\" id=\"voting-shoot-5\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"shoot\" value=\"6\" id=\"voting-shoot-6\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"shoot\" value=\"7\" id=\"voting-shoot-7\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"shoot\" value=\"8\" id=\"voting-shoot-8\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"shoot\" value=\"9\" id=\"voting-shoot-9\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"shoot\" value=\"10\" id=\"voting-shoot-10\"></td>\r\n        <td class=\"text-muted text-left\"><em>Winner</em></td>\r\n      </tr>\r\n    </tbody>\r\n  </table>\r\n  <h3>Pass<b class=\"text-danger\">*</b> <small>Accuracy, Time and Observation</small></h3>\r\n  <table class=\"table table-striped gap-xl lift-md voting-table\">\r\n    <thead>\r\n      <tr>\r\n        <th></th>\r\n        <th class=\"rate\"><label for=\"voting-pass-1\">1</label></th>\r\n        <th class=\"rate\"><label for=\"voting-pass-2\">2</label></th>\r\n        <th class=\"rate\"><label for=\"voting-pass-3\">3</label></th>\r\n        <th class=\"rate\"><label for=\"voting-pass-4\">4</label></th>\r\n        <th class=\"rate\"><label for=\"voting-pass-5\">5</label></th>\r\n        <th class=\"rate\"><label for=\"voting-pass-6\">6</label></th>\r\n        <th class=\"rate\"><label for=\"voting-pass-7\">7</label></th>\r\n        <th class=\"rate\"><label for=\"voting-pass-8\">8</label></th>\r\n        <th class=\"rate\"><label for=\"voting-pass-9\">9</label></th>\r\n        <th class=\"rate\"><label for=\"voting-pass-10\">10</label></th>\r\n        <th></th>\r\n      <tr>\r\n    </thead>\r\n    <tbody>\r\n      <tr>\r\n        <td class=\"text-muted text-right\"><em>Looser</em></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"pass\" value=\"1\" id=\"voting-pass-1\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"pass\" value=\"2\" id=\"voting-pass-2\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"pass\" value=\"3\" id=\"voting-pass-3\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"pass\" value=\"4\" id=\"voting-pass-4\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"pass\" value=\"5\" id=\"voting-pass-5\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"pass\" value=\"6\" id=\"voting-pass-6\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"pass\" value=\"7\" id=\"voting-pass-7\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"pass\" value=\"8\" id=\"voting-pass-8\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"pass\" value=\"9\" id=\"voting-pass-9\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"pass\" value=\"10\" id=\"voting-pass-10\"></td>\r\n        <td class=\"text-muted text-left\"><em>Winner</em></td>\r\n      </tr>\r\n    </tbody>\r\n  </table>\r\n  <h3>Dribble<b class=\"text-danger\">*</b> <small>Stop the ball, Lead the ball, Fint the ball</small></h3>\r\n  <table class=\"table table-striped gap-xl lift-md voting-table\">\r\n    <thead>\r\n      <tr>\r\n        <th></th>\r\n        <th class=\"rate\"><label for=\"voting-dribble-1\">1</label></th>\r\n        <th class=\"rate\"><label for=\"voting-dribble-2\">2</label></th>\r\n        <th class=\"rate\"><label for=\"voting-dribble-3\">3</label></th>\r\n        <th class=\"rate\"><label for=\"voting-dribble-4\">4</label></th>\r\n        <th class=\"rate\"><label for=\"voting-dribble-5\">5</label></th>\r\n        <th class=\"rate\"><label for=\"voting-dribble-6\">6</label></th>\r\n        <th class=\"rate\"><label for=\"voting-dribble-7\">7</label></th>\r\n        <th class=\"rate\"><label for=\"voting-dribble-8\">8</label></th>\r\n        <th class=\"rate\"><label for=\"voting-dribble-9\">9</label></th>\r\n        <th class=\"rate\"><label for=\"voting-dribble-10\">10</label></th>\r\n        <th></th>\r\n      <tr>\r\n    </thead>\r\n    <tbody>\r\n      <tr>\r\n        <td class=\"text-muted text-right\"><em>Looser</em></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"dribble\" value=\"1\" id=\"voting-dribble-1\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"dribble\" value=\"2\" id=\"voting-dribble-2\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"dribble\" value=\"3\" id=\"voting-dribble-3\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"dribble\" value=\"4\" id=\"voting-dribble-4\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"dribble\" value=\"5\" id=\"voting-dribble-5\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"dribble\" value=\"6\" id=\"voting-dribble-6\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"dribble\" value=\"7\" id=\"voting-dribble-7\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"dribble\" value=\"8\" id=\"voting-dribble-8\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"dribble\" value=\"9\" id=\"voting-dribble-9\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"dribble\" value=\"10\" id=\"voting-dribble-10\"></td>\r\n        <td class=\"text-muted text-left\"><em>Winner</em></td>\r\n      </tr>\r\n    </tbody>\r\n  </table>\r\n  <h3>Pace<b class=\"text-danger\">*</b> <small>Speed, Stamina, Run until death</small></h3>\r\n  <table class=\"table table-striped gap-xl lift-md voting-table\">\r\n    <thead>\r\n      <tr>\r\n        <th></th>\r\n        <th class=\"rate\"><label for=\"voting-pace-1\">1</label></th>\r\n        <th class=\"rate\"><label for=\"voting-pace-2\">2</label></th>\r\n        <th class=\"rate\"><label for=\"voting-pace-3\">3</label></th>\r\n        <th class=\"rate\"><label for=\"voting-pace-4\">4</label></th>\r\n        <th class=\"rate\"><label for=\"voting-pace-5\">5</label></th>\r\n        <th class=\"rate\"><label for=\"voting-pace-6\">6</label></th>\r\n        <th class=\"rate\"><label for=\"voting-pace-7\">7</label></th>\r\n        <th class=\"rate\"><label for=\"voting-pace-8\">8</label></th>\r\n        <th class=\"rate\"><label for=\"voting-pace-9\">9</label></th>\r\n        <th class=\"rate\"><label for=\"voting-pace-10\">10</label></th>\r\n        <th></th>\r\n      <tr>\r\n    </thead>\r\n    <tbody>\r\n      <tr>\r\n        <td class=\"text-muted text-right\"><em>Looser</em></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"pace\" value=\"1\" id=\"voting-pace-1\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"pace\" value=\"2\" id=\"voting-pace-2\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"pace\" value=\"3\" id=\"voting-pace-3\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"pace\" value=\"4\" id=\"voting-pace-4\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"pace\" value=\"5\" id=\"voting-pace-5\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"pace\" value=\"6\" id=\"voting-pace-6\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"pace\" value=\"7\" id=\"voting-pace-7\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"pace\" value=\"8\" id=\"voting-pace-8\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"pace\" value=\"9\" id=\"voting-pace-9\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"pace\" value=\"10\" id=\"voting-pace-10\"></td>\r\n        <td class=\"text-muted text-left\"><em>Winner</em></td>\r\n      </tr>\r\n    </tbody>\r\n  </table>\r\n  <h3>Defence<b class=\"text-danger\">*</b> <small>Take the ball, Stand like a wall, Cover your teammate</small></h3>\r\n  <table class=\"table table-striped gap-xl lift-md voting-table\">\r\n    <thead>\r\n      <tr>\r\n        <th></th>\r\n        <th class=\"rate\"><label for=\"voting-def-1\">1</label></th>\r\n        <th class=\"rate\"><label for=\"voting-def-2\">2</label></th>\r\n        <th class=\"rate\"><label for=\"voting-def-3\">3</label></th>\r\n        <th class=\"rate\"><label for=\"voting-def-4\">4</label></th>\r\n        <th class=\"rate\"><label for=\"voting-def-5\">5</label></th>\r\n        <th class=\"rate\"><label for=\"voting-def-6\">6</label></th>\r\n        <th class=\"rate\"><label for=\"voting-def-7\">7</label></th>\r\n        <th class=\"rate\"><label for=\"voting-def-8\">8</label></th>\r\n        <th class=\"rate\"><label for=\"voting-def-9\">9</label></th>\r\n        <th class=\"rate\"><label for=\"voting-def-10\">10</label></th>\r\n        <th></th>\r\n      <tr>\r\n    </thead>\r\n    <tbody>\r\n      <tr>\r\n        <td class=\"text-muted text-right\"><em>Looser</em></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"def\" value=\"1\" id=\"voting-def-1\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"def\" value=\"2\" id=\"voting-def-2\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"def\" value=\"3\" id=\"voting-def-3\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"def\" value=\"4\" id=\"voting-def-4\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"def\" value=\"5\" id=\"voting-def-5\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"def\" value=\"6\" id=\"voting-def-6\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"def\" value=\"7\" id=\"voting-def-7\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"def\" value=\"8\" id=\"voting-def-8\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"def\" value=\"9\" id=\"voting-def-9\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"def\" value=\"10\" id=\"voting-def-10\"></td>\r\n        <td class=\"text-muted text-left\"><em>Winner</em></td>\r\n      </tr>\r\n    </tbody>\r\n  </table>\r\n  <h3>Goal Keeper<b class=\"text-danger\">*</b> <small>No comments</small></h3>\r\n  <table class=\"table table-striped gap-xl lift-md voting-table\">\r\n    <thead>\r\n      <tr>\r\n        <th></th>\r\n        <th class=\"rate\"><label for=\"voting-gk-1\">1</label></th>\r\n        <th class=\"rate\"><label for=\"voting-gk-2\">2</label></th>\r\n        <th class=\"rate\"><label for=\"voting-gk-3\">3</label></th>\r\n        <th class=\"rate\"><label for=\"voting-gk-4\">4</label></th>\r\n        <th class=\"rate\"><label for=\"voting-gk-5\">5</label></th>\r\n        <th class=\"rate\"><label for=\"voting-gk-6\">6</label></th>\r\n        <th class=\"rate\"><label for=\"voting-gk-7\">7</label></th>\r\n        <th class=\"rate\"><label for=\"voting-gk-8\">8</label></th>\r\n        <th class=\"rate\"><label for=\"voting-gk-9\">9</label></th>\r\n        <th class=\"rate\"><label for=\"voting-gk-10\">10</label></th>\r\n        <th></th>\r\n      <tr>\r\n    </thead>\r\n    <tbody>\r\n      <tr>\r\n        <td class=\"text-muted text-right\"><em>Looser</em></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"gk\" value=\"1\" id=\"voting-gk-1\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"gk\" value=\"2\" id=\"voting-gk-2\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"gk\" value=\"3\" id=\"voting-gk-3\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"gk\" value=\"4\" id=\"voting-gk-4\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"gk\" value=\"5\" id=\"voting-gk-5\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"gk\" value=\"6\" id=\"voting-gk-6\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"gk\" value=\"7\" id=\"voting-gk-7\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"gk\" value=\"8\" id=\"voting-gk-8\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"gk\" value=\"9\" id=\"voting-gk-9\"></td>\r\n        <td class=\"rate\"><input type=\"radio\" name=\"gk\" value=\"10\" id=\"voting-gk-10\"></td>\r\n        <td class=\"text-muted text-left\"><em>Winner</em></td>\r\n      </tr>\r\n    </tbody>\r\n  </table>\r\n\r\n  <button class=\"btn btn-success fa-lg\"><i class=\"fa-lg flaticon-sports24\"></i> Vote and go to Next</button>\r\n  <button class=\"btn btn-default fa-lg\"><i class=\"fa-lg flaticon-football72\"></i> Skip</button>\r\n</form>\r\n");
+  return buffer;
+  
+});
+
+},{"ember":2}],91:[function(require,module,exports){
+module.exports=require(64)
+},{"ember":2}],92:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var compiler = require('ember').Handlebars;
 module.exports = compiler.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
@@ -74912,44 +76202,47 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = '', stack1, helper, options;
-  data.buffer.push("\r\n        <tr>\r\n          <td>");
-  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(2, program2, data),contexts:[depth0,depth0],types:["STRING","ID"],data:data},helper ? helper.call(depth0, "tourney", "", options) : helperMissing.call(depth0, "link-to", "tourney", "", options));
+  data.buffer.push("\r\n          ");
+  stack1 = (helper = helpers['link-to'] || (depth0 && depth0['link-to']),options={hash:{
+    'classNameBindings': (":list-group-item isVoted:list-group-item-success")
+  },hashTypes:{'classNameBindings': "STRING"},hashContexts:{'classNameBindings': depth0},inverse:self.noop,fn:self.program(2, program2, data),contexts:[depth0,depth0],types:["STRING","ID"],data:data},helper ? helper.call(depth0, "voting.player", "", options) : helperMissing.call(depth0, "link-to", "voting.player", "", options));
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("</td>\r\n          <td>");
-  stack1 = helpers._triageMustache.call(depth0, "date", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("</td>\r\n          <td>wamg</td>\r\n          <td>list</td>\r\n          <td>\r\n            ");
-  stack1 = helpers['if'].call(depth0, "isPlayed", {hash:{},hashTypes:{},hashContexts:{},inverse:self.program(6, program6, data),fn:self.program(4, program4, data),contexts:[depth0],types:["ID"],data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\r\n          </td>\r\n        </tr>\r\n      ");
+  data.buffer.push("\r\n        ");
   return buffer;
   }
 function program2(depth0,data) {
   
-  var stack1;
+  var buffer = '', stack1;
+  data.buffer.push("\r\n            <span class=\"label label-primary pull-right\">");
+  stack1 = helpers._triageMustache.call(depth0, "rating", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("</span>\r\n            ");
   stack1 = helpers._triageMustache.call(depth0, "name", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  else { data.buffer.push(''); }
-  }
-
-function program4(depth0,data) {
-  
-  
-  data.buffer.push("\r\n              played\r\n            ");
-  }
-
-function program6(depth0,data) {
-  
-  
-  data.buffer.push("\r\n              upcoming\r\n            ");
-  }
-
-  data.buffer.push("<div class=\"row\">\r\n  <table class=\"table\">\r\n    <thead>\r\n      <tr>\r\n        <th>tourney</th>\r\n        <th>date</th>\r\n        <th>league</th>\r\n        <th>players</th>\r\n        <th>status</th>\r\n      </tr>\r\n    </thead>\r\n    <tbody>\r\n      ");
-  stack1 = helpers.each.call(depth0, {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[],types:[],data:data});
+  data.buffer.push("\r\n            ");
+  stack1 = helpers['if'].call(depth0, "isLocked", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(3, program3, data),contexts:[depth0],types:["ID"],data:data});
   if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
-  data.buffer.push("\r\n    </tbody>\r\n  </table>\r\n</div>\r\n");
+  data.buffer.push("\r\n          ");
+  return buffer;
+  }
+function program3(depth0,data) {
+  
+  
+  data.buffer.push("<i class=\"fa fa-lock\"></i>");
+  }
+
+  data.buffer.push("<div class=\"row\">\r\n  <div class=\"col-sm-9 col-sm-push-3\">\r\n    ");
+  stack1 = helpers._triageMustache.call(depth0, "outlet", {hash:{},hashTypes:{},hashContexts:{},contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\r\n  </div>\r\n  <div class=\"col-sm-3 col-sm-pull-9\">\r\n    <div class=\"panel panel-default\">\r\n      <div class=\"panel-heading\">\r\n        <label style=\"font-weight: normal\">\r\n          <input type=\"checkbox\">\r\n          Filter to No Votes Only\r\n        </label>\r\n      </div>\r\n      <div class=\"list-group\">\r\n        ");
+  stack1 = helpers.each.call(depth0, "controller", {hash:{},hashTypes:{},hashContexts:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["ID"],data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>\r\n");
   return buffer;
   
 });
 
-},{"ember":2}]},{},[37])
+},{"ember":2}]},{},[48])
+
+
+//# sourceMappingURL=app.js.map
