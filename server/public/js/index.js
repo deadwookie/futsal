@@ -13,7 +13,6 @@ var App = Ember.Application.create({
   }
 });
 
-// @TODO: get host from config
 App.ApplicationAdapter = DS.FirebaseAdapter.extend({
   firebase: new Firebase('https://' + config.firebase.host)
 });
@@ -33,9 +32,9 @@ App.Router.map(function() {
 });
 
 // Application
-App.ApplicationRoute = require('./app/route');
-App.ApplicationController = require('./app/controller');
-App.templates.application = require('./app/template.hbs');
+App.ApplicationRoute = require('./application/route');
+App.ApplicationController = require('./application/controller');
+App.templates.application = require('./application/template.hbs');
 
 // Auth
 App.AuthRoute = require('./auth/route');
@@ -129,3 +128,6 @@ App.templates.matches = require('./matches/template.hbs');
 
 // Me
 App.MeRoute = require('./me/route');
+
+// debug purpose
+global.zApp = module.exports = App;

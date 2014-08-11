@@ -31,9 +31,6 @@ module.exports = Ember.ObjectController.extend({
   attemptedTransition: null,
 
   init: function() {
-    // @FIXME: remove debug
-    window.auth = this;
-
     // tick. monitor a user's authentication status
     // var authRef = new Firebase(dbRoot + '/.info/authenticated');
     // authRef.on("value", function(snap) {
