@@ -1,9 +1,9 @@
 <div class="row players-list">
-  {{#each}}
+  {{#each itemController='player'}}
     <div class="col-sm-4 players-item">
       <div class="media">
         {{#link-to "player" this class="pull-left"}}
-          <img src="{{unbound photo}}?size=60px" alt="photo" class="media-object img-thumbnail">
+          <img src="{{unbound gravatar}}?size=60px" alt="photo" class="media-object img-thumbnail">
         {{/link-to}}
         <div class="media-body">
           <h3 class="media-heading">
