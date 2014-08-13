@@ -3,11 +3,13 @@ var Ember = require('ember');
 module.exports = Ember.ObjectController.extend({
   email: null,
   password: null,
+  rememerMe: false,
 
   reset: function() {
     this.setProperties({
       email: null,
-      password: null
+      password: null,
+      rememerMe: false
     });
   },
 

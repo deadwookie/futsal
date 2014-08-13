@@ -5,7 +5,7 @@ module.exports = Ember.ObjectController.extend({
   gravatar: function() {
     return 'http://www.gravatar.com/avatar/' + md5(this.get('model.email')) + '.jpg';
   }.property('email'),
-  
+
   isVoted: function() {
     return this.get('rating') % 2;
   }.property('rating'),

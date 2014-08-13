@@ -1,0 +1,31 @@
+<div>
+  @TODO: change
+  <ul>
+    <li>name</li>
+    <li>password ( <a href="https://www.firebase.com/docs/web/api/firebasesimplelogin/changepassword.html">firebase</a> )</li>
+    <li>avatar ( <a href="https://github.com/chute/avatars-io-js">avatars.io</a> )</li>
+  </ul>
+</div>
+
+
+<form class="form-horizontal" {{action "changePassword" on="submit"}}>
+  <div class="form-group">
+    <label for="" class="col-sm-2 control-label">OLD Password</label>
+    <div class="col-xs-4">
+      {{input value=oldPassword type="password" class="form-control" required="required" placeholder="Old Password"}}
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="" class="col-sm-2 control-label">NEW Password</label>
+    <div class="col-xs-4">
+      {{input value=newPassword type="password" class="form-control" required="required" placeholder="New Password"}}
+    </div>
+  </div>
+
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-4">
+      <button type="submit" class="btn btn-primary" {{bind-attr disabled="isProcessing"}}>Change</button>
+    </div>
+  </div>
+</form>

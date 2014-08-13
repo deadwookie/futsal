@@ -26,9 +26,14 @@ App.templates = Ember.TEMPLATES;
 App.config = config;
 
 App.Router.map(function() {
-  this.route('me', {path: '/'});
+  // this.route('me', {path: '/'});
+  this.resource('me', {path: '/'}, function() {
+    this.route('settings');
+  });
+
   this.route('login');
   this.route('signup');
+  this.route('restore');
 
   this.resource('players');
   this.resource('player', {path: 'players/:id'});
@@ -67,6 +72,11 @@ App.SignupRoute = require('./signup/route');
 App.SignupController = require('./signup/controller');
 App.templates.signup = require('./signup/template');
 
+// restore (password)
+App.RestoreRoute = require('./restore/route');
+App.RestoreController = require('./restore/controller');
+App.templates.restore = require('./restore/template');
+
 // Gameday
 App.GamedayIndexRoute = require('./gameday/index/route');
 App.templates.gameday = require('./gameday/template.hbs');
@@ -85,7 +95,6 @@ App.templates['voting/player'] = require('./voting/player/template.hbs');
 
 // Player Model
 App.Player = require('./player/model');
-
 
 // Player
 App.PlayerRoute = require('./players/route');
@@ -141,6 +150,10 @@ App.templates.matches = require('./matches/template.hbs');
 
 // Me
 App.MeRoute = require('./me/route');
+
+// Me Settings
+App.MeSettingsRoute = require('./me/settings/route');
+App.templates['me/settings'] = require('./me/settings/template.hbs');
 
 // debug purpose
 global.zApp = module.exports = App;

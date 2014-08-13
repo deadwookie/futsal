@@ -13,6 +13,7 @@ var config = require('config')
 var dbRef = new Firebase(config.get('firebase.host'));
 
 // @TODO: remember me. tick. attemptedTransition
+// http://firebase.github.io/firebase-simple-login/
 module.exports = Ember.ObjectController.extend({
 
   needs: ['player'],
@@ -68,7 +69,6 @@ module.exports = Ember.ObjectController.extend({
   },
 
   /**
-
   @method logout
   @return {Promise} Returns a promise that resolves when the user is logged out.
   */
@@ -91,6 +91,59 @@ module.exports = Ember.ObjectController.extend({
         });
       });
     });
+  },
+
+  /**
+  Restore password
+  @method restore
+  @return {Promise} Returns a promise that resolves on restore.
+  */
+  restore: function(email) {
+    var promise = new Ember.RSVP.Promise(function(resolve, reject) {
+      var authClient = new FirebaseSimpleLogin(dbRef, function(error, user) {
+        Ember.run(function() {
+          if (error) {
+            reject(error);
+          }
+        });
+      });
+
+      authClient.sendPasswordResetEmail(email, function(error) {
+        if (error === null) {
+          console.log("Password reset email sent successfully");
+          resolve(null);
+        } else {
+          console.log("Error sending password reset email:", error);
+          reject(error);
+        }
+      });
+    });
+
+    return promise;
+  },
+
+  changePassword: function(email, oldPassword, newPassword) {
+    var promise = new Ember.RSVP.Promise(function(resolve, reject) {
+      var authClient = new FirebaseSimpleLogin(dbRef, function(error, user) {
+        Ember.run(function() {
+          if (error) {
+            reject(error);
+          }
+        });
+      });
+
+      authClient.changePassword(email, oldPassword, newPassword, function(error) {
+        if (error === null) {
+          console.log("Password changed successfully");
+          resolve(null);
+        } else {
+          console.log("Error changing password:", error);
+          reject(error);
+        }
+      });
+    });
+
+    return promise;
   },
 
   /**
