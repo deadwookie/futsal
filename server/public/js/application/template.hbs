@@ -33,9 +33,6 @@
             <em>3 days left</em>
           </li> --}}
           {{#if isAuthenticated}}
-            {{#link-to "me.settings" tagName="li" href=false}}
-              {{#link-to "me.settings"}}<i class="fa fa-cog"></i>{{/link-to}}
-            {{/link-to}}
             <li>
               <a href="#" class="btn1 navbar-btn1" {{action logout}}>Logout</a>
             </li>

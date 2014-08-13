@@ -1,14 +1,7 @@
-var PlayerRoute = require('../../player/route');
+var Ember = require('ember');
 
-module.exports = PlayerRoute.extend({
-  templateName: 'me/settings',
-
-  model: function() {
-    var currentUser = this.get('auth').get('currentUser');
-    return currentUser ? this._super({id: currentUser.id}) : Ember.Object.create();
-  },
-
-  // @TODO: move to controller
+module.exports = Ember.ObjectController.extend({
+  needs: 'player',
   actions: {
     changePassword: function() {
       var email = this.get('auth').get('currentUser.email'),
@@ -23,6 +16,10 @@ module.exports = PlayerRoute.extend({
         }.bind(this), function(reason) {
           console.log(reason);
         });
-    }
+    },
+
+    updateProfile: function() {
+      console.log('update profile');
+    },
   }
 });

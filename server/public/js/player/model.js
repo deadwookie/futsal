@@ -5,5 +5,6 @@ module.exports = DS.Model.extend({
   email: DS.attr('string'),
   photo: DS.attr('string'),
   rating: DS.attr('number'),
-  isAdmin: DS.attr('boolean', { defaultValue: false })
+  isAdmin: DS.attr('boolean', { defaultValue: false }),
+  isApproved: DS.attr('boolean', { defaultValue: false })
 });

@@ -36,7 +36,9 @@ App.Router.map(function() {
   this.route('restore');
 
   this.resource('players');
-  this.resource('player', {path: 'players/:id'});
+  this.resource('player', {path: 'players/:id'}, function() {
+    this.route('edit');
+  });
   this.resource('tourneys', function() {
     this.route('new');
   });
@@ -101,6 +103,10 @@ App.PlayerRoute = require('./players/route');
 App.PlayerController = require('./player/controller');
 App.templates.player = require('./player/template.hbs');
 
+App.PlayerEditRoute = require('./player/edit/route');
+App.PlayerEditController = require('./player/edit/controller');
+App.templates['player/edit'] = require('./player/edit/template.hbs');
+
 // Players
 App.PlayersRoute = require('./players/route');
 App.PlayersController = require('./players/controller');
@@ -150,10 +156,6 @@ App.templates.matches = require('./matches/template.hbs');
 
 // Me
 App.MeRoute = require('./me/route');
-
-// Me Settings
-App.MeSettingsRoute = require('./me/settings/route');
-App.templates['me/settings'] = require('./me/settings/template.hbs');
 
 // debug purpose
 global.zApp = module.exports = App;
