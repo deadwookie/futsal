@@ -26,10 +26,7 @@ App.templates = Ember.TEMPLATES;
 App.config = config;
 
 App.Router.map(function() {
-  // this.route('me', {path: '/'});
-  this.resource('me', {path: '/'}, function() {
-    this.route('settings');
-  });
+  this.route('me', {path: '/'});
 
   this.route('login');
   this.route('signup');
@@ -105,6 +102,11 @@ App.templates.player = require('./player/template.hbs');
 
 App.PlayerEditRoute = require('./player/edit/route');
 App.PlayerEditController = require('./player/edit/controller');
+App.PlayerEditPhotoEditView = require('./player/edit/photoEditView');
+App.PlayerEditPhotoPreviewView = require('./player/edit/photoPreviewView');
+// @TODO: use in template {{view NAME}} instead of helper
+Ember.Handlebars.helper('player-photo-edit-view', App.PlayerEditPhotoEditView);
+Ember.Handlebars.helper('player-photo-preview-view', App.PlayerEditPhotoPreviewView);
 App.templates['player/edit'] = require('./player/edit/template.hbs');
 
 // Players

@@ -1,5 +1,6 @@
 @import "/bower/bootstrap/dist/css/bootstrap.css";
 @import "/bower/fontawesome/css/font-awesome.css";
+@import "/bower/jquery-cropbox/jquery.cropbox.css";
 @import "./football/flaticon.css";
 
 body {

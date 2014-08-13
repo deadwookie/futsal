@@ -14,8 +14,8 @@ module.exports = Ember.Route.extend({
     }
   },
 
-  model: function() {
-    return this.get('auth').get('currentUser');
+  model: function(params, transition) {
+    return this.store.find('player', transition.params.player.id);
   },
 
   redirectToLogin: function(transition) {

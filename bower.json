@@ -6,7 +6,8 @@
     "ember": "~1.7.0",
     "ember-data": "~1.0.0",
     "bootstrap": "~3.2.0",
-    "fontawesome": "~4.1.0"
+    "fontawesome": "~4.1.0",
+    "jquery-cropbox": "~0.1.9"
   },
   "devDependencies": {},
   "private": true,

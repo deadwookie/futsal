@@ -17,20 +17,24 @@
       </div>
 
       <div class="form-group">
-        <label class="col-sm-2 control-label" for="photo">Photo</label>
-        <div class="col-xs-4">
-          <input id="photo" name="photo" class="input-file" type="file">
-          <span class="help-block"><a href="https://github.com/chute/avatars-io-js">avatars.io</a></span>
-        </div>
-      </div>
-
-      <div class="form-group">
         <div class="col-sm-offset-2 col-sm-2">
           <div>
             <label>
               {{input checked=isApproved type="checkbox"}} Approved
             </label>
           </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-2 control-label" for="photo">Photo</label>
+        <div class="col-xs-4">
+          {{#view Ember.View contentBinding="photo"}}
+            {{! @TODO: use view App.PlayerEditPhotoEditView instead}}
+            {{player-photo-edit-view}}
+            <br>
+            {{player-photo-preview-view srcBinding="photo" width="100" height="100" showControls="auto"}}
+          {{/view}}
         </div>
       </div>
 

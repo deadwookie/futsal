@@ -2,6 +2,8 @@ var Ember = require('ember');
 
 module.exports = Ember.ObjectController.extend({
   needs: 'player',
+  photoCropped: null,
+
   actions: {
     changePassword: function() {
       var email = this.get('auth').get('currentUser.email'),
@@ -19,7 +21,11 @@ module.exports = Ember.ObjectController.extend({
     },
 
     updateProfile: function() {
-      console.log('update profile');
+      console.log('@TODO: update (save) profile');
+      console.log('name: ' + this.get('name'));
+      console.log('photo: ' + this.get('photo'));
+      console.log('photoCropped: ' + this.get('photoCropped'));
+      console.log('isApproved: ' + this.get('isApproved'));
     },
   }
 });
