@@ -82,13 +82,10 @@ App.templates.voting = require('./voting/template.hbs');
 App.VotingPlayerController = require('./voting/player/controller');
 App.VotingPlayerRoute = require('./voting/player/route');
 App.templates['voting/player'] = require('./voting/player/template.hbs');
+
 // Player Model
 App.Player = require('./player/model');
-App.PlayerAdapter = App.ApplicationAdapter.extend({
-  pathForType: function(type) {
-    return 'players';
-  }
-});
+
 
 // Player
 App.PlayerRoute = require('./players/route');
@@ -102,11 +99,6 @@ App.templates.players = require('./players/template.hbs');
 
 // Tourney Model
 App.Tourney = require('./tourney/model');
-App.TourneyAdapter = App.ApplicationAdapter.extend({
-  pathForType: function(type) {
-    return 'tourneys';
-  }
-});
 
 // Tourney
 App.TourneyRoute = require('./tourney/route');
@@ -125,11 +117,6 @@ App.templates.tourneys = require('./tourneys/template.hbs');
 
 // Team Model
 App.Team = require('./team/model');
-App.TeamAdapter = App.ApplicationAdapter.extend({
-  pathForType: function(type) {
-    return 'teams';
-  }
-});
 
 // Team
 App.TeamRoute = require('./team/route');
@@ -142,11 +129,6 @@ App.templates.teams = require('./teams/template.hbs');
 
 // Match Model
 App.Match = require('./match/model');
-App.MatchAdapter = App.ApplicationAdapter.extend({
-  pathForType: function(type) {
-    return 'matches';
-  }
-});
 
 // Match
 App.MatchRoute = require('./match/route');
