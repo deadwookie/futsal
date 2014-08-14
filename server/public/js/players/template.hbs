@@ -3,7 +3,11 @@
     <div class="col-sm-4 players-item">
       <div class="media">
         {{#link-to "player" this class="pull-left"}}
-          <img src="{{unbound gravatar}}?size=60px" alt="photo" class="media-object img-thumbnail">
+          {{#if photo}}
+            <img src="{{unbound photo}}" width="60px" height="60px" alt="photo" class="media-object img-thumbnail">
+          {{else}}
+            <img src="{{unbound gravatar}}?size=60px" alt="photo" class="media-object img-thumbnail">
+          {{/if}}
         {{/link-to}}
         <div class="media-body">
           <h3 class="media-heading">

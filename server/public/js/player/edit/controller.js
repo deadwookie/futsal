@@ -14,18 +14,20 @@ module.exports = Ember.ObjectController.extend({
         .then(function(value) {
           console.log(value);
           // this.reset();
-          // this.transitionToRoute('me');
+          this.transitionToRoute('me');
         }.bind(this), function(reason) {
           console.log(reason);
         });
     },
 
     updateProfile: function() {
-      console.log('@TODO: update (save) profile');
-      console.log('name: ' + this.get('name'));
-      console.log('photo: ' + this.get('photo'));
-      console.log('photoCropped: ' + this.get('photoCropped'));
-      console.log('isApproved: ' + this.get('isApproved'));
+      var model = this.get('model');
+      model.set('name', this.get('name'));
+      model.set('photo', this.get('photoCropped') || this.get('photo'));
+      model.set('isApproved', this.get('isApproved'));
+      model.save();
+      // this.transitionToRoute('player', this.get('model'));
+      this.transitionToRoute('me');
     },
   }
 });
