@@ -11,26 +11,29 @@ module.exports = Ember.ObjectController.extend({
   needs: ['player'],
 
   /**
-  @property currentUser
-  @type {User}
-  @default null
-  */
+   * @property currentUser
+   * @type {Player}
+   * @default null
+   */
   currentUser: null,
+
   /**
-  @property isAuthenticated
-  @type {bool}
-  @default null
-  */
+   * @property isAuthenticated
+   * @type {bool}
+   * @default null
+   */
   isAuthenticated: false,
+
   /**
-  @property attemptedTransition
-  @type {transition}
-  @default null
-  */
+   * @todo: support redirect after login
+   * @property attemptedTransition
+   * @type {Transition}
+   * @default null
+   */
   attemptedTransition: null,
 
   init: function() {
-    // tick. monitor a user's authentication status
+    // @todo: tick. monitor a user's authentication status to keep session
     // var authRef = new Firebase(dbRoot + '/.info/authenticated');
     // authRef.on("value", function(snap) {
     //   if (snap.val() === true) {
@@ -42,16 +45,17 @@ module.exports = Ember.ObjectController.extend({
   },
 
   /**
-  Logs a user in with an email in password.
-  If no arguments are given attempts to login a currently active session.
-  If user does not exist or no user is logged in promise will resolve with null.
-  https://gist.github.com/raytiley/8976037
-
-  @method login
-  @param {String} email The users email
-  @param {String} password The users password
-  @return {Promise} Returns a promise that resolves with the logged in User
-  */
+   * @todo: support "rememberMe"
+   * Logs a user in with an email in password.
+   * If no arguments are given attempts to login a currently active session.
+   * If user does not exist or no user is logged in promise will resolve with null.
+   * https://gist.github.com/raytiley/8976037
+   *
+   * @method login
+   * @param {String} email The users email
+   * @param {String} password The users password
+   * @return {Promise} Returns a promise that resolves with the logged in User
+   */
   login: function(email, password) {
     if (email === undefined) {
       return this._loginActiveSession();
@@ -61,9 +65,9 @@ module.exports = Ember.ObjectController.extend({
   },
 
   /**
-  @method logout
-  @return {Promise} Returns a promise that resolves when the user is logged out.
-  */
+   * @method logout
+   * @return {Promise} Returns a promise that resolves when the user is logged out.
+   */
   logout: function() {
     var self = this;
     return new Ember.RSVP.Promise(function(resolve, reject) {
@@ -86,10 +90,10 @@ module.exports = Ember.ObjectController.extend({
   },
 
   /**
-  Restore password
-  @method restore
-  @return {Promise} Returns a promise that resolves on restore.
-  */
+   * Performs restore password by firebase-simple-login
+   * @method restore
+   * @return {Promise} Returns a promise that resolves on restore.
+   */
   restore: function(email) {
     var promise = new Ember.RSVP.Promise(function(resolve, reject) {
       var authClient = new FirebaseSimpleLogin(dbRef, function(error, user) {
@@ -114,6 +118,14 @@ module.exports = Ember.ObjectController.extend({
     return promise;
   },
 
+  /**
+   * Performs reset password from firebase-simple-login
+   *
+   * @param  {String} email       User's email
+   * @param  {String} oldPassword old/current password
+   * @param  {String} newPassword new password to set
+   * @return {Promise}
+   */
   changePassword: function(email, oldPassword, newPassword) {
     var promise = new Ember.RSVP.Promise(function(resolve, reject) {
       var authClient = new FirebaseSimpleLogin(dbRef, function(error, user) {
@@ -139,13 +151,14 @@ module.exports = Ember.ObjectController.extend({
   },
 
   /**
-
-  @method createNewUser
-  @param {String} email
-  @param {String} password
-  @param {Object} optional data
-  @return {Promise} Returns a promsie that resolves with newly created user
-  */
+   * Create new user in firebase (type "password")
+   *
+   * @method createNewUser
+   * @param {String} email
+   * @param {String} password
+   * @param {Object} optional data
+   * @return {Promise} Returns a promsie that resolves with newly created user
+   */
   createNewUser: function(email, password, options) {
     options || (options = {});
 
@@ -180,38 +193,36 @@ module.exports = Ember.ObjectController.extend({
             });
           });
         });
-
-        // authClient.createUser(email, password, function(error, user) {
-        //   Ember.run(function() {
-        //     if (error)
-        //       reject(error);
-
-        //     if (user) {
-        //       authClient.login('password', {email: email, password: password});
-        //     }
-        //   });
-        // });
     });
 
     return promise;
   },
 
+  /**
+   * @todo: support "rememberMe"
+   * Login user with credentials (email/password)
+   *
+   * @param  {String} email    User's email
+   * @param  {String} password User's password
+   * @return {Promise}
+   */
   _loginWithCredentials: function(email, password) {
     var self = this;
+
     // Setup a promise that creates the FirebaseSimpleLogin and resolves
     var promise = new Ember.RSVP.Promise(function(resolve, reject) {
       var authClient = new FirebaseSimpleLogin(dbRef, function(error, user) {
-        //First Time this fires error and user should be null. If connection successful
-        //Second Time will be due to login. In that case we should have user or error
+        // First Time this fires error and user should be null. If connection successful
+        // Second Time will be due to login. In that case we should have user or error
         Ember.run(function() {
           // Handle posible errors.
           if (error && error.code === 'INVALID_USER') {
             resolve(null);
           } else if (error) {
-            reject(error)
+            reject(error);
           }
 
-          // Handle user
+          // Setup user and return with resolve
           if (user) {
             var appUser = self.get('controllers.player').store.find('player', user.id).then(function(appUser) {
               self.set('currentUser', appUser);
@@ -233,8 +244,15 @@ module.exports = Ember.ObjectController.extend({
     return promise;
   },
 
+  /**
+   * @todo: merge with _loginWithCredentials
+   * Login user active session
+   *
+   * @return {Promise}
+   */
   _loginActiveSession: function() {
     var self = this;
+
     // Setup a promise that creates the FirebaseSimpleLogin and resolves
     var promise = new Ember.RSVP.Promise(function(resolve, reject) {
       var authClient = new FirebaseSimpleLogin(dbRef, function(error, user) {
@@ -243,11 +261,9 @@ module.exports = Ember.ObjectController.extend({
           if (!error && !user) {
             resolve(null);
           }
-
           if (error) {
             reject(error);
           }
-
           if (user) {
             var appUser = self.get('controllers.player').store.find('player', user.id).then(function(value) {
               self.set('currentUser', value);

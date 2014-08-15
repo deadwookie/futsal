@@ -13,7 +13,7 @@
       <div class="list-group">
         {{#each controller}}
           {{#link-to 'voting.player' this classNameBindings=":list-group-item isVoted:list-group-item-success"}}
-            <span class="label label-primary pull-right">{{rating}}</span>
+            <span class="label label-primary pull-right">{{#if rating}}{{rating}}{{else}}n/a{{/if}}</span>
             {{name}}
             {{#if isLocked}}<i class="fa fa-lock"></i>{{/if}}
           {{/link-to}}

@@ -26,7 +26,7 @@ module.exports = Ember.ObjectController.extend({
           this.reset();
           this.transitionToRoute('me');
         }.bind(this), function(reason) {
-          console.log(reason);
+          console.error(reason);
         });
     }
   }
