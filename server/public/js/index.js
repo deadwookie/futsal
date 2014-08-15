@@ -35,6 +35,7 @@ App.Router.map(function() {
   this.resource('players');
   this.resource('player', {path: 'players/:id'}, function() {
     this.route('edit');
+    this.route('changePassword');
   });
   this.resource('tourneys', function() {
     this.route('new');
@@ -107,7 +108,10 @@ App.PlayerEditPhotoPreviewView = require('./player/edit/photoPreviewView');
 // @TODO: use in template {{view NAME}} instead of helper
 Ember.Handlebars.helper('player-photo-edit-view', App.PlayerEditPhotoEditView);
 Ember.Handlebars.helper('player-photo-preview-view', App.PlayerEditPhotoPreviewView);
+App.PlayerChangePasswordRoute = require('./player/changePassword/route');
+App.PlayerChangePasswordController = require('./player/changePassword/controller');
 App.templates['player/edit'] = require('./player/edit/template.hbs');
+App.templates['player/changePassword'] = require('./player/changePassword/template.hbs');
 
 // Players
 App.PlayersRoute = require('./players/route');
