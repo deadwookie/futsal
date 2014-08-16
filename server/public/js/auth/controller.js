@@ -5,8 +5,12 @@ var FirebaseSimpleLogin = require('firebase-simple-login');
 // @TODO: remember me. tick. attemptedTransition
 // http://firebase.github.io/firebase-simple-login/
 module.exports = Ember.ObjectController.extend({
-
-  needs: ['player'],
+  /**
+   * Model name for new user
+   *
+   * @type {string}
+   */
+  userModel: 'player',
 
   /**
    * @property user
@@ -167,7 +171,7 @@ module.exports = Ember.ObjectController.extend({
                 reject(error);
               }
               if (user) {
-                var newUser = self.store.createRecord('player', {
+                var newUser = self.store.createRecord(self.userModel, {
                   id: user.id,
                   email: user.email,
                   name: options.name
@@ -215,7 +219,7 @@ module.exports = Ember.ObjectController.extend({
 
           // Setup user and return with resolve
           if (user) {
-            var appUser = self.store.find('player', user.id).then(function(appUser) {
+            var appUser = self.store.find(self.userModel, user.id).then(function(appUser) {
               self.set('user', appUser);
               return appUser;
             });
@@ -255,7 +259,7 @@ module.exports = Ember.ObjectController.extend({
             reject(error);
           }
           if (user) {
-            var appUser = self.store.find('player', user.id).then(function(value) {
+            var appUser = self.store.find(self.userModel, user.id).then(function(value) {
               self.set('user', value);
               return value;
             });
