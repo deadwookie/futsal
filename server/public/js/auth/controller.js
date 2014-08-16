@@ -1,8 +1,6 @@
 var Ember = require('ember');
 var Firebase = require('firebase-client');
 var FirebaseSimpleLogin = require('firebase-simple-login');
-var config = require('config');
-var dbRef = new Firebase(config.get('firebase.host'));
 
 // @TODO: remember me. tick. attemptedTransition
 // http://firebase.github.io/firebase-simple-login/
@@ -71,7 +69,7 @@ module.exports = Ember.ObjectController.extend({
   logout: function() {
     var self = this;
     return new Ember.RSVP.Promise(function(resolve, reject) {
-      var authClient = new FirebaseSimpleLogin(dbRef, function(error, user) {
+      var authClient = new FirebaseSimpleLogin(self.get('firebase'), function(error, user) {
         Ember.run(function() {
           if (error) {
             reject(error);
@@ -95,8 +93,9 @@ module.exports = Ember.ObjectController.extend({
    * @return {Promise} Returns a promise that resolves on restore.
    */
   restore: function(email) {
+    var self = this;
     var promise = new Ember.RSVP.Promise(function(resolve, reject) {
-      var authClient = new FirebaseSimpleLogin(dbRef, function(error, user) {
+      var authClient = new FirebaseSimpleLogin(self.get('firebase'), function(error, user) {
         Ember.run(function() {
           if (error) {
             reject(error);
@@ -106,10 +105,10 @@ module.exports = Ember.ObjectController.extend({
 
       authClient.sendPasswordResetEmail(email, function(error) {
         if (error === null) {
-          console.log("Password reset email sent successfully");
+          console.log('Password reset email sent successfully');
           resolve(null);
         } else {
-          console.log("Error sending password reset email:", error);
+          console.log('Error sending password reset email:', error);
           reject(error);
         }
       });
@@ -127,8 +126,9 @@ module.exports = Ember.ObjectController.extend({
    * @return {Promise}
    */
   changePassword: function(email, oldPassword, newPassword) {
+    var self = this;
     var promise = new Ember.RSVP.Promise(function(resolve, reject) {
-      var authClient = new FirebaseSimpleLogin(dbRef, function(error, user) {
+      var authClient = new FirebaseSimpleLogin(self.get('firebase'), function(error, user) {
         Ember.run(function() {
           if (error) {
             reject(error);
@@ -138,10 +138,10 @@ module.exports = Ember.ObjectController.extend({
 
       authClient.changePassword(email, oldPassword, newPassword, function(error) {
         if (error === null) {
-          console.log("Password changed successfully");
+          console.log('Password changed successfully');
           resolve(null);
         } else {
-          console.log("Error changing password:", error);
+          console.log('Error changing password:', error);
           reject(error);
         }
       });
@@ -164,7 +164,7 @@ module.exports = Ember.ObjectController.extend({
 
     var self = this;
     var promise = new Ember.RSVP.Promise(function(resolve, reject) {
-        var authClient = new FirebaseSimpleLogin(dbRef, function(error, user) {
+        var authClient = new FirebaseSimpleLogin(self.get('firebase'), function(error, user) {
           Ember.run(function() {
             if (error) {
               reject(error);
@@ -211,7 +211,7 @@ module.exports = Ember.ObjectController.extend({
 
     // Setup a promise that creates the FirebaseSimpleLogin and resolves
     var promise = new Ember.RSVP.Promise(function(resolve, reject) {
-      var authClient = new FirebaseSimpleLogin(dbRef, function(error, user) {
+      var authClient = new FirebaseSimpleLogin(self.get('firebase'), function(error, user) {
         // First Time this fires error and user should be null. If connection successful
         // Second Time will be due to login. In that case we should have user or error
         Ember.run(function() {
@@ -255,7 +255,7 @@ module.exports = Ember.ObjectController.extend({
 
     // Setup a promise that creates the FirebaseSimpleLogin and resolves
     var promise = new Ember.RSVP.Promise(function(resolve, reject) {
-      var authClient = new FirebaseSimpleLogin(dbRef, function(error, user) {
+      var authClient = new FirebaseSimpleLogin(self.get('firebase'), function(error, user) {
         // This callback should fire just once if no error or user than not logged in
         Ember.run(function() {
           if (!error && !user) {

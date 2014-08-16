@@ -1,0 +1,12 @@
+{
+  "ember": {
+    "log": {
+      "transitions": true,
+      "transitionsInternal": false,
+      "activeGeneration": false,
+      "resolver": false,
+      "bindings": false,
+      "deprecation": true
+    }
+  }
+}

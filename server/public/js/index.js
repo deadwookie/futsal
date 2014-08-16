@@ -1,29 +1,83 @@
 var Ember = require('ember');
 var DS = require('ember-data');
 var EmberFire = require('emberfire');
-var Firebase = require("firebase-client");
+var Firebase = require('firebase-client');
 var config = require('config')
   // Note: Cannot use config.file() or config.dir(),
   // Because browserify doesn't allow to require files by variable name :(
   .extend(require('../../config/browser.overrides.json'))
   .extend(require('../../config/services.json'))
+  .extend(require('../../config/ember.json'))
   .extend(require('../../config/browser.json'));
 
+var firebaseRef = new Firebase(config.get('firebase.host'));
+var Application = Ember.Application.extend({
+  // Basic logging, e.g. "Transitioned into 'post'"
+  LOG_TRANSITIONS: config.get('ember.log.transitions'),
 
-var App = Ember.Application.create({
-  LOG_TRANSITIONS: true,
-  ready: function() {
-    this.register('main:auth', App.AuthController);
-    this.inject('route', 'auth', 'main:auth');
-    this.inject('controller', 'auth', 'main:auth');
+  // Extremely detailed logging, highlighting every internal
+  // step made while transitioning into a route, including
+  // `beforeModel`, `model`, and `afterModel` hooks, and
+  // information about redirects and aborted transitions
+  LOG_TRANSITIONS_INTERNAL: config.get('ember.log.transitionsInternal'),
+
+  // Log generated classes
+  LOG_ACTIVE_GENERATION: config.get('ember.log.activeGeneration'),
+
+  // Useful for understanding which objects Ember is finding
+  // when it does a lookup and which it is generating automatically for you.
+  LOG_RESOLVER: config.get('ember.log.resolver')
+});
+var App;
+
+// Log
+Ember.LOG_BINDINGS = config.get('ember.log.bindings');
+Ember.LOG_STACKTRACE_ON_DEPRECATION  = config.get('ember.log.deprecation');
+
+// injections
+Ember.Application.initializer({
+  name: 'config',
+  initialize: function(container, application) {
+    // Convert whole config to what Ember likes
+    var cfg = Ember.Object.extend(config.get());
+
+    container.register('config:main', cfg);
+
+    application.inject('route', 'config', 'config:main');
+    application.inject('controller', 'config', 'config:main');
+    application.inject('model', 'config', 'config:main');
   }
 });
 
+Ember.Application.initializer({
+  name: 'firebaseRef',
+  after: ['firebase', 'config'],
+  before: 'session',
+  initialize: function(container, application) {
+    var config = container.lookup('config:main');
+    container.register('firebase:ref', firebaseRef, {instantiate: false});
+    // application.inject('adapter:-firebase', 'firebase', 'firebase:ref');
+  }
+});
+
+Ember.Application.initializer({
+  name: 'session',
+  initialize: function(container, application) {
+    container.register('auth:main', App.AuthController);
+    application.inject('auth:main', 'firebase', 'firebase:ref');
+    application.inject('route', 'auth', 'auth:main');
+    application.inject('controller', 'auth', 'auth:main');
+  }
+});
+
+
+// start App
+App = Application.create();
+
 App.ApplicationAdapter = DS.FirebaseAdapter.extend({
-  firebase: new Firebase(config.get('firebase.host'))
+  firebase: firebaseRef
 });
 App.templates = Ember.TEMPLATES;
-App.config = config;
 
 App.Router.map(function() {
   this.route('me', {path: '/'});
