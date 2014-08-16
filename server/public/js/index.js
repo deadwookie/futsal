@@ -52,7 +52,7 @@ Ember.Application.initializer({
 Ember.Application.initializer({
   name: 'firebaseRef',
   after: ['firebase', 'config'],
-  before: 'session',
+  before: 'auth',
   initialize: function(container, application) {
     var config = container.lookup('config:main');
     container.register('firebase:ref', firebaseRef, {instantiate: false});
@@ -61,7 +61,7 @@ Ember.Application.initializer({
 });
 
 Ember.Application.initializer({
-  name: 'session',
+  name: 'auth',
   initialize: function(container, application) {
     container.register('auth:main', App.AuthController);
     application.inject('auth:main', 'firebase', 'firebase:ref');
@@ -69,6 +69,24 @@ Ember.Application.initializer({
 
     application.inject('route', 'auth', 'auth:main');
     application.inject('controller', 'auth', 'auth:main');
+
+    Ember.Route.reopen({
+      beforeModel: function(transition) {
+        var permissions;
+
+        if (this.get('isAuthRequired') && !this.get('auth.user')) {
+          this.get('auth').set('attemptedTransition', transition);
+          // TODO: show a "login required" message
+          return this.transitionTo('login');
+        }
+
+        permissions = this.get('isPermissionRequired');
+        if (permissions && !this.get('auth').hasPermission(permissions)) {
+          // TODO: show "no permission" message
+          transition.abort();
+        }
+      }
+    });
   }
 });
 
