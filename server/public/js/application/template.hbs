@@ -6,7 +6,12 @@
       <ul class="nav navbar-nav">
         {{#link-to "me" tagName="li" href=false}}
           {{#link-to "me"}}
-            <i class="flaticon-football118 fa-lg"></i> Profile
+            <i class="flaticon-football118 fa-lg"></i>
+            {{#if auth.user}}
+              {{auth.user.name}}
+            {{else}}
+              Login
+            {{/if}}
           {{/link-to}}
         {{/link-to}}
         {{#link-to "players" tagName="li" href=false}}
@@ -32,7 +37,7 @@
           {{!-- <li class="navbar-text">
             <em>3 days left</em>
           </li> --}}
-          {{#if isAuthenticated}}
+          {{#if auth.user}}
             <li>
               <a href="#" class="btn1 navbar-btn1" {{action logout}}>Logout</a>
             </li>

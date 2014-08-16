@@ -9,11 +9,11 @@ module.exports = PlayerRoute.extend({
 
   model: function() {
     var user = this.get('auth.user');
-    return user ? this._super({id: user.id}) : Ember.Object.create();
+    return this._super({id: user.id});
   },
 
   beforeModel: function(transition) {
-    if (!this.get('auth').get('isAuthenticated')) {
+    if (!this.get('auth.user')) {
       return this.redirectToLogin(transition);
     }
   },

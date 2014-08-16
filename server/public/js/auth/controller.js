@@ -16,13 +16,6 @@ module.exports = Ember.ObjectController.extend({
   user: null,
 
   /**
-   * @property isAuthenticated
-   * @type {bool}
-   * @default null
-   */
-  isAuthenticated: false,
-
-  /**
    * @todo: support redirect after login
    * @property attemptedTransition
    * @type {Transition}
@@ -79,7 +72,6 @@ module.exports = Ember.ObjectController.extend({
 
           if (!user) {
             self.set('user', null);
-            self.set('isAuthenticated', false);
             resolve(null);
           }
         });
@@ -183,7 +175,6 @@ module.exports = Ember.ObjectController.extend({
 
                 var appUser = newUser.save().then(function(value) {
                   self.set('user', value);
-                  self.set('isAuthenticated', true);
                   return value;
                 });
 
@@ -226,7 +217,6 @@ module.exports = Ember.ObjectController.extend({
           if (user) {
             var appUser = self.store.find('player', user.id).then(function(appUser) {
               self.set('user', appUser);
-              appUser && self.set('isAuthenticated', true);
               return appUser;
             });
 
@@ -267,7 +257,6 @@ module.exports = Ember.ObjectController.extend({
           if (user) {
             var appUser = self.store.find('player', user.id).then(function(value) {
               self.set('user', value);
-              value && self.set('isAuthenticated', true);
               return value;
             });
 

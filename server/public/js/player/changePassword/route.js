@@ -9,7 +9,7 @@ module.exports = Ember.Route.extend({
   },
 
   beforeModel: function(transition) {
-    if (!this.get('auth').get('isAuthenticated')) {
+    if (!this.get('auth.user')) {
       return this.redirectToLogin(transition);
     }
   },
