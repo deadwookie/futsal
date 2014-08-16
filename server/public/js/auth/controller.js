@@ -9,11 +9,11 @@ module.exports = Ember.ObjectController.extend({
   needs: ['player'],
 
   /**
-   * @property currentUser
+   * @property user
    * @type {Player}
    * @default null
    */
-  currentUser: null,
+  user: null,
 
   /**
    * @property isAuthenticated
@@ -78,7 +78,7 @@ module.exports = Ember.ObjectController.extend({
           authClient.logout();
 
           if (!user) {
-            self.set('currentUser', null);
+            self.set('user', null);
             self.set('isAuthenticated', false);
             resolve(null);
           }
@@ -175,14 +175,14 @@ module.exports = Ember.ObjectController.extend({
                 reject(error);
               }
               if (user) {
-                var newUser = self.get('controllers.player').store.createRecord('player', {
+                var newUser = self.store.createRecord('player', {
                   id: user.id,
                   email: user.email,
                   name: options.name
                 });
 
                 var appUser = newUser.save().then(function(value) {
-                  self.set('currentUser', value);
+                  self.set('user', value);
                   self.set('isAuthenticated', true);
                   return value;
                 });
@@ -224,8 +224,8 @@ module.exports = Ember.ObjectController.extend({
 
           // Setup user and return with resolve
           if (user) {
-            var appUser = self.get('controllers.player').store.find('player', user.id).then(function(appUser) {
-              self.set('currentUser', appUser);
+            var appUser = self.store.find('player', user.id).then(function(appUser) {
+              self.set('user', appUser);
               appUser && self.set('isAuthenticated', true);
               return appUser;
             });
@@ -265,8 +265,8 @@ module.exports = Ember.ObjectController.extend({
             reject(error);
           }
           if (user) {
-            var appUser = self.get('controllers.player').store.find('player', user.id).then(function(value) {
-              self.set('currentUser', value);
+            var appUser = self.store.find('player', user.id).then(function(value) {
+              self.set('user', value);
               value && self.set('isAuthenticated', true);
               return value;
             });

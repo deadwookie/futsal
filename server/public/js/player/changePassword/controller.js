@@ -15,7 +15,7 @@ module.exports = Ember.ObjectController.extend({
 
   actions: {
     changePassword: function() {
-      var email = this.get('auth').get('currentUser.email'),
+      var email = this.get('auth.user.email'),
         oldPassword = this.get('oldPassword'),
         newPassword = this.get('newPassword');
 

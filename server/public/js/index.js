@@ -65,6 +65,8 @@ Ember.Application.initializer({
   initialize: function(container, application) {
     container.register('auth:main', App.AuthController);
     application.inject('auth:main', 'firebase', 'firebase:ref');
+    application.inject('auth:main', 'store', 'store:main');
+
     application.inject('route', 'auth', 'auth:main');
     application.inject('controller', 'auth', 'auth:main');
   }
@@ -86,6 +88,10 @@ App.Router.map(function() {
   this.route('signup');
   this.route('restore');
 
+  this.resource('voting', function() {
+    this.route('player', {path: ':id'});
+  });
+
   this.resource('players');
   this.resource('player', {path: 'players/:id'}, function() {
     this.route('edit');
@@ -100,10 +106,6 @@ App.Router.map(function() {
     this.route('players');
     this.route('teams');
     this.route('matches');
-  });
-
-  this.resource('voting', function() {
-    this.route('player', {path: ':id'});
   });
 });
 

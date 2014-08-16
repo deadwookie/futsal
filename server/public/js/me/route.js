@@ -1,3 +1,4 @@
+var Ember = require('ember');
 var PlayerRoute = require('../player/route');
 
 // An alias to existed player
@@ -7,8 +8,8 @@ module.exports = PlayerRoute.extend({
   controllerName: 'player',
 
   model: function() {
-    var currentUser = this.get('auth').get('currentUser');
-    return currentUser ? this._super({id: currentUser.id}) : Ember.Object.create();
+    var user = this.get('auth.user');
+    return user ? this._super({id: user.id}) : Ember.Object.create();
   },
 
   beforeModel: function(transition) {
