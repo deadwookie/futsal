@@ -1,7 +1,7 @@
 var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
-  beforeModel: function() {
+  redirect: function() {
     this.transitionTo('auth.login');
   }
 });

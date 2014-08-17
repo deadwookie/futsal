@@ -1,33 +1,48 @@
 var Ember = require('ember');
 
 module.exports = Ember.ObjectController.extend({
+  needs: 'auth',
+  auth: Ember.computed.alias('controllers.auth'),
+
   email: null,
   password: null,
   name: null,
+  isProcessing: false,
+  errorMsg: false,
 
   reset: function() {
     this.setProperties({
       email: null,
       password: null,
-      name: null
+      name: null,
+      isProcessing: false,
+      errorMsg: false
     });
   },
 
   actions: {
     signup: function() {
-      var email = this.get('email'),
+      var auth = this.get('auth'),
+        email = this.get('email'),
         password = this.get('password'),
-        userdata = {
+        profile = {
           name: this.get('name')
         };
 
-      this.get('auth').createNewUser(email, password, userdata)
-        .then(function(value) {
+      this.set('isProcessing', true);
+      auth.createUser(email, password, profile)
+        .then(function(user) {
+          return auth.login(email, password);
+        })
+        .then(function(user) {
           this.reset();
-          this.transitionToRoute('');
-        }.bind(this), function(reason) {
-          console.error(reason);
-        });
+          auth.goBack();
+        }.bind(this))
+        .catch(function(error) {
+          // todo: custom error message based on error.code
+          this.set('errorMsg', error.message);
+          this.set('isProcessing', false);
+        }.bind(this));
     }
   }
 });

@@ -1,0 +1,15 @@
+<ul class="nav nav-pills gap-lg">
+  {{#link-to "auth.login" tagName="li" href=false}}
+    {{#link-to "auth.login"}}Login{{/link-to}}
+  {{/link-to}}
+  {{#link-to "auth.signup" tagName="li" href=false}}
+    {{#link-to "auth.signup"}}Sign up{{/link-to}}
+  {{/link-to}}
+  {{#link-to "auth.restore" tagName="li" href=false}}
+    {{#link-to "auth.restore"}}Restore Password{{/link-to}}
+  {{/link-to}}
+</ul>
+
+<div class="well">
+  {{outlet}}
+</div>

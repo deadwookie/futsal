@@ -28,10 +28,11 @@ module.exports = Ember.Object.extend({
       }.bind(this));
   },
 
-  login: function(email, password) {
+  login: function(email, password, rememberMe) {
     var options = {
       email: email,
-      password: password
+      password: password,
+      rememberMe: !!rememberMe
     };
 
     return this.get('adapter').login('password', options)
@@ -46,11 +47,8 @@ module.exports = Ember.Object.extend({
   },
 
   logout: function() {
-    return this.get('adapter').logout()
-      .then(function() {
-        this.set('user', void 0);
-        console.warn('LOGOUT!!!!!!!!!!!!', this.get('user'));
-      }.bind(this));
+    this.set('user', void 0);
+    return this.get('adapter').logout();
   }
 
 });

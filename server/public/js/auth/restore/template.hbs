@@ -1,16 +1,19 @@
 <form class="form-horizontal" {{action "restore" on="submit"}}>
+  {{#if errorMsg}}
+    <div class="alert alert-danger" role="alert">
+      <strong>Login Error!</strong> {{errorMsg}}
+  {{/if}}
+  
   <div class="form-group">
     <label for="" class="col-sm-2 control-label">Email</label>
-    <div class="col-xs-4">
+    <div class="col-sm-4">
       {{input value=email type="email" class="form-control" required="required" placeholder="Email"}}
     </div>
   </div>
 
   <div class="form-group">
     <div class="col-sm-offset-2 col-sm-4">
-      <button type="submit" class="btn btn-primary" {{bind-attr disabled="isProcessing"}}>Restore</button>
-      OR
-      {{#link-to "auth.login"}}Login{{/link-to}}
+      <button type="submit" class="btn btn-success" {{bind-attr disabled="isProcessing"}}>Restore</button>
     </div>
   </div>
 </form>

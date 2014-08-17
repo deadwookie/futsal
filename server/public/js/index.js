@@ -84,8 +84,8 @@ Ember.Application.initializer({
         var permissions;
 
         if (this.get('isAuthRequired') && !this.get('session.user')) {
+          console.warn('auth is required for "%s"', transition.targetName);
           this.controllerFor('auth').set('attemptedTransition', transition);
-          console.warn('auth is required', transition.toString());
           // TODO: show a "login required" message
           return this.transitionTo('auth');
         }
@@ -142,8 +142,9 @@ App.ApplicationController = require('./application/controller');
 App.templates.application = require('./application/template.hbs');
 
 // Auth
-App.AuthRoute = require('./auth/route');
 App.AuthController = require('./auth/controller');
+App.AuthIndexRoute = require('./auth/index/route');
+App.templates.auth = require('./auth/template');
 
 // login
 App.AuthLoginRoute = require('./auth/login/route');
