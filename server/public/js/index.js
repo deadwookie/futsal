@@ -10,7 +10,6 @@ var config = require('config')
   .extend(require('../../config/ember.json'))
   .extend(require('../../config/browser.json'));
 
-var firebaseRef = new Firebase(config.get('firebase.host'));
 var Application = Ember.Application.extend({
   // Basic logging, e.g. "Transitioned into 'post'"
   LOG_TRANSITIONS: config.get('ember.log.transitions'),
@@ -39,9 +38,9 @@ Ember.Application.initializer({
   name: 'config',
   initialize: function(container, application) {
     // Convert whole config to what Ember likes
-    var cfg = Ember.Object.extend(config.get());
+    var cfg = Ember.Object.extend(config.get()).create();
 
-    container.register('config:main', cfg);
+    container.register('config:main', cfg, {instantiate: false});
 
     application.inject('route', 'config', 'config:main');
     application.inject('controller', 'config', 'config:main');
@@ -54,9 +53,17 @@ Ember.Application.initializer({
   after: ['firebase', 'config'],
   before: 'auth',
   initialize: function(container, application) {
+    var FirebaseLoginAdapter = require('./_adapters/firebase-login');
     var config = container.lookup('config:main');
+    var firebaseRef = new Firebase(config.get('firebase.host'));
+
     container.register('firebase:ref', firebaseRef, {instantiate: false});
-    // application.inject('adapter:-firebase', 'firebase', 'firebase:ref');
+
+    container.register('adapter:application', container.lookupFactory('adapter:-firebase'));
+    container.injection('adapter:application', 'firebase', 'firebase:ref');
+
+    container.register('firebase:login', FirebaseLoginAdapter);
+    container.injection('firebase:login', 'firebase', 'firebase:ref');
   }
 });
 
@@ -80,11 +87,11 @@ Ember.Application.initializer({
           return this.transitionTo('login');
         }
 
-        permissions = this.get('isPermissionRequired');
-        if (permissions && !this.get('auth').hasPermission(permissions)) {
-          // TODO: show "no permission" message
-          transition.abort();
-        }
+        // permissions = this.get('isPermissionRequired');
+        // if (permissions && !this.get('auth').hasPermission(permissions)) {
+        //   // TODO: show "no permission" message
+        //   transition.abort();
+        // }
       }
     });
   }
@@ -93,10 +100,6 @@ Ember.Application.initializer({
 
 // start App
 App = Application.create();
-
-App.ApplicationAdapter = DS.FirebaseAdapter.extend({
-  firebase: firebaseRef
-});
 App.templates = Ember.TEMPLATES;
 
 App.Router.map(function() {
