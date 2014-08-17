@@ -3,28 +3,25 @@ var Ember = require('ember');
 module.exports = Ember.ObjectController.extend({
   email: null,
   password: null,
-  name: null,
+  rememerMe: false,
 
   reset: function() {
     this.setProperties({
       email: null,
       password: null,
-      name: null
+      rememerMe: false
     });
   },
 
   actions: {
-    signup: function() {
+    login: function() {
       var email = this.get('email'),
-        password = this.get('password'),
-        userdata = {
-          name: this.get('name')
-        };
+        password = this.get('password');
 
-      this.get('auth').createNewUser(email, password, userdata)
-        .then(function(value) {
+      this.get('session').login(email, password)
+        .then(function(user) {
           this.reset();
-          this.transitionToRoute('me');
+          this.transitionToRoute('');
         }.bind(this), function(reason) {
           console.error(reason);
         });

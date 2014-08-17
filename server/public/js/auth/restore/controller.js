@@ -13,13 +13,13 @@ module.exports = Ember.ObjectController.extend({
     restore: function() {
       var email = this.get('email');
 
-      this.get('auth').restore(email)
+      this.get('session.adapter').sendPasswordResetEmail(email)
         .then(function(value) {
           console.log(value);
           this.reset();
-          this.transitionToRoute('login');
+          this.transitionToRoute('auth.login');
         }.bind(this), function(reason) {
-          console.log(reason);
+          console.error(reason);
         });
     }
   }

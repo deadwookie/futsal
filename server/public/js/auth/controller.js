@@ -160,37 +160,61 @@ module.exports = Ember.ObjectController.extend({
 
     var self = this;
     var promise = new Ember.RSVP.Promise(function(resolve, reject) {
-        var authClient = new FirebaseSimpleLogin(self.get('firebase'), function(error, user) {
-          Ember.run(function() {
+      var authClient = new FirebaseSimpleLogin(self.get('firebase'), function(error, user) {
+        Ember.run(function() {
+          if (error) {
+            reject(error);
+          }
+
+          authClient.createUser(email, password, function(error, user) {
             if (error) {
               reject(error);
             }
+            if (user) {
+              var newUser = self.store.createRecord(self.userModel, {
+                id: user.id,
+                email: user.email,
+                name: options.name
+              });
 
-            authClient.createUser(email, password, function(error, user) {
-              if (error) {
-                reject(error);
-              }
-              if (user) {
-                var newUser = self.store.createRecord(self.userModel, {
-                  id: user.id,
-                  email: user.email,
-                  name: options.name
-                });
+              var appUser = newUser.save().then(function(value) {
+                self.set('user', value);
+                return value;
+              });
 
-                var appUser = newUser.save().then(function(value) {
-                  self.set('user', value);
-                  return value;
-                });
-
-                authClient.login('password', {email: email, password: password});
-                resolve(appUser);
-              }
-            });
+              authClient.login('password', {email: email, password: password});
+              resolve(appUser);
+            }
           });
         });
+      });
     });
 
     return promise;
+  },
+
+  hasPermission: function(check, options) {
+    console.warn('auth:user hasPermission', this.get('user'));
+    return true;
+
+    var user = this.get('user'),
+      result = [],
+      permissions;
+    options || (options = {});
+
+    if (!check) return true;
+    if (!user) return false;
+
+    check = [].concat(check);
+    permissions = user.get('permissions');
+
+    if (permissions.get('all')) return true;
+    check.forEach(function(p) {
+      if (permissions.get(p)) result.push(p);
+    });
+
+    // should user has all passed permissions or at least one?
+    return options.strict ? check.length === result.length : result.length > 0;
   },
 
   /**

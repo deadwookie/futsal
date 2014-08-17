@@ -10,7 +10,7 @@ module.exports = PlayerRoute.extend({
   isAuthRequired: true,
 
   model: function() {
-    var user = this.get('auth.user');
+    var user = this.get('session.user');
     return this._super({id: user.id});
   }
 });

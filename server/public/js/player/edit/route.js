@@ -2,6 +2,7 @@ var Ember = require('ember');
 
 module.exports = Ember.Route.extend({
   isAuthRequired: true,
+  isPermissionRequired: 'user-edit',
 
   renderTemplate: function(controller, model) {
     this.render('player/edit', {

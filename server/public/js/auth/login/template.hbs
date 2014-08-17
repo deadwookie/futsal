@@ -21,7 +21,7 @@
         </label>
       </div>
       <div class="pull-right">
-        {{#link-to "restore"}}<small>forgot password?</small>{{/link-to}}
+        {{#link-to "auth.restore"}}<small>forgot password?</small>{{/link-to}}
       </div>
     </div>
   </div>
@@ -30,7 +30,7 @@
     <div class="col-sm-offset-2 col-sm-4">
       <button type="submit" class="btn btn-primary" {{bind-attr disabled="isProcessing"}}>Login</button>
       OR
-      {{#link-to "signup" class=""}}Sign Up{{/link-to}}
+      {{#link-to "auth.signup" class=""}}Sign Up{{/link-to}}
     </div>
   </div>
 </form>

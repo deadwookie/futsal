@@ -38,18 +38,18 @@ Ember.Application.initializer({
   name: 'config',
   initialize: function(container, application) {
     // Convert whole config to what Ember likes
-    var cfg = Ember.Object.extend(config.get()).create();
+    var cfg = Ember.Object.extend(config.get());
 
-    container.register('config:main', cfg, {instantiate: false});
+    container.register('config:main', cfg);
 
-    application.inject('route', 'config', 'config:main');
-    application.inject('controller', 'config', 'config:main');
-    application.inject('model', 'config', 'config:main');
+    container.injection('route', 'config', 'config:main');
+    container.injection('controller', 'config', 'config:main');
+    container.injection('model', 'config', 'config:main');
   }
 });
 
 Ember.Application.initializer({
-  name: 'firebaseRef',
+  name: 'firebase:ref',
   after: ['firebase', 'config'],
   before: 'auth',
   initialize: function(container, application) {
@@ -70,21 +70,24 @@ Ember.Application.initializer({
 Ember.Application.initializer({
   name: 'auth',
   initialize: function(container, application) {
-    container.register('auth:main', App.AuthController);
-    application.inject('auth:main', 'firebase', 'firebase:ref');
-    application.inject('auth:main', 'store', 'store:main');
+    var Session = require('./session');
 
-    application.inject('route', 'auth', 'auth:main');
-    application.inject('controller', 'auth', 'auth:main');
+    container.register('session:main', Session);
+    container.injection('session:main', 'store', 'store:main');
+    container.injection('session:main', 'adapter', 'firebase:login');
+
+    container.injection('route', 'session', 'session:main');
+    container.injection('controller', 'session', 'session:main');
 
     Ember.Route.reopen({
       beforeModel: function(transition) {
         var permissions;
 
-        if (this.get('isAuthRequired') && !this.get('auth.user')) {
-          this.get('auth').set('attemptedTransition', transition);
+        if (this.get('isAuthRequired') && !this.get('session.user')) {
+          this.controllerFor('auth').set('attemptedTransition', transition);
+          console.warn('auth is required', transition.toString());
           // TODO: show a "login required" message
-          return this.transitionTo('login');
+          return this.transitionTo('auth');
         }
 
         // permissions = this.get('isPermissionRequired');
@@ -105,9 +108,12 @@ App.templates = Ember.TEMPLATES;
 App.Router.map(function() {
   this.route('me', {path: '/'});
 
-  this.route('login');
-  this.route('signup');
-  this.route('restore');
+  this.resource('auth', function() {
+    this.route('login');
+    this.route('logout');
+    this.route('signup');
+    this.route('restore');
+  });
 
   this.resource('voting', function() {
     this.route('player', {path: ':id'});
@@ -140,19 +146,22 @@ App.AuthRoute = require('./auth/route');
 App.AuthController = require('./auth/controller');
 
 // login
-App.LoginRoute = require('./login/route');
-App.LoginController = require('./login/controller');
-App.templates.login = require('./login/template');
+App.AuthLoginRoute = require('./auth/login/route');
+App.AuthLoginController = require('./auth/login/controller');
+App.templates['auth/login'] = require('./auth/login/template');
+
+// Logout
+App.AuthLogoutRoute = require('./auth/logout/route');
 
 // signup
-App.SignupRoute = require('./signup/route');
-App.SignupController = require('./signup/controller');
-App.templates.signup = require('./signup/template');
+App.AuthSignupRoute = require('./auth/signup/route');
+App.AuthSignupController = require('./auth/signup/controller');
+App.templates['auth/signup'] = require('./auth/signup/template');
 
 // restore (password)
-App.RestoreRoute = require('./restore/route');
-App.RestoreController = require('./restore/controller');
-App.templates.restore = require('./restore/template');
+App.AuthRestoreRoute = require('./auth/restore/route');
+App.AuthRestoreController = require('./auth/restore/controller');
+App.templates['auth/restore'] = require('./auth/restore/template');
 
 // Gameday
 App.GamedayIndexRoute = require('./gameday/index/route');
