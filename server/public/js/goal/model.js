@@ -1,10 +1,10 @@
 var DS = require('ember-data');
 
 module.exports = DS.Model.extend({
-  tourney: DS.belongsTo('tourney'),
-  player: DS.belongsTo('player'),
-  match: DS.belongsTo('match'),
-  team: DS.belongsTo('team'),
+  tourney: DS.belongsTo('tourney', { async: true }),
+  match: DS.belongsTo('match', { async: true }),
+  team: DS.belongsTo('team', { async: true }),
+  player: DS.belongsTo('player', { async: true }),
   minute: DS.attr('number'),
   isOwn: DS.attr('boolean', {
     defaultValue: false

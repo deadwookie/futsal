@@ -2,6 +2,13 @@ var Ember = require('ember');
 var md5 = require('MD5');
 
 module.exports = Ember.ObjectController.extend({
+  ratingAvg: function() {
+    var r = this.get('ratings'),
+      avg = (r.get('sho') + r.get('pas') + r.get('dri') + r.get('pac') + r.get('def') + r.get('gk')) / 6;
+
+    return avg ? avg.toFixed(1) : 0;
+  }.property('ratings'),
+
   gravatar: function() {
     return 'http://www.gravatar.com/avatar/' + md5(this.get('model.email')) + '.jpg';
   }.property('email'),

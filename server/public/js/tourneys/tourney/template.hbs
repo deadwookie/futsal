@@ -1,0 +1,201 @@
+<h2 class="tourney-title">
+  Tourney #{{id}}
+  <span class="label label-success active" title="Been there">+1</span>
+
+  <small class="tourney-meta pull-right">
+    <b>{{players.length}}</b> Players / <b>{{teams.length}}</b> Teams
+  </small>
+  <small class="nowrap">{{date}}</small>
+</h2>
+
+<ul class="nav nav-pills gap-lg">
+  <li class="active"><a href="#">Overview</a></li>
+  <li><a href="#">Alpha</a></li>
+  <li><a href="#">Bravo</a></li>
+  <li><a href="#">Charlie <i class="flaticon-football117"></i></a></li>
+  <li><a href="#">Delta</a></li>
+</ul>
+
+<div class="row">
+  <div class="col-md-9 col-md-push-3">
+    <table class="table tourney-table">
+      <thead>
+        <tr>
+          <th>Team</th>
+          <th title="Average Rating">AVR</th>
+          <th title="Matches Played">MP</th>
+          <th title="Won">W</th>
+          <th title="Drawn">D</th>
+          <th title="Lost">L</th>
+          <th title="Goals For">GF</th>
+          <th title="Goals Against">GA</th>
+          <th title="Goal Difference">±</th>
+          <th title="Points">Pts</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each teams itemController='tourneysTourney'}}
+          <tr>
+            <th>{{name}} <i class="flaticon-football117"></i></th>
+            <td><span class="label label-info">7.1</span></td>
+            <td>{{matchesPlayed}}</td>
+            <td>{{matchesWon}}</td>
+            <td>{{matchesDraw}}</td>
+            <td>{{matchesLost}}</td>
+            <td>{{goalsFor}}</td>
+            <td>{{goalsAgainst}}</td>
+            <td>{{goalsDiff}}</td>
+            <td>{{points}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+
+    <div class="row">
+      <div class="col-md-6">
+        <h3>Matches</h3>
+        <table class="table table-striped matches-table">
+          <tbody>
+            {{#each matches itemController='match'}}
+              <tr class="text-success">
+                <td><b>{{home.name}}</b></td> <td>{{goalsHome}} : {{goalsAway}}</td> <td>{{away.name}}</td>
+              </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="col-md-6">
+        <h3>Shooters</h3>
+        <table class="table table-striped shooters-table">
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td><a href="#">Витя</a></td>
+              <td><span class="label label-info">7</span></td>
+              <td>
+                <i class="flaticon-football28"></i>
+                <i class="flaticon-football28"></i>
+                <i class="flaticon-football28"></i>
+                <i class="flaticon-football28"></i>
+                <i class="flaticon-football28"></i>
+                <i class="flaticon-football28"></i>
+                <i class="flaticon-football28"></i>
+                <i class="flaticon-football28"></i>
+              </td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td><a href="#">Серёга (GK)</a></td>
+              <td><span class="label label-primary">8</span></td>
+              <td>
+                <i class="flaticon-football28"></i>
+                <i class="flaticon-football28"></i>
+                <i class="flaticon-football28"></i>
+                <i class="flaticon-football28"></i>
+                <i class="flaticon-football28"></i>
+                <i class="flaticon-football28"></i>
+              </td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td><a href="#">Кирилл</a></td>
+              <td><span class="label label-warning">9</span></td>
+              <td>
+                <i class="flaticon-football28"></i>
+                <i class="flaticon-football28"></i>
+                <i class="flaticon-football28"></i>
+                <i class="flaticon-football28"></i>
+                <i class="flaticon-football28"></i>
+              </td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td><a href="#">Тимур</a></td>
+              <td><span class="label label-info">6</span></td>
+              <td>
+                <i class="flaticon-football28"></i>
+                <i class="flaticon-football28"></i>
+                <i class="flaticon-football28"></i>
+                <i class="flaticon-football28"></i>
+              </td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td><a href="#">Саша Дозер</a></td>
+              <td><span class="label label-default">2</span></td>
+              <td>
+                <i class="flaticon-football28"></i>
+                <i class="flaticon-football28"></i>
+                <i class="flaticon-football28"></i>
+              </td>
+            </tr>
+            <tr class="success">
+              <td>6</td>
+              <td><a href="#">Витя</a></td>
+              <td><span class="label label-info">7</span></td>
+              <td>
+                <i class="flaticon-football28"></i>
+                <i class="flaticon-football28"></i>
+              </td>
+            </tr>
+            <tr>
+              <td>7</td>
+              <td><a href="#">Серёга (GK)</a></td>
+              <td><span class="label label-primary">8</span></td>
+              <td>
+                <i class="flaticon-football28"></i>
+                <i class="flaticon-football28"></i>
+              </td>
+            </tr>
+            <tr>
+              <td>8</td>
+              <td><a href="#">Кирилл</a></td>
+              <td><span class="label label-warning">9</span></td>
+              <td>
+                <i class="flaticon-football28"></i>
+              </td>
+            </tr>
+            <tr>
+              <td>9</td>
+              <td><a href="#">Тимур</a></td>
+              <td><span class="label label-info">6</span></td>
+              <td>
+                <i class="flaticon-football28"></i>
+              </td>
+            </tr>
+            <tr>
+              <td>10</td>
+              <td><a href="#">Саша Дозер</a></td>
+              <td><span class="label label-default">2</span></td>
+              <td>
+                <i class="flaticon-football28"></i>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 col-md-pull-9">
+    {{#each teams itemController="team"}}
+      <div class="panel panel-default panel-success1">
+        <div class="panel-heading">
+          <span class="pull-right">
+            <span class="badge hide">{{teamRank}}</span>
+            <i class="flaticon-football117 pull-right"></i>
+          </span>
+          <h3 class="panel-title">{{name}}</h3>
+        </div>
+        <ul class="panel-body list-unstyled">
+          {{#each playersSorderByRank itemController='PlayersPlayer'}}
+            <li>
+              <span class="label label-warning pull-right">{{ratingAvg}}</span>
+              {{#link-to "players.player" this class="label label-info"}}{{name}}{{/link-to}}
+            </li>
+          {{/each}}
+        </ul>
+      </div>
+    {{/each}}
+  </div>
+</div>

@@ -11,21 +11,21 @@
           9..10 warning
           10.. danger
          -->
-        <span class="label label-primary">{{#if rating}}{{rating}}{{else}}n/a{{/if}}</span>
+        <span class="label label-primary">{{ratingAvg}}</span>
       </h1>
       <dl class="dl-horizontal lead pull-right">
         <dt>Shoot</dt>
-        <dd><span class="label label-info">5.0</span></dd>
+        <dd><span class="label label-info">{{ratings.sho}}</span></dd>
         <dt>Pass</dt>
-        <dd><span class="label label-warning">9.1</span></dd>
+        <dd><span class="label label-warning">{{ratings.pas}}</span></dd>
         <dt>Dribble</dt>
-        <dd><span class="label label-default">3.1</span></dd>
+        <dd><span class="label label-default">{{ratings.dri}}</span></dd>
         <dt>Pace</dt>
-        <dd><span class="label label-primary">6.3</span></dd>
+        <dd><span class="label label-primary">{{ratings.pac}}</span></dd>
         <dt>Defence</dt>
-        <dd><span class="label label-success">8.5</span></dd>
+        <dd><span class="label label-success">{{ratings.def}}</span></dd>
         <dt>Goal Keeper</dt>
-        <dd><span class="label label-info">5.4</span></dd>
+        <dd><span class="label label-info">{{ratings.gk}}</span></dd>
       </dl>
       <p class="text-muted pull-right">
         <em>* Based on 12 Votes</em>

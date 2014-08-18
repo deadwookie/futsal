@@ -133,9 +133,9 @@ App.Router.map(function() {
   });
 
   this.resource('tourneys', function() {
+    this.route('tourney', {path: ':id'});
     this.route('new');
   });
-  this.resource('tourney', {path: 'tourneys/:id'});
 
   this.resource('gameday', function() {
     this.route('players');
@@ -146,6 +146,9 @@ App.Router.map(function() {
 
 // Models
 App.Player = require('./_models/player');
+App.Rating = require('./_models/rating');
+App.Tourney = require('./_models/tourney');
+App.Settings = require('./_models/settings');
 
 // Application
 App.ApplicationRoute = require('./application/route');
@@ -223,18 +226,11 @@ App.templates['gameday/players'] = require('./gameday/players.hbs');
 App.templates['gameday/teams'] = require('./gameday/teams.hbs');
 App.templates['gameday/matches'] = require('./gameday/matches.hbs');
 
-// Tourney Model
-App.Tourney = require('./tourney/model');
-
 // Tourney
-App.TourneyRoute = require('./tourney/route');
-App.TourneyController = require('./tourney/controller');
-App.templates.tourney = require('./tourney/template.hbs');
-App.templates['tourneys/new'] = require('./tourney/mockup.hbs');
-App.templates.tourneyPlayers = require('./tourney/players.hbs');
-App.templates.tourneyTeams = require('./tourney/teams.hbs');
-App.templates.tourneyTable = require('./tourney/table.hbs');
-App.templates.tourneyMatches = require('./tourney/matches.hbs');
+App.TourneysTourneyRoute = require('./tourneys/tourney/route');
+App.TourneysTourneyController = require('./tourneys/tourney/controller');
+App.templates['tourneys/tourney'] = require('./tourneys/tourney/template.hbs');
+App.templates['tourneys/new'] = require('./tourneys/tourney/mockup.hbs');
 
 // Tourneys
 App.TourneysRoute = require('./tourneys/route');
@@ -255,6 +251,9 @@ App.templates.teams = require('./teams/template.hbs');
 
 // Match Model
 App.Match = require('./match/model');
+
+// Goal Model
+App.Goal = require('./goal/model');
 
 // Match
 App.MatchRoute = require('./match/route');
