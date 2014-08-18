@@ -10,7 +10,7 @@ module.exports = Ember.Route.extend({
 
     controller.set('model', model);
 
-    this.controllerFor('players').set('model', model.get('players'));
+    this.controllerFor('players.index').set('model', model.get('players'));
     this.controllerFor('teams').set('model', model.get('teams'));
     this.controllerFor('matches').set('model', model.get('matches'));
   },
@@ -23,7 +23,7 @@ module.exports = Ember.Route.extend({
     this.render('tourneyPlayers', {
       into: 'tourney',
       outlet: 'playersOutlet',
-      controller: this.controllerFor('players')
+      controller: this.controllerFor('players.index')
     });
 
     this.render('tourneyTeams', {
