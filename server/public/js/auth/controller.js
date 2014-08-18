@@ -51,30 +51,6 @@ module.exports = Ember.ObjectController.extend({
 
   changePassword: function(email, oldPassword, newPassword) {
     return this.get('session.adapter').changePassword(email, oldPassword, newPassword);
-  },
-
-  hasPermission: function(check, options) {
-    console.warn('auth:user hasPermission', this.get('user'));
-    return true;
-
-    var user = this.get('user'),
-      result = [],
-      permissions;
-    options || (options = {});
-
-    if (!check) return true;
-    if (!user) return false;
-
-    check = [].concat(check);
-    permissions = user.get('permissions');
-
-    if (permissions.get('all')) return true;
-    check.forEach(function(p) {
-      if (permissions.get(p)) result.push(p);
-    });
-
-    // should user has all passed permissions or at least one?
-    return options.strict ? check.length === result.length : result.length > 0;
-  },
+  }
 
 });

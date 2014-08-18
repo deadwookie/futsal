@@ -49,6 +49,37 @@ module.exports = Ember.Object.extend({
   logout: function() {
     this.set('user', void 0);
     return this.get('adapter').logout();
+  },
+
+  hasPermission: function(check, options) {
+    var user = this.get('user'),
+      result = [],
+      permissions, path;
+    options || (options = {});
+
+    if (!check) return true;
+    if (!user) return false;
+
+    check = [].concat(check);
+    permissions = user.get('permissions') || Ember.Object.create();
+    if (!permissions) return false;
+
+    if (permissions.get('all')) return true;
+    check.forEach(function(p) {
+      if (permissions.get(p)) {
+        result.push(p);
+        return;
+      }
+
+      if (options.model && p === '@current') {
+        // hook for user's own data
+        // todo: rethink
+        if (options.model.get('id') === user.get('id')) result.push(p);
+      }
+    });
+
+    // should user has all passed permissions or at least one?
+    return options.atLeastOne ? result.length > 0 : check.length === result.length;
   }
 
 });

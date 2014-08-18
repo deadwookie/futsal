@@ -80,21 +80,25 @@ Ember.Application.initializer({
     container.injection('controller', 'session', 'session:main');
 
     Ember.Route.reopen({
-      beforeModel: function(transition) {
-        var permissions;
-
+      beforeModel: function(transition, params) {
         if (this.get('isAuthRequired') && !this.get('session.user')) {
           console.warn('auth is required for "%s"', transition.targetName);
           this.controllerFor('auth').set('attemptedTransition', transition);
           // TODO: show a "login required" message
           return this.transitionTo('auth');
         }
+      },
 
-        // permissions = this.get('isPermissionRequired');
-        // if (permissions && !this.get('auth').hasPermission(permissions)) {
-        //   // TODO: show "no permission" message
-        //   transition.abort();
-        // }
+      afterModel: function(model, transition) {
+        var options = {
+          atLeastOne: true,
+          model: model
+        };
+        if (!this.get('session').hasPermission(this.get('isPermissionRequired'), options)) {
+          // TODO: show "no permission" message
+          console.warn('no permission for "%s" on %o', transition.targetName, model.toJSON());
+          transition.abort();
+        }
       }
     });
   }
