@@ -119,11 +119,15 @@ App.Router.map(function() {
     this.route('player', {path: ':id'});
   });
 
-  this.resource('players');
-  this.resource('player', {path: 'players/:id'}, function() {
-    this.route('edit');
-    this.route('changePassword');
+  this.resource('players', function() {
+    this.route('player', {path: ':id'});
+
+    this.resource('profile', {path: ':id/profile'}, function() {
+      this.route('setup');
+      this.route('password');
+    });
   });
+
   this.resource('tourneys', function() {
     this.route('new');
   });
@@ -135,6 +139,9 @@ App.Router.map(function() {
     this.route('matches');
   });
 });
+
+// Models
+App.Player = require('./_models/player');
 
 // Application
 App.ApplicationRoute = require('./application/route');
@@ -154,22 +161,47 @@ App.templates['auth/login'] = require('./auth/login/template');
 // Logout
 App.AuthLogoutRoute = require('./auth/logout/route');
 
-// signup
+// Sign Up
 App.AuthSignupRoute = require('./auth/signup/route');
 App.AuthSignupController = require('./auth/signup/controller');
 App.templates['auth/signup'] = require('./auth/signup/template');
 
-// restore (password)
+// Restore (password)
 App.AuthRestoreRoute = require('./auth/restore/route');
 App.AuthRestoreController = require('./auth/restore/controller');
 App.templates['auth/restore'] = require('./auth/restore/template');
 
-// Gameday
-App.GamedayIndexRoute = require('./gameday/index/route');
-App.templates.gameday = require('./gameday/template.hbs');
-App.templates['gameday/players'] = require('./gameday/players.hbs');
-App.templates['gameday/teams'] = require('./gameday/teams.hbs');
-App.templates['gameday/matches'] = require('./gameday/matches.hbs');
+// Me
+App.MeRoute = require('./me/route');
+
+// Players
+App.templates.players = require('./players/template.hbs');
+App.PlayersIndexRoute = require('./players/index/route');
+App.PlayersIndexController = require('./players/index/controller');
+App.templates['players/index'] = require('./players/index/template.hbs');
+
+// Player
+App.PlayersPlayerRoute = require('./players/player/route');
+App.PlayersPlayerController = require('./players/player/controller');
+App.templates['players/player'] = require('./players/player/template.hbs');
+
+// Profile
+App.ProfileRoute = require('./profile/route');
+App.templates.profile = require('./profile/template.hbs');
+
+App.ProfileIndexRoute = require('./profile/index/route');
+
+App.ProfileSetupController = require('./profile/setup/controller');
+App.ProfileSetupPhotoEditView = require('./profile/setup/photoEditView');
+App.ProfileSetupPhotoPreviewView = require('./profile/setup/photoPreviewView');
+App.templates['profile/setup'] = require('./profile/setup/template.hbs');
+// @TODO: use in template {{view NAME}} instead of helper
+Ember.Handlebars.helper('player-photo-edit-view', App.ProfileSetupPhotoEditView);
+Ember.Handlebars.helper('player-photo-preview-view', App.ProfileSetupPhotoPreviewView);
+
+// Change Password
+App.ProfilePasswordController = require('./profile/password/controller');
+App.templates['profile/password'] = require('./profile/password/template.hbs');
 
 // Voting
 App.VotingRoute = require('./voting/route');
@@ -180,30 +212,12 @@ App.VotingPlayerController = require('./voting/player/controller');
 App.VotingPlayerRoute = require('./voting/player/route');
 App.templates['voting/player'] = require('./voting/player/template.hbs');
 
-// Player Model
-App.Player = require('./player/model');
-
-// Player
-App.PlayerRoute = require('./players/route');
-App.PlayerController = require('./player/controller');
-App.templates.player = require('./player/template.hbs');
-
-App.PlayerEditRoute = require('./player/edit/route');
-App.PlayerEditController = require('./player/edit/controller');
-App.PlayerEditPhotoEditView = require('./player/edit/photoEditView');
-App.PlayerEditPhotoPreviewView = require('./player/edit/photoPreviewView');
-// @TODO: use in template {{view NAME}} instead of helper
-Ember.Handlebars.helper('player-photo-edit-view', App.PlayerEditPhotoEditView);
-Ember.Handlebars.helper('player-photo-preview-view', App.PlayerEditPhotoPreviewView);
-App.PlayerChangePasswordRoute = require('./player/changePassword/route');
-App.PlayerChangePasswordController = require('./player/changePassword/controller');
-App.templates['player/edit'] = require('./player/edit/template.hbs');
-App.templates['player/changePassword'] = require('./player/changePassword/template.hbs');
-
-// Players
-App.PlayersRoute = require('./players/route');
-App.PlayersController = require('./players/controller');
-App.templates.players = require('./players/template.hbs');
+// Gameday
+App.GamedayIndexRoute = require('./gameday/index/route');
+App.templates.gameday = require('./gameday/template.hbs');
+App.templates['gameday/players'] = require('./gameday/players.hbs');
+App.templates['gameday/teams'] = require('./gameday/teams.hbs');
+App.templates['gameday/matches'] = require('./gameday/matches.hbs');
 
 // Tourney Model
 App.Tourney = require('./tourney/model');
@@ -247,8 +261,6 @@ App.MatchesRoute = require('./matches/route');
 App.MatchesController = require('./matches/controller');
 App.templates.matches = require('./matches/template.hbs');
 
-// Me
-App.MeRoute = require('./me/route');
 
 // debug purpose
 global.zApp = module.exports = App;

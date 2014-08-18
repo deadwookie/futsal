@@ -1,0 +1,12 @@
+<ul class="nav nav-pills gap-lg">
+  {{#link-to "profile.setup" tagName="li" href=false}}
+    {{#link-to "profile.setup"}}Profile{{/link-to}}
+  {{/link-to}}
+  {{#link-to "profile.password" tagName="li" href=false}}
+    {{#link-to "profile.password"}}Change Password{{/link-to}}
+  {{/link-to}}
+</ul>
+
+<div class="well">
+    {{outlet}}
+</div>

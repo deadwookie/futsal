@@ -1,7 +1,6 @@
 var Ember = require('ember');
 
 module.exports = Ember.ObjectController.extend({
-  needs: 'player',
   photoCropped: null,
 
   actions: {
@@ -11,7 +10,9 @@ module.exports = Ember.ObjectController.extend({
       model.set('photo', this.get('photoCropped') || this.get('photo'));
       model.set('isApproved', this.get('isApproved'));
       model.save();
-      this.transitionToRoute('me');
+
+      // todo: notify "profile updated"
+      this.transitionToRoute('players.player', model);
     },
   }
 });

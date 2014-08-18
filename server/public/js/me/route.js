@@ -1,11 +1,11 @@
 var Ember = require('ember');
-var PlayerRoute = require('../player/route');
+var PlayerRoute = require('../players/player/route');
 
 // An alias to existed player
 module.exports = PlayerRoute.extend({
-  templateName: 'player',
+  templateName: 'players.player',
   // viewName: 'player',
-  controllerName: 'player',
+  controllerName: 'players.player',
 
   isAuthRequired: true,
 

@@ -30,11 +30,15 @@
       <p class="text-muted pull-right">
         <em>* Based on 12 Votes</em>
         <br>
-        {{#link-to "player.edit" this}}<i class="fa fa-cog"></i>{{/link-to}}
+        {{#link-to "profile" this}}<i class="fa fa-cog"></i>{{/link-to}}
       </p>
     </div>
     <div class="col-sm-4">
-      <img src="{{unbound gravatar}}?size=400px" alt="photo" class="img-thumbnail img-responsive">
+      {{#if photo}}
+        <img {{bind-attr src="photo"}} alt="photo" class="img-thumbnail img-responsive">
+      {{else}}
+        <img src="{{unbound gravatar}}?size=60px" alt="gravatar" class="img-thumbnail img-responsive">
+      {{/if}}
     </div>
     <div class="col-sm-4">
       <br>

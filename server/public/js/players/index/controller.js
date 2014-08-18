@@ -1,7 +1,7 @@
 var Ember = require('ember');
 
 module.exports = Ember.ArrayController.extend({
-  itemController: 'player',
+  itemController: 'players.player',
 
   sortProperties: ['rating'],
   sortAscending: false,

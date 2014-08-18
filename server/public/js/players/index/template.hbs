@@ -1,0 +1,34 @@
+<div class="row players-list">
+  {{#each}}
+    <div class="col-sm-4 players-item">
+      <div class="media">
+        {{#link-to "players.player" this class="pull-left"}}
+          {{#if photo}}
+            <img {{bind-attr src="photo"}} alt="photo" class="media-object img-thumbnail">
+          {{else}}
+            <img src="{{unbound gravatar}}?size=60px" alt="gravatar" class="media-object img-thumbnail">
+          {{/if}}
+        {{/link-to}}
+        <div class="media-body">
+          <h3 class="media-heading">
+            {{#link-to "players.player" this}}
+              {{name}} <span class="label label-primary">{{rating}}</span>
+            {{/link-to}}
+          </h3>
+          <ul class="list-unstyled">
+            <li>
+              {{#if isVoted}}
+                <i class="fa fa-check-circle"></i> Voted
+                {{#if isLocked}}{{else}}
+                  ({{#link-to 'voting.player' this}}Re-Vote{{/link-to}})
+                {{/if}}
+              {{else}}
+                {{#link-to 'voting.player' this class="text-danger"}}<i class="fa fa-exclamation-circle"></i> Vote Now!{{/link-to}}
+              {{/if}}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  {{/each}}
+</div>
