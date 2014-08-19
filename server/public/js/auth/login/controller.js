@@ -1,9 +1,6 @@
 var Ember = require('ember');
 
 module.exports = Ember.ObjectController.extend({
-  needs: 'auth',
-  auth: Ember.computed.alias('controllers.auth'),
-
   email: null,
   password: null,
   rememberMe: false,
@@ -34,6 +31,7 @@ module.exports = Ember.ObjectController.extend({
           auth.goBack();
         }.bind(this))
         .catch(function(error) {
+          console.warn('login error', error);
           // todo: custom error message based on error.code
           this.set('errorMsg', error.message);
           this.set('isProcessing', false);

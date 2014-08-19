@@ -7,8 +7,8 @@
         {{#link-to "me" tagName="li" href=false}}
           {{#link-to "me"}}
             <i class="flaticon-football118 fa-lg"></i>
-            {{#if session.user}}
-              {{session.user.name}}
+            {{#if auth.user}}
+              {{auth.user.name}}
             {{else}}
               Auth
             {{/if}}
@@ -37,7 +37,7 @@
           {{!-- <li class="navbar-text">
             <em>3 days left</em>
           </li> --}}
-          {{#if session.user}}
+          {{#if auth.user}}
             <li>
               {{#link-to "auth.logout"}}Logout{{/link-to}}
             </li>

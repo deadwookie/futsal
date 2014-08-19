@@ -1,9 +1,6 @@
 var Ember = require('ember');
 
 module.exports = Ember.ObjectController.extend({
-  needs: 'auth',
-  auth: Ember.computed.alias('controllers.auth'),
-
   oldPassword: null,
   newPassword: null,
   isProcessing: false,
@@ -20,7 +17,7 @@ module.exports = Ember.ObjectController.extend({
 
   actions: {
     changePassword: function() {
-      var email = this.get('session.user.email'),
+      var email = this.get('model.email'),
         oldPassword = this.get('oldPassword'),
         newPassword = this.get('newPassword');
 

@@ -70,20 +70,19 @@ Ember.Application.initializer({
 Ember.Application.initializer({
   name: 'auth',
   initialize: function(container, application) {
-    var Session = require('./session');
+    var Auth = require('./auth');
+    container.register('auth:main', Auth);
+    container.injection('auth:main', 'store', 'store:main');
+    container.injection('auth:main', 'adapter', 'firebase:login');
 
-    container.register('session:main', Session);
-    container.injection('session:main', 'store', 'store:main');
-    container.injection('session:main', 'adapter', 'firebase:login');
-
-    container.injection('route', 'session', 'session:main');
-    container.injection('controller', 'session', 'session:main');
+    container.injection('route', 'auth', 'auth:main');
+    container.injection('controller', 'auth', 'auth:main');
 
     Ember.Route.reopen({
       beforeModel: function(transition, params) {
-        if (this.get('isAuthRequired') && !this.get('session.user')) {
+        if (this.get('isAuthRequired') && !this.get('auth.user')) {
           console.warn('auth is required for "%s"', transition.targetName);
-          this.controllerFor('auth').set('attemptedTransition', transition);
+          this.get('auth').set('attemptedTransition', transition);
           // TODO: show a "login required" message
           return this.transitionTo('auth');
         }
@@ -94,7 +93,7 @@ Ember.Application.initializer({
           atLeastOne: true,
           model: model
         };
-        if (!this.get('session').hasPermission(this.get('isPermissionRequired'), options)) {
+        if (!this.get('auth').hasPermission(this.get('isPermissionRequired'), options)) {
           // TODO: show "no permission" message
           console.warn('no permission for "%s" on %o', transition.targetName, model.toJSON());
           transition.abort();
@@ -156,7 +155,6 @@ App.ApplicationController = require('./application/controller');
 App.templates.application = require('./application/template.hbs');
 
 // Auth
-App.AuthController = require('./auth/controller');
 App.AuthIndexRoute = require('./auth/index/route');
 App.templates.auth = require('./auth/template');
 

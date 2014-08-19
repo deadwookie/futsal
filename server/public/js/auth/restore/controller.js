@@ -1,9 +1,6 @@
 var Ember = require('ember');
 
 module.exports = Ember.ObjectController.extend({
-  needs: 'auth',
-  auth: Ember.computed.alias('controllers.auth'),
-
   email: null,
   isProcessing: false,
   errorMsg: false,

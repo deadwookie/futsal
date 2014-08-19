@@ -4,19 +4,39 @@ module.exports = Ember.Object.extend({
   adapter: void 0,
   user: void 0,
   _userModelName: 'player',
+  _userModelId: function() {
+    return 'player_' + this.get('adapter.user.id');
+  }.property('adapter.user.id'),
+  /**
+   * Redirect after login
+   * @property attemptedTransition
+   * @type {Transition}
+   * @default null
+   */
+  attemptedTransition: null,
 
   init: function() {
     if (!this.get('adapter')) {
-      throw new Error('Please set the `adapter` property on the session.');
+      throw new Error('Please set the `adapter` property for `auth` controller.');
     }
   },
 
-  fetch: function() {
+  goBack: function() {
+    var transition = this.get('attemptedTransition');
+    if (transition) {
+      this.set('attemptedTransition', null);
+      transition.retry();
+    } else {
+      this.transitionToRoute('');
+    }
+  },
+
+  session: function() {
     return this.get('adapter').connect()
       .then(function(user) {
         if (user) {
           // it seems, user is logged in, let's find the actual data model
-          return this.store.find(this._userModelName, user.id);
+          return this.store.find(this.get('_userModelName'), this.get('_userModelId'));
         }
 
         return void 0;
@@ -38,9 +58,10 @@ module.exports = Ember.Object.extend({
     return this.get('adapter').login('password', options)
       .then(function(user) {
         if (!user) throw new Error('User is undefined');
-        return this.store.find(this._userModelName, user.id);
+        return this.store.find(this.get('_userModelName'), this.get('_userModelId'));
       }.bind(this))
       .then(function(user) {
+        console.info('logged user:', user && user.toJSON());
         this.set('user', user);
         return user;
       }.bind(this));
@@ -80,6 +101,32 @@ module.exports = Ember.Object.extend({
 
     // should user has all passed permissions or at least one?
     return options.atLeastOne ? result.length > 0 : check.length === result.length;
+  },
+
+  createUser: function(email, password, profile) {
+    return this.get('adapter').createUser(email, password)
+      .then(function(user) {
+        var newUser = this.store.createRecord(this.get('_userModelName'), {
+          id: user.id,
+          email: user.email
+        });
+
+        newUser.setProperties(profile);
+
+        if (!newUser.get('name')) {
+          newUser.set('name', String(user.email).split('@').shift());
+        }
+
+        return newUser.save();
+      }.bind(this));
+  },
+
+  resetPassword: function(email) {
+    return this.get('adapter').sendPasswordResetEmail(email);
+  },
+
+  changePassword: function(email, oldPassword, newPassword) {
+    return this.get('adapter').changePassword(email, oldPassword, newPassword);
   }
 
 });
