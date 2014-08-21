@@ -10,6 +10,13 @@ var config = require('config')
   .extend(require('../../config/ember.json'))
   .extend(require('../../config/browser.json'));
 
+// Give your handlebars.js templates some swag son!
+// See http://elving.github.io/swag/
+var Swag = require('swag');
+// Hook until https://github.com/elving/swag/pull/49
+if (window.Swag) Swag = window.Swag;
+Swag.registerHelpers(Ember.Handlebars);
+
 var Application = Ember.Application.extend({
   // Basic logging, e.g. "Transitioned into 'post'"
   LOG_TRANSITIONS: config.get('ember.log.transitions'),
