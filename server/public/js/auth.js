@@ -4,9 +4,10 @@ module.exports = Ember.Object.extend({
   adapter: void 0,
   user: void 0,
   _userModelName: 'player',
+  _userModelIdPrefix: 'player_',
   _userModelId: function() {
-    return 'player_' + this.get('adapter.user.id');
-  }.property('adapter.user.id'),
+    return this.get('_userModelIdPrefix') + this.get('adapter.user.id');
+  }.property('_userModelIdPrefix', 'adapter.user.id'),
   /**
    * Redirect after login
    * @property attemptedTransition
@@ -23,12 +24,12 @@ module.exports = Ember.Object.extend({
 
   goBack: function() {
     var transition = this.get('attemptedTransition');
-    if (transition) {
-      this.set('attemptedTransition', null);
-      transition.retry();
-    } else {
-      this.transitionToRoute('');
+    if (!transition) {
+      return false;
     }
+
+    this.set('attemptedTransition', null);
+    return transition.retry();
   },
 
   session: function() {
@@ -106,18 +107,7 @@ module.exports = Ember.Object.extend({
   createUser: function(email, password, profile) {
     return this.get('adapter').createUser(email, password)
       .then(function(user) {
-        var newUser = this.store.createRecord(this.get('_userModelName'), {
-          id: user.id,
-          email: user.email
-        });
-
-        newUser.setProperties(profile);
-
-        if (!newUser.get('name')) {
-          newUser.set('name', String(user.email).split('@').shift());
-        }
-
-        return newUser.save();
+        return this._createRecord(user, profile);
       }.bind(this));
   },
 
@@ -127,6 +117,25 @@ module.exports = Ember.Object.extend({
 
   changePassword: function(email, oldPassword, newPassword) {
     return this.get('adapter').changePassword(email, oldPassword, newPassword);
+  },
+
+  _createRecord: function(user, profile) {
+    var record = this.store.createRecord(this.get('_userModelName'), {
+      id: this._generateUserId(user, profile),
+      email: user.email
+    });
+
+    record.setProperties(profile);
+
+    if (!record.get('name')) {
+      record.set('name', String(user.email).split('@').shift());
+    }
+
+    return record.save();
+  },
+
+  _generateUserId: function(user, profile) {
+    return this.get('_userModelIdPrefix') + user.id;
   }
 
 });

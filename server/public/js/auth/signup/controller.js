@@ -33,7 +33,7 @@ module.exports = Ember.ObjectController.extend({
         })
         .then(function(user) {
           this.reset();
-          auth.goBack();
+          auth.goBack() || this.transitionToRoute('');
         }.bind(this))
         .catch(function(error) {
           // todo: custom error message based on error.code

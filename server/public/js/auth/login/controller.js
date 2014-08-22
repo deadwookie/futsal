@@ -28,10 +28,10 @@ module.exports = Ember.ObjectController.extend({
       auth.login(email, password, rememberMe)
         .then(function(user) {
           this.reset();
-          auth.goBack();
+          auth.goBack() || this.transitionToRoute('');
         }.bind(this))
         .catch(function(error) {
-          console.warn('login error', error);
+          console.warn('login error', error, error.stack);
           // todo: custom error message based on error.code
           this.set('errorMsg', error.message);
           this.set('isProcessing', false);

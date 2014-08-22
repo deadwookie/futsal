@@ -103,6 +103,7 @@ Ember.Application.initializer({
         if (!this.get('auth').hasPermission(this.get('isPermissionRequired'), options)) {
           // TODO: show "no permission" message
           console.warn('no permission for "%s" on %o', transition.targetName, model.toJSON());
+          // TODO: make redirect when login was previosly asked
           transition.abort();
         }
       }

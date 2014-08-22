@@ -7,8 +7,8 @@
         {{#link-to "me" tagName="li" href=false}}
           {{#link-to "me"}}
             <i class="flaticon-football118 fa-lg"></i>
-            {{#if auth.user}}
-              {{auth.user.name}}
+            {{#if auth.user.name}}
+              {{truncate auth.user.name 20 "…"}}
             {{else}}
               Auth
             {{/if}}
@@ -39,13 +39,12 @@
           </li> --}}
           {{#if auth.user}}
             <li>
-              {{#link-to "auth.logout"}}Logout{{/link-to}}
+              {{#link-to "auth.logout" title="Log out"}}<i class="fa fa-sign-out"></i>{{/link-to}}
             </li>
           {{/if}}
       </div>
     </div><!--/.container-fluid -->
   </div>
-
 <div class="container">
   {{outlet}}
 </div>

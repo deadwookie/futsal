@@ -11,24 +11,26 @@
           9..10 warning
           10.. danger
          -->
-        <span class="label label-primary">{{ratingAvg}}</span>
+        <span class="label label-primary">{{default ratingAvg "?"}}</span>
       </h1>
-      <dl class="dl-horizontal lead pull-right">
-        <dt>Shoot</dt>
-        <dd><span class="label label-info">{{ratings.sho}}</span></dd>
-        <dt>Pass</dt>
-        <dd><span class="label label-warning">{{ratings.pas}}</span></dd>
-        <dt>Dribble</dt>
-        <dd><span class="label label-default">{{ratings.dri}}</span></dd>
-        <dt>Pace</dt>
-        <dd><span class="label label-primary">{{ratings.pac}}</span></dd>
-        <dt>Defence</dt>
-        <dd><span class="label label-success">{{ratings.def}}</span></dd>
-        <dt>Goal Keeper</dt>
-        <dd><span class="label label-info">{{ratings.gk}}</span></dd>
-      </dl>
+      {{#if ratings}}
+        <dl class="dl-horizontal lead pull-right">
+          <dt>Shoot</dt>
+          <dd><span class="label label-info">{{toFixed ratings.sho 1}}</span></dd>
+          <dt>Pass</dt>
+          <dd><span class="label label-warning">{{toFixed ratings.pas 1}}</span></dd>
+          <dt>Dribble</dt>
+          <dd><span class="label label-default">{{toFixed ratings.dri 1}}</span></dd>
+          <dt>Pace</dt>
+          <dd><span class="label label-primary">{{toFixed ratings.pac 1}}</span></dd>
+          <dt>Defence</dt>
+          <dd><span class="label label-success">{{toFixed ratings.def 1}}</span></dd>
+          <dt>Goal Keeper</dt>
+          <dd><span class="label label-info">{{toFixed ratings.gk 1}}</span></dd>
+        </dl>
+      {{/if}}
       <p class="text-muted pull-right">
-        <em>* Based on 12 Votes</em>
+        <em>* Based on {{votesCount}} Votes</em>
         <br>
         {{#link-to "profile" this}}<i class="fa fa-cog"></i>{{/link-to}}
       </p>
