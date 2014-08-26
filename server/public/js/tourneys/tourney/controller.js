@@ -2,8 +2,12 @@ var Ember = require('ember');
 
 module.exports = Ember.ObjectController.extend({
   isFinished: function() {
-    return this.get('model.matches').length > 0 && this.get('model.matches').filterBy('isPlayed', false).length === 0;
-  }.property('matches'),
+    return this.get('model.matches') && this.get('model.matches').length > 0 && this.get('model.matches').filterBy('isPlayed', false).length === 0;
+  }.property('matches.@each.isPlayed'),
+
+  isWinner: function() {
+    return !this.get('name') || this.get('name') === 'charlie' ? true : false;
+  }.property('matches.@each.isPlayed'),
 
   matchesPlayed: function() {
     var teamId = this.get('model.id'),
@@ -12,7 +16,7 @@ module.exports = Ember.ObjectController.extend({
       });
 
     return matches.length;
-  }.property('matches'),
+  }.property('matches.@each.home', 'matches.@each.away'),
 
   matchesWon: function() {
     var teamId = this.get('model.id'),
@@ -28,7 +32,7 @@ module.exports = Ember.ObjectController.extend({
       });
 
     return matches.length;
-  }.property('matches'),
+  }.property('matches.@each.goals', 'matches.@each.goals.@each.team', 'matches.@each.home', 'matches.@each.away'),
 
   matchesDraw: function() {
     var teamId = this.get('model.id'),
@@ -43,7 +47,7 @@ module.exports = Ember.ObjectController.extend({
       });
 
     return matches.length;
-  }.property('matches'),
+  }.property('matches.@each.goals', 'matches.@each.goals.@each.team', 'matches.@each.home', 'matches.@each.away'),
 
   matchesLost: function() {
     var teamId = this.get('model.id'),
@@ -59,7 +63,7 @@ module.exports = Ember.ObjectController.extend({
       });
 
     return matches.length;
-  }.property('matches'),
+  }.property('matches.@each.goals', 'matches.@each.goals.@each.team', 'matches.@each.home', 'matches.@each.away'),
 
   goalsFor: function() {
     var teamId = this.get('model.id'),
@@ -77,7 +81,7 @@ module.exports = Ember.ObjectController.extend({
         goals = match.get('home.id') === teamId ? goalsHome : goalsAway;
       return previousValue + goals;
     }, 0);
-  }.property('matches'),
+  }.property('matches.@each.goals', 'matches.@each.goals.@each.team', 'matches.@each.home', 'matches.@each.away'),
 
   goalsAgainst: function() {
     var teamId = this.get('model.id'),
@@ -95,13 +99,13 @@ module.exports = Ember.ObjectController.extend({
         goals = match.get('home.id') === teamId ? goalsAway : goalsHome;
       return previousValue + goals;
     }, 0);
-  }.property('matches'),
+  }.property('matches.@each.goals', 'matches.@each.goals.@each.team', 'matches.@each.home', 'matches.@each.away'),
 
   goalsDiff: function() {
     return this.get('goalsFor') - this.get('goalsAgainst');
-  }.property('matches'),
+  }.property('matches.@each.goals', 'matches.@each.goals.@each.team', 'matches.@each.home', 'matches.@each.away'),
 
   points: function() {
     return this.get('matchesWon') * 3 + this.get('matchesDraw') * 1;
-  }.property('matches')
+  }.property('matches.@each.goals', 'matches.@each.goals.@each.team', 'matches.@each.home', 'matches.@each.away')
 });
