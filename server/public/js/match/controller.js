@@ -6,15 +6,22 @@ module.exports = Ember.ObjectController.extend({
   }.property('isPlayed'),
 
   goalsHome: function() {
-    return this.get('goals').filter(function(item, index, enumerable) {
+    return this.get('model.goals').filter(function(item, index, enumerable) {
       return item.get('team.id') == this.get('home.id');
     }.bind(this)).length;
-  }.property('goals.@each.team'),
+  }.property('home', 'goals.@each.team'),
 
   goalsAway: function() {
-    return this.get('goals').filter(function(item, index, enumerable) {
-        return item.get('away.id') == this.get('away.id');
+    return this.get('model.goals').filter(function(item, index, enumerable) {
+        return item.get('team.id') == this.get('away.id');
     }.bind(this)).length;
-  }.property('goals.@each.team')
-});
+  }.property('away', 'goals.@each.team'),
 
+  winHome: function() {
+    return this.get('goalsHome') > this.get('goalsAway');
+  }.property('home', 'away', 'goals.@each.team'),
+
+  winAway: function() {
+    return this.get('goalsHome') < this.get('goalsAway');
+  }.property('home', 'away', 'goals.@each.team'),
+});

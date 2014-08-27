@@ -7,5 +7,5 @@ module.exports = Ember.ArrayController.extend({
   sortAscending: false,
 
   playersSortedByRankDesc: ['rating:desc', 'name:asc'],
-  playersSorderByRank: Ember.computed.sort('model', 'playersSortedByRankDesc'),
+  playersSortedByRank: Ember.computed.sort('model', 'playersSortedByRankDesc'),
 });

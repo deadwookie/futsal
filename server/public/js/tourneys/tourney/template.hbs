@@ -10,8 +10,8 @@
 
 <ul class="nav nav-pills gap-lg">
   <li class="active"><a href="#">Overview</a></li>
-  {{#each teams itemController='tourneysTourney'}}
-    <li><a href="#">{{name}} {{#if isWinner}}<i class="flaticon-football117"></i>{{/if}}</a></li>
+  {{#each teams itemController='team'}}
+    <li><a href="#">{{capitalizeFirst name}} {{#if isWinner}}<i class="flaticon-football117"></i>{{/if}}</a></li>
   {{/each}}
 </ul>
 
@@ -33,10 +33,10 @@
         </tr>
       </thead>
       <tbody>
-        {{#each teams itemController='tourneysTourney'}}
+        {{#each teams itemController='team'}}
           <tr>
-            <th>{{name}} {{#if isWinner}}<i class="flaticon-football117"></i>{{/if}}</th>
-            <td><span class="label label-info">7.1</span></td>
+            <th>{{capitalizeFirst name}} {{#if isWinner}}<i class="flaticon-football117"></i>{{/if}}</th>
+            <td><span class="label label-info">{{ratingAvg}}</span></td>
             <td>{{matchesPlayed}}</td>
             <td>{{matchesWon}}</td>
             <td>{{matchesDraw}}</td>
@@ -56,9 +56,30 @@
         <table class="table table-striped matches-table">
           <tbody>
             {{#each matches itemController='match'}}
-              <tr class="text-success">
-                <td><b>{{home.name}}</b></td> <td>{{goalsHome}} : {{goalsAway}}</td> <td>{{away.name}}</td>
-              </tr>
+              {{!fixme}}
+              {{#if home.name}}
+              {{#if away.name}}
+                <tr class="text-success1">
+                  <td>
+                    {{#if winHome}}
+                      <b>{{capitalizeFirst home.name}}</b>
+                    {{else}}
+                      {{capitalizeFirst home.name}}
+                    {{/if}}
+                  </td>
+                  <td>
+                    {{goalsHome}} : {{goalsAway}}
+                  </td>
+                  <td>
+                    {{#if winAway}}
+                      <b>{{capitalizeFirst away.name}}</b>
+                    {{else}}
+                      {{capitalizeFirst away.name}}
+                    {{/if}}
+                  </td>
+                </tr>
+              {{/if}}
+              {{/if}}
             {{/each}}
           </tbody>
         </table>
@@ -68,128 +89,40 @@
         <h3>Shooters</h3>
         <table class="table table-striped shooters-table">
           <tbody>
-            <tr>
-              <td>1</td>
-              <td><a href="#">Витя</a></td>
-              <td><span class="label label-info">7</span></td>
-              <td>
-                <i class="flaticon-football28"></i>
-                <i class="flaticon-football28"></i>
-                <i class="flaticon-football28"></i>
-                <i class="flaticon-football28"></i>
-                <i class="flaticon-football28"></i>
-                <i class="flaticon-football28"></i>
-                <i class="flaticon-football28"></i>
-                <i class="flaticon-football28"></i>
-              </td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td><a href="#">Серёга (GK)</a></td>
-              <td><span class="label label-primary">8</span></td>
-              <td>
-                <i class="flaticon-football28"></i>
-                <i class="flaticon-football28"></i>
-                <i class="flaticon-football28"></i>
-                <i class="flaticon-football28"></i>
-                <i class="flaticon-football28"></i>
-                <i class="flaticon-football28"></i>
-              </td>
-            </tr>
-            <tr>
-              <td>3</td>
-              <td><a href="#">Кирилл</a></td>
-              <td><span class="label label-warning">9</span></td>
-              <td>
-                <i class="flaticon-football28"></i>
-                <i class="flaticon-football28"></i>
-                <i class="flaticon-football28"></i>
-                <i class="flaticon-football28"></i>
-                <i class="flaticon-football28"></i>
-              </td>
-            </tr>
-            <tr>
-              <td>4</td>
-              <td><a href="#">Тимур</a></td>
-              <td><span class="label label-info">6</span></td>
-              <td>
-                <i class="flaticon-football28"></i>
-                <i class="flaticon-football28"></i>
-                <i class="flaticon-football28"></i>
-                <i class="flaticon-football28"></i>
-              </td>
-            </tr>
-            <tr>
-              <td>5</td>
-              <td><a href="#">Саша Дозер</a></td>
-              <td><span class="label label-default">2</span></td>
-              <td>
-                <i class="flaticon-football28"></i>
-                <i class="flaticon-football28"></i>
-                <i class="flaticon-football28"></i>
-              </td>
-            </tr>
-            <tr class="success">
-              <td>6</td>
-              <td><a href="#">Витя</a></td>
-              <td><span class="label label-info">7</span></td>
-              <td>
-                <i class="flaticon-football28"></i>
-                <i class="flaticon-football28"></i>
-              </td>
-            </tr>
-            <tr>
-              <td>7</td>
-              <td><a href="#">Серёга (GK)</a></td>
-              <td><span class="label label-primary">8</span></td>
-              <td>
-                <i class="flaticon-football28"></i>
-                <i class="flaticon-football28"></i>
-              </td>
-            </tr>
-            <tr>
-              <td>8</td>
-              <td><a href="#">Кирилл</a></td>
-              <td><span class="label label-warning">9</span></td>
-              <td>
-                <i class="flaticon-football28"></i>
-              </td>
-            </tr>
-            <tr>
-              <td>9</td>
-              <td><a href="#">Тимур</a></td>
-              <td><span class="label label-info">6</span></td>
-              <td>
-                <i class="flaticon-football28"></i>
-              </td>
-            </tr>
-            <tr>
-              <td>10</td>
-              <td><a href="#">Саша Дозер</a></td>
-              <td><span class="label label-default">2</span></td>
-              <td>
-                <i class="flaticon-football28"></i>
-              </td>
-            </tr>
+            {{#each goalsScoredSorted}}
+              <tr>
+                {{!@TODO: define helper eachIndexed like here http://mozmonkey.com/2014/03/ember-getting-the-index-in-each-loops/}}
+                <td>{{add _view.contentIndex 1}}</td>
+                <td>{{#link-to "players.player" player}}{{player.name}}{{/link-to}}</td>
+                <td><span class="label label-info">{{player.ratingAvg}}</span></td>
+                <td>
+                  {{#each goals}}
+                    {{!@TODO: show details onhover: match/minute...}}
+                    <i class="flaticon-football28"></i>
+                  {{/each}}
+                </td>
+              </tr>
+            {{/each}}
           </tbody>
         </table>
       </div>
     </div>
   </div>
+
   <div class="col-md-3 col-md-pull-9">
     {{#each teams itemController="team"}}
       <div class="panel panel-default panel-success1">
         <div class="panel-heading">
           <span class="pull-right">
-            <span class="badge hide">{{teamRank}}</span> {{#unless isWinner}}<i class="flaticon-football117 pull-right"></i>{{/unless}}
+            <span class="badge hide">{{teamRank}}</span> {{#if isWinner}}<i class="flaticon-football117 pull-right"></i>{{/if}}
           </span>
-          <h3 class="panel-title">{{name}}</h3>
+          <h3 class="panel-title">{{capitalizeFirst name}}</h3>
         </div>
         <ul class="panel-body list-unstyled">
-          {{#each playersSorderByRank itemController='PlayersPlayer'}}
+          {{#each playersSortedByRank itemController='PlayersPlayer'}}
             <li>
               <span class="label label-warning pull-right">{{ratingAvg}}</span>
-              {{#link-to "players.player" this class="label label-info"}}{{name}}{{/link-to}}
+              {{#link-to "players.player" this class="label label-info"}}{{truncate name 14}}{{/link-to}}
             </li>
           {{/each}}
         </ul>
