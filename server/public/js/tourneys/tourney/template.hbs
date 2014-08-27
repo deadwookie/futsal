@@ -94,7 +94,7 @@
         <table class="table table-striped shooters-table">
           <tbody>
             {{#each goalsScoredSorted}}
-              <tr>
+              <tr {{bind-attr class="isHighlighted:success"}}>
                 {{!@TODO: define helper eachIndexed like here http://mozmonkey.com/2014/03/ember-getting-the-index-in-each-loops/}}
                 <td>{{add _view.contentIndex 1}}</td>
                 <td>{{#link-to "players.player" player}}{{player.name}}{{/link-to}}</td>

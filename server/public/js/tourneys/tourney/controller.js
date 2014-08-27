@@ -22,24 +22,25 @@ module.exports = Ember.ObjectController.extend({
           player: goal.get('player'),
           goals: [goal],
           goalsCnt: 1,
+          isHighlighted: this.get('highlightedTeam') == goal.get('team')
         };
       }
-    });
+    }.bind(this));
 
     return Object.keys(goalsScored).map(function(key) {
         return goalsScored[key];
     });
-  }.property('goals.@each.player'),
+  }.property('goals.@each.player', 'highlightedTeam'),
 
   actions: {
     highlight: function(team) {
-      this.set('highlightedTeam', team || null);
       this.get('teams').forEach(function(t, i) {
         t.set('highlighted', false);
       });
       if (team) {
         team.set('highlighted', true);
       }
+      this.set('highlightedTeam', team || null);
     }
   }
 });
