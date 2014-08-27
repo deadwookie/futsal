@@ -24,4 +24,8 @@ module.exports = Ember.ObjectController.extend({
   winAway: function() {
     return this.get('goalsHome') < this.get('goalsAway');
   }.property('home', 'away', 'goals.@each.team'),
+
+  isHighlighted: function() {
+    return this.get('home.highlighted') || this.get('away.highlighted');
+  }.property('home.highlighted', 'away.highlighted')
 });

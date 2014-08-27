@@ -16,6 +16,10 @@ module.exports = Ember.ObjectController.extend({
     return !this.get('name') || this.get('name') === 'alpha' ? true : false;
   }.property('matches.@each.isPlayed'),
 
+  isHighlighted: function() {
+    return this.get('highlighted');
+  }.property('highlighted'),
+
   ratingAvg: function() {
     var ratingAvg, sum = 0;
 

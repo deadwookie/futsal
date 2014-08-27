@@ -9,9 +9,13 @@
 </h2>
 
 <ul class="nav nav-pills gap-lg">
-  <li class="active"><a href="#">Overview</a></li>
+  <li {{bind-attr class="highlightedTeam::active"}}>
+    <a href="#" {{action highlight}}>Overview</a>
+  </li>
   {{#each teams itemController='team'}}
-    <li><a href="#">{{capitalizeFirst name}} {{#if isWinner}}<i class="flaticon-football117"></i>{{/if}}</a></li>
+    <li {{bind-attr class="isHighlighted:active"}}>
+      <a href="#" {{action highlight this}}>{{capitalizeFirst name}} {{#if isWinner}}<i class="flaticon-football117"></i>{{/if}}</a>
+    </li>
   {{/each}}
 </ul>
 
@@ -34,7 +38,7 @@
       </thead>
       <tbody>
         {{#each teams itemController='team'}}
-          <tr>
+          <tr {{bind-attr class="isHighlighted:success"}}>
             <th>{{capitalizeFirst name}} {{#if isWinner}}<i class="flaticon-football117"></i>{{/if}}</th>
             <td><span class="label label-info">{{ratingAvg}}</span></td>
             <td>{{matchesPlayed}}</td>
@@ -59,7 +63,7 @@
               {{!fixme}}
               {{#if home.name}}
               {{#if away.name}}
-                <tr class="text-success1">
+                <tr {{bind-attr class="isHighlighted:text-success"}}>
                   <td>
                     {{#if winHome}}
                       <b>{{capitalizeFirst home.name}}</b>
@@ -111,7 +115,7 @@
 
   <div class="col-md-3 col-md-pull-9">
     {{#each teams itemController="team"}}
-      <div class="panel panel-default panel-success1">
+      <div {{bind-attr class=":panel :panel-default isHighlighted:panel-success"}}>
         <div class="panel-heading">
           <span class="pull-right">
             <span class="badge hide">{{teamRank}}</span> {{#if isWinner}}<i class="flaticon-football117 pull-right"></i>{{/if}}

@@ -4,6 +4,8 @@ module.exports = Ember.ObjectController.extend({
   goalsScoredSortedDesc: ['goalsCnt:desc'],
   goalsScoredSorted: Ember.computed.sort('goalsScored', 'goalsScoredSortedDesc'),
 
+  highlightedTeam: null,
+
   isFinished: function() {
     return this.get('matches') && this.get('matches').length > 0 && this.get('matches').filterBy('isPlayed', false).length === 0;
   }.property('matches.@each.isPlayed'),
@@ -27,5 +29,17 @@ module.exports = Ember.ObjectController.extend({
     return Object.keys(goalsScored).map(function(key) {
         return goalsScored[key];
     });
-  }.property('goals.@each.player')
+  }.property('goals.@each.player'),
+
+  actions: {
+    highlight: function(team) {
+      this.set('highlightedTeam', team || null);
+      this.get('teams').forEach(function(t, i) {
+        t.set('highlighted', false);
+      });
+      if (team) {
+        team.set('highlighted', true);
+      }
+    }
+  }
 });
